@@ -60,7 +60,7 @@ fun TakaoNavBar(modifier: Modifier = Modifier, onNavClicked: (destination: Strin
         brand = NavBarBrand(
             title = "TakaoTech",
             image = "https://avatars.githubusercontent.com/u/125040015",
-            href = "#"
+            href = "/"
         ),
         stickyTop = true
     )
