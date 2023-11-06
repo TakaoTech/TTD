@@ -45,18 +45,5 @@ fun HomePage() {
 //           }
 //       }
 
-
-
-
-//       Iframe(
-//           attrs = {
-//               attr("src" ,"https://www.youtube.com/embed/qgi0IohVilk?si=n9xnhngFnm8xUdkT")
-//               attr("width" ,"560")
-//               attr("height" ,"315")
-//           }
-//       )
-
-
-
    }
 }
