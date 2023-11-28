@@ -1,7 +1,7 @@
-package com.takaotech.kotlinbest.pages.cv
+package com.takaotech.dashboard.pages.cv
 
 import androidx.compose.runtime.Composable
-import com.takaotech.kotlinbest.components.TakaoNavBar
+import com.takaotech.dashboard.components.TakaoNavBar
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Modifier

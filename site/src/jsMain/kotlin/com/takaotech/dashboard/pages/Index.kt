@@ -1,11 +1,7 @@
-package com.takaotech.kotlinbest.pages
+package com.takaotech.dashboard.pages
 
 import androidx.compose.runtime.Composable
-import com.stevdza.san.kotlinbs.components.BSNavBar
-import com.stevdza.san.kotlinbs.models.BackgroundStyle
-import com.stevdza.san.kotlinbs.models.navbar.NavBarBrand
-import com.stevdza.san.kotlinbs.models.navbar.NavLink
-import com.takaotech.kotlinbest.components.TakaoNavBar
+import com.takaotech.dashboard.components.TakaoNavBar
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth

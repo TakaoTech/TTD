@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.kobwebx.markdown)
 }
 
-group = "com.takaotech.kotlinbest"
+group = "com.takaotech.dashboard"
 version = "1.0-SNAPSHOT"
 
 kobweb {
@@ -36,7 +36,7 @@ kobweb {
 }
 
 kotlin {
-    configAsKobwebApplication("kotlinbest", includeServer = true)
+    configAsKobwebApplication("dashboard", includeServer = true)
 
     sourceSets {
         val commonMain by getting {

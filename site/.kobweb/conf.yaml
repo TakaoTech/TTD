@@ -5,10 +5,10 @@ server:
   files:
     dev:
       contentRoot: "build/processedResources/js/main/public"
-      script: "build/dist/js/developmentExecutable/kotlinbest.js"
-      api: "build/libs/kotlinbest.jar"
+      script: "build/dist/js/developmentExecutable/dashboard.js"
+      api: "build/libs/dashboard.jar"
     prod:
-      script: "build/dist/js/productionExecutable/kotlinbest.js"
+      script: "build/dist/js/productionExecutable/dashboard.js"
       siteRoot: ".kobweb/site"
 
   port: 8080

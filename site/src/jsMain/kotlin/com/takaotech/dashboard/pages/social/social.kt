@@ -1,9 +1,9 @@
-package com.takaotech.kotlinbest.pages.social
+package com.takaotech.dashboard.pages.social
 
 import androidx.compose.runtime.Composable
 import com.stevdza.san.kotlinbs.components.BSIcon
 import com.stevdza.san.kotlinbs.icons.BSIcons
-import com.takaotech.kotlinbest.components.TakaoNavBar
+import com.takaotech.dashboard.components.TakaoNavBar
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment

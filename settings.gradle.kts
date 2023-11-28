@@ -6,6 +6,6 @@ pluginManagement {
     }
 }
 
-rootProject.name = "kotlinbest"
+rootProject.name = "TakaoTechDashboard"
 
 include(":site")

@@ -1,4 +1,4 @@
-package com.takaotech.kotlinbest.components
+package com.takaotech.dashboard.components
 
 import androidx.compose.runtime.Composable
 import com.stevdza.san.kotlinbs.components.BSNavBar
