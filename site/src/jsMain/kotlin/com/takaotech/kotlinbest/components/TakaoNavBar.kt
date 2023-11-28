@@ -8,7 +8,6 @@ import com.stevdza.san.kotlinbs.models.navbar.NavDropdown
 import com.stevdza.san.kotlinbs.models.navbar.NavDropdownItem
 import com.stevdza.san.kotlinbs.models.navbar.NavLink
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 
 @Composable
 fun TakaoNavBar(modifier: Modifier = Modifier, onNavClicked: (destination: String) -> Unit) {
@@ -33,7 +32,7 @@ fun TakaoNavBar(modifier: Modifier = Modifier, onNavClicked: (destination: Strin
                 id = "cv",
                 title = "CV",
                 onClick = {
-
+                    onNavClicked("/cv")
                 }
             ),
             NavDropdown(

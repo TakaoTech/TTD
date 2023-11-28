@@ -42,6 +42,9 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(compose.runtime)
+//                api("io.github.qdsfdhvh:image-loader:1.7.0")
+                api("media.kamel:kamel-image:0.8.3")
+
             }
         }
 
@@ -52,8 +55,11 @@ kotlin {
                 implementation(libs.kobweb.silk)
                 implementation(libs.silk.icons.fa)
                 implementation(libs.kobwebx.markdown)
+                implementation("io.ktor:ktor-client-js:2.3.5")
+
 
                 implementation("com.github.stevdza-san:KotlinBootstrap:0.0.6")
+//                implementation("media.kamel:kamel-image:0.8.3")
             }
         }
         val jvmMain by getting {
