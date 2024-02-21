@@ -7,7 +7,7 @@ import org.koin.core.annotation.Factory
 class GithubController(private val githubRepository: GithubRepository) {
 
 	suspend fun getStarsFromZeroAndStore() {
-		githubRepository.getAllStarts().map {
+		githubRepository.getAllStars().map {
 			it.copy(
 				languages = githubRepository.getLanguagesByRepository(it.id)
 			)

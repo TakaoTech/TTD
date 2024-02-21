@@ -49,7 +49,7 @@ class GithubRepositoryTest : FunSpec(), KoinTest {
 
 	init {
 		test("Get Repository Start List") {
-			val repoStars = githubRepository.getAllStarts()
+			val repoStars = githubRepository.getAllStars()
 			assertTrue { repoStars.isNotEmpty() }
 		}
 
