@@ -1,0 +1,174 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec
+import org.jetbrains.compose.ExperimentalComposeLibrary
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+
+val projectPackage: String by project
+
+plugins {
+	alias(libs.plugins.kotlinMultiplatform)
+	alias(libs.plugins.androidApplication)
+	alias(libs.plugins.jetbrainsCompose)
+	alias(libs.plugins.ksp)
+	alias(libs.plugins.ktorfit)
+	alias(libs.plugins.buildkonfig)
+}
+
+kotlin {
+//    @OptIn(ExperimentalWasmDsl::class)
+//    wasmJs {
+//        moduleName = "composeApp"
+//        browser {
+//            commonWebpackConfig {
+//                outputFileName = "composeApp.js"
+//            }
+//        }
+//        binaries.executable()
+//    }
+
+	androidTarget {
+		compilations.all {
+			kotlinOptions {
+				jvmTarget = "1.8"
+			}
+		}
+	}
+
+	listOf(
+		iosX64(),
+		iosArm64(),
+		iosSimulatorArm64()
+	).forEach { iosTarget ->
+		iosTarget.binaries.framework {
+			baseName = "ComposeApp"
+			isStatic = true
+		}
+	}
+
+	sourceSets {
+
+		androidMain.dependencies {
+			implementation(libs.compose.ui.tooling.preview)
+			implementation(libs.androidx.activity.compose)
+			implementation(libs.koin.android)
+		}
+		val commonMain by getting {
+			kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+
+			dependencies {
+				implementation(compose.runtime)
+				implementation(compose.foundation)
+				implementation(compose.material)
+				implementation(compose.ui)
+				implementation(compose.materialIconsExtended)
+				implementation(compose.components.resources)
+				//https://github.com/DevSrSouza/compose-icons
+				implementation(projects.shared)
+				implementation(libs.ktorfit.lib)
+				implementation(libs.koin.core)
+				implementation(libs.koin.annotation)
+
+				implementation(libs.voyager.navigator)
+				implementation(libs.voyager.screenmodel)
+				implementation(libs.voyager.navigator.bottomsheet)
+				implementation(libs.voyager.navigator.tab)
+				implementation(libs.voyager.transitions)
+				implementation(libs.voyager.koin)
+
+//				implementation(libs.i18n4k.core)
+
+				//https://github.com/mikepenz/AboutLibraries
+			}
+
+		}
+	}
+}
+
+android {
+	namespace = projectPackage
+	compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+	sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+	sourceSets["main"].res.srcDirs("src/androidMain/res")
+	sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+
+	defaultConfig {
+		applicationId = projectPackage
+		minSdk = libs.versions.android.minSdk.get().toInt()
+		targetSdk = libs.versions.android.targetSdk.get().toInt()
+		versionCode = 1
+		versionName = "1.0"
+	}
+	packaging {
+		resources {
+			excludes += "/META-INF/{AL2.0,LGPL2.1}"
+		}
+	}
+	buildTypes {
+		getByName("release") {
+			isMinifyEnabled = false
+		}
+	}
+	compileOptions {
+		sourceCompatibility = JavaVersion.VERSION_1_8
+		targetCompatibility = JavaVersion.VERSION_1_8
+	}
+	dependencies {
+		debugImplementation(libs.compose.ui.tooling)
+	}
+}
+
+dependencies {
+	ksp(libs.koin.compilerksp)
+	ksp(libs.ktorfit.ksp)
+//	with(libs.ktorfit.ksp.get()) {
+//		add("kspCommonMainMetadata", this)
+//        add("kspJvm", this)
+//        add("kspJvmTest", this)
+//		add("kspAndroid", this)
+//		add("kspAndroidTest", this)
+//		add("kspIosX64", this)
+//		add("kspIosX64Test", this)
+//		add("kspIosArm64", this)
+//		add("kspIosArm64Test", this)
+//		add("kspIosSimulatorArm64", this)
+//		add("kspIosSimulatorArm64Test", this)
+//        add("kspJs", this)
+//        add("kspJsTest", this)
+//	}
+}
+
+// WORKAROUND: ADD this dependsOn("kspCommonMainKotlinMetadata") instead of above dependencies
+//tasks.withType<KotlinCompile<*>>().configureEach {
+//	if (name != "kspCommonMainKotlinMetadata") {
+//		dependsOn("kspCommonMainKotlinMetadata")
+//	}
+//}
+//afterEvaluate {
+//	tasks.filter {
+//		it.name.contains("SourcesJar", true)
+//	}?.forEach {
+//		println("SourceJarTask====>${it.name}")
+//		it.dependsOn("kspCommonMainKotlinMetadata")
+//	}
+//}
+
+buildkonfig {
+	packageName = projectPackage
+	objectName = "AppBuildKonfig"
+//    // exposeObjectWithName = 'YourAwesomePublicConfig'
+//
+	defaultConfigs {
+		buildConfigField(FieldSpec.Type.STRING, "baseUrl", "https://takaotech.com")
+	}
+}
+//i18n4k {
+//	packageName = projectPackage
+//	inputDirectory = "src/commonMain/resources/i18n"
+//	sourceCodeLocales = listOf("en", "it")
+//}
+
+//compose.experimental {
+//    web.application {}
+//}
