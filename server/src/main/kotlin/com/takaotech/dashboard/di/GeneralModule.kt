@@ -32,7 +32,7 @@ fun getGeneralModule(
 
 	single<Database> {
 		runBlocking {
-			Database.connect(dbConfiguration.url, dbConfiguration.driver)
+			connectToDatabase(dbConfiguration)
 		}
 	}
 
@@ -46,4 +46,8 @@ fun getGeneralModule(
 			digester = digestFunction
 		)
 	}
+}
+
+fun connectToDatabase(dbConfiguration: DbConfiguration): Database {
+	return Database.connect(dbConfiguration.url, dbConfiguration.driver)
 }
