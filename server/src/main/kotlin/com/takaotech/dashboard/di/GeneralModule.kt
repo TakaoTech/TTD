@@ -19,6 +19,8 @@ fun getGeneralModule(
 	credentialConfig: CredentialConfig
 ): Module = module {
 	single { credentialConfig }
+	single { githubConfiguration }
+	single { dbConfiguration }
 
 	single<Logger> {
 		log
