@@ -14,7 +14,7 @@ import org.koin.core.annotation.Factory
 @Factory
 class DepositoryRepository(private val database: Database) {
 
-	fun saveAllRepositoryToDB(repositoryList: List<GHRepository>) {
+	fun saveRepositoriesToDB(repositoryList: List<GHRepository>) {
 		transaction(database) {
 			var repositoryListFiltered = repositoryList
 			if (!GithubDepositoryTable.selectAll().empty()) {
@@ -63,7 +63,7 @@ class DepositoryRepository(private val database: Database) {
 	}
 
 	fun setTagsAtRepository(repositoryId: Long, tags: List<TagsEntity>) {
-		transaction {
+		transaction(database) {
 			GithubDepositoryEntity.findById(repositoryId)?.let {
 				it.tags = SizedCollection(tags)
 			}
@@ -71,9 +71,18 @@ class DepositoryRepository(private val database: Database) {
 	}
 
 	fun getAllDepository(): List<GithubDepositoryEntity> {
-		return transaction {
+		return transaction(database) {
 			GithubDepositoryEntity.all()
 				.toList()
+		}
+	}
+
+	/**
+	 * Check if a repository exists in db
+	 */
+	fun ghRepositoryExist(id: Long): Boolean {
+		return transaction(database) {
+			GithubDepositoryEntity.findById(id) != null
 		}
 	}
 }

@@ -1,23 +1,42 @@
 package com.takaotech.dashboard.route.github.controller
 
+import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.koin.core.annotation.Factory
 
 @Factory
-class GithubController(private val githubRepository: GithubRepository) {
+class GithubController(
+	private val githubRepository: GithubRepository,
+	private val githubDepositoryRepository: DepositoryRepository
+) {
 
 	suspend fun getStarsFromZeroAndStore() = coroutineScope {
-		val mergedStarsWithLanguages = githubRepository.getAllStars().map {
-			async {
-				it.copy(
-					languages = githubRepository.getLanguagesByRepository(it.id)
-				)
-			}
-		}
+//		val mapJobs = mutableListOf<Deferred<List<GHRepository>>>()
+		val allStars = githubRepository.getAllStars()
+			.filter { !githubDepositoryRepository.ghRepositoryExist(it.id) }
 
-		mergedStarsWithLanguages.awaitAll()
+//			.let {
+//				if (it.size < 4) {
+//					listOf(it)
+//				} else {
+//					it.chunked(it.size / 4)
+//				}
+//			}.map {
+//				mapJobs.add(
+//					async {
+//						it.map {
+//							it.copy(
+//								languages = githubRepository.getLanguagesByRepository(it.id)
+//							)
+//						}
+//					}
+//				)
+//			}
+
+//		allStars = mapJobs.awaitAll().flatten()
+
+		githubDepositoryRepository.saveRepositoriesToDB(allStars)
+
 	}
 }

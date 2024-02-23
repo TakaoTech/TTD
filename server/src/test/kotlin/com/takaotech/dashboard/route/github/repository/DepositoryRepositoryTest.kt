@@ -79,7 +79,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 				)
 			)
 
-			depositoryRepository.saveAllRepositoryToDB(repository)
+			depositoryRepository.saveRepositoriesToDB(repository)
 			val recoveredRepo = depositoryRepository.getAllDepository()
 			assertTrue { recoveredRepo.isNotEmpty() }
 			assertTrue { recoveredRepo.map { it.id.value } == repository.map { it.id } }

@@ -21,6 +21,7 @@ class GithubRepository(
 
 		val mapJobs = mutableListOf<Deferred<List<GHRepository>>>()
 
+		//TODO fix downloadedRepository < 4 explode
 		downloadedRepository.chunked(downloadedRepository.size / 4).forEach {
 			mapJobs.add(
 				async(Dispatchers.Default) {
