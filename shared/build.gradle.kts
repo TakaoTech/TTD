@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
-
 plugins {
 	alias(libs.plugins.kotlinMultiplatform)
 	alias(libs.plugins.androidLibrary)
@@ -29,6 +27,7 @@ kotlin {
 			// put your Multiplatform dependencies here
 			implementation(libs.ktorfit.lib)
 			implementation(libs.koin.core)
+			implementation(libs.serialization)
 		}
 	}
 }

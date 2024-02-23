@@ -22,6 +22,7 @@ mockk = "1.13.9"
 i18n4k = "0.7.1"
 
 kotlin = "1.9.22"
+serialization = "1.5.1"
 ksp = "1.9.22-1.0.17"
 
 ktor = "2.3.8"
@@ -97,6 +98,7 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
 ktorfit-ksp = { module = "de.jensklingenberg.ktorfit:ktorfit-ksp", version.ref = "ktorfit" }
+serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
