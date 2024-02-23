@@ -81,4 +81,5 @@ dependencies {
 	testImplementation(libs.kotest.ktor)
 	testImplementation(libs.koin.test)
 	testImplementation(libs.koin.junit)
+	testImplementation(libs.mockk)
 }

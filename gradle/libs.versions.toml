@@ -17,6 +17,7 @@ compose = "1.6.0"
 compose-plugin = "1.6.0-beta02"
 junit = "4.13.2"
 kotest = "5.8.0"
+mockk = "1.13.9"
 
 i18n4k = "0.7.1"
 
@@ -92,6 +93,7 @@ kotest-ktor = { module = "io.kotest.extensions:kotest-assertions-ktor", version 
 kotest-extension = { module = "io.kotest:kotest-extensions-jvm", version.ref = "kotest" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 koin-junit = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
 ktorfit-ksp = { module = "de.jensklingenberg.ktorfit:ktorfit-ksp", version.ref = "ktorfit" }
