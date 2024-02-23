@@ -6,6 +6,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
 
+//TODO Convert IntIdTable to StringIdTable and use name as primary key
 object TagsTable : IntIdTable() {
 	val name: Column<String> = varchar("name", 50)
 }

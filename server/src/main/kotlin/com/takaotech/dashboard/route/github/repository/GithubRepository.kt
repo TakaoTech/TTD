@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.route.github.repository
 
+import com.takaotech.dashboard.data.MainCategory
 import com.takaotech.dashboard.route.github.model.GHRepository
 import com.takaotech.dashboard.route.github.model.GHUser
 import io.ktor.util.logging.*
@@ -39,7 +40,11 @@ class GithubRepository(
 									user.url.toString()
 								)
 							},
-							languages = repository.listLanguages()
+							languages = repository.listLanguages(),
+							//Use default on data recovery
+							mainCategory = MainCategory.NONE,
+							//Use default on data recovery
+							tags = listOf()
 						)
 					}
 				}

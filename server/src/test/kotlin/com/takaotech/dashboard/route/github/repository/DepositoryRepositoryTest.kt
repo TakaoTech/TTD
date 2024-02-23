@@ -4,6 +4,8 @@ import com.takaotech.dashboard.configuration.CredentialConfig
 import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.configuration.GithubConfiguration
 import com.takaotech.dashboard.configuration.SessionConfig
+import com.takaotech.dashboard.data.MainCategory
+import com.takaotech.dashboard.di.connectToDatabase
 import com.takaotech.dashboard.di.getGeneralModule
 import com.takaotech.dashboard.route.github.data.GithubDepositoryTable
 import com.takaotech.dashboard.route.github.data.GithubDepositoryTagsTable
@@ -22,6 +24,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.ksp.generated.defaultModule
 import org.koin.test.KoinTest
 import org.koin.test.inject
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DepositoryRepositoryTest : FunSpec(), KoinTest {
@@ -55,18 +59,24 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 	)
 
 	init {
-		test("Save data in DB") {
+		beforeEach {
+			val dbConfiguration by inject<DbConfiguration>()
 			val database by inject<Database>()
-			val depositoryRepository by inject<DepositoryRepository>()
+			connectToDatabase(dbConfiguration)
 			transaction(database) {
 				addLogger(StdOutSqlLogger)
+				SchemaUtils.drop(TagsTable, GithubDepositoryTable, GithubUserTable, GithubDepositoryTagsTable)
 				SchemaUtils.create(TagsTable, GithubDepositoryTable, GithubUserTable, GithubDepositoryTagsTable)
 				commit()
 			}
+		}
 
-			val repository = listOf(
+		test("Save data in DB") {
+			val depositoryRepository by inject<DepositoryRepository>()
+
+			val inputRepository = listOf(
 				GHRepository(
-					id = 1254,
+					id = 1,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
 					url = "https://www.bing.com/search?q=splendide",
@@ -74,15 +84,131 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
 					languages = mapOf(
+						"Kotlin" to 100
+					),
+					tags = listOf(),
+					mainCategory = MainCategory.NONE
+				),
+				GHRepository(
+					id = 2,
+					name = "Tracy Henson",
+					fullName = "Clay Olsen",
+					url = "https://www.bing.com/search?q=splendide",
+					user = GHUser(
+						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
+					),
+					languages = mapOf(
+						"Bash" to 100
+					),
+					tags = listOf(),
+					mainCategory = MainCategory.NONE
+				)
+			)
+
+			val outputRepository = listOf(
+				GHRepository(
+					id = 1,
+					name = "Tracy Henson",
+					fullName = "Clay Olsen",
+					url = "https://www.bing.com/search?q=splendide",
+					user = GHUser(
+						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
+					),
+					languages = mapOf(
+						"Kotlin" to 100
+					),
+					tags = listOf(),
+					mainCategory = MainCategory.KOTLIN
+				),
+				GHRepository(
+					id = 2,
+					name = "Tracy Henson",
+					fullName = "Clay Olsen",
+					url = "https://www.bing.com/search?q=splendide",
+					user = GHUser(
+						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
+					),
+					languages = mapOf(
+						"Bash" to 100
+					),
+					tags = listOf(),
+					mainCategory = MainCategory.NONE
+				)
+			)
+
+			depositoryRepository.saveRepositoriesToDB(inputRepository)
+			val recoveredRepo = depositoryRepository.getAllDepository()
+			assertTrue { recoveredRepo.isNotEmpty() }
+			assertEquals(outputRepository, recoveredRepo)
+			assertTrue { recoveredRepo.find { it.id == 1L }!!.mainCategory == MainCategory.KOTLIN }
+			assertTrue { recoveredRepo.find { it.id == 2L }!!.mainCategory == MainCategory.NONE }
+		}
+
+		test("ghRepositoryExist Repository Not Exist") {
+			val depositoryRepository by inject<DepositoryRepository>()
+
+			val repository = listOf(
+				GHRepository(
+					id = 1,
+					name = "Tracy Henson",
+					fullName = "Clay Olsen",
+					url = "https://www.bing.com/search?q=splendide",
+					user = GHUser(
+						id = 1, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
+					),
+					languages = mapOf(
 						"Kotlin" to 20
-					)
+					),
+					tags = listOf(),
+					mainCategory = MainCategory.NONE
 				)
 			)
 
 			depositoryRepository.saveRepositoriesToDB(repository)
 			val recoveredRepo = depositoryRepository.getAllDepository()
 			assertTrue { recoveredRepo.isNotEmpty() }
-			assertTrue { recoveredRepo.map { it.id.value } == repository.map { it.id } }
+			assertFalse { depositoryRepository.ghRepositoryExist(2) }
+
+		}
+
+		test("ghRepositoryExist Repository Exist") {
+			val depositoryRepository by inject<DepositoryRepository>()
+
+			val repository = listOf(
+				GHRepository(
+					id = 1,
+					name = "Tracy Henson",
+					fullName = "Clay Olsen",
+					url = "https://www.bing.com/search?q=splendide",
+					user = GHUser(
+						id = 1, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
+					),
+					languages = mapOf(
+						"Kotlin" to 20
+					),
+					tags = listOf(),
+					mainCategory = MainCategory.NONE
+				),
+				GHRepository(
+					id = 2,
+					name = "Tracy Henson",
+					fullName = "Clay Olsen",
+					url = "https://www.bing.com/search?q=splendide",
+					user = GHUser(
+						id = 2, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
+					),
+					languages = mapOf(
+						"Kotlin" to 20
+					),
+					tags = listOf(),
+					mainCategory = MainCategory.NONE
+				)
+			)
+
+			depositoryRepository.saveRepositoriesToDB(repository)
+			val recoveredRepo = depositoryRepository.getAllDepository()
+			assertTrue { recoveredRepo.isNotEmpty() }
+			assertTrue { depositoryRepository.ghRepositoryExist(2) }
 		}
 	}
 

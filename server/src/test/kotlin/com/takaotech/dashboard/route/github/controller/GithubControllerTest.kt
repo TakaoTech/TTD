@@ -1,11 +1,13 @@
 package com.takaotech.dashboard.route.github.controller
 
+import com.takaotech.dashboard.data.MainCategory
 import com.takaotech.dashboard.route.github.model.GHRepository
 import com.takaotech.dashboard.route.github.model.GHUser
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.*
+import kotlin.test.assertEquals
 
 
 class GithubControllerTest : FunSpec({
@@ -30,7 +32,9 @@ class GithubControllerTest : FunSpec({
 				),
 				languages = mapOf(
 					"Kotlin" to 100
-				)
+				),
+				tags = listOf(),
+				mainCategory = MainCategory.KOTLIN
 			),
 			GHRepository(
 				id = 2,
@@ -42,7 +46,9 @@ class GithubControllerTest : FunSpec({
 				),
 				languages = mapOf(
 					"Kotlin" to 100
-				)
+				),
+				tags = listOf(),
+				mainCategory = MainCategory.KOTLIN
 			)
 		)
 
@@ -73,7 +79,9 @@ class GithubControllerTest : FunSpec({
 				),
 				languages = mapOf(
 					"Kotlin" to 100
-				)
+				),
+				tags = listOf(),
+				mainCategory = MainCategory.KOTLIN
 			),
 			GHRepository(
 				id = 2,
@@ -85,7 +93,9 @@ class GithubControllerTest : FunSpec({
 				),
 				languages = mapOf(
 					"Kotlin" to 100
-				)
+				),
+				tags = listOf(),
+				mainCategory = MainCategory.KOTLIN
 			)
 		)
 
@@ -115,7 +125,9 @@ class GithubControllerTest : FunSpec({
 			),
 			languages = mapOf(
 				"Kotlin" to 100
-			)
+			),
+			tags = listOf(),
+			mainCategory = MainCategory.KOTLIN
 		)
 		val testList = listOf(
 			GHRepository(
@@ -128,7 +140,9 @@ class GithubControllerTest : FunSpec({
 				),
 				languages = mapOf(
 					"Kotlin" to 100
-				)
+				),
+				tags = listOf(),
+				mainCategory = MainCategory.KOTLIN
 			),
 			newObj
 		)
@@ -150,5 +164,42 @@ class GithubControllerTest : FunSpec({
 		verify {
 			depository.saveRepositoriesToDB(listOf(newObj))
 		}
+	}
+
+	test("Get Stored Depository, not empty") {
+		val testList = listOf(
+			GHRepository(
+				id = 1,
+				name = "Kotlin",
+				fullName = "Kotlin",
+				url = "https://www.bing.com/search?q=kotlin",
+				user = GHUser(
+					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
+				),
+				languages = mapOf(
+					"Kotlin" to 100
+				),
+				tags = listOf(),
+				mainCategory = MainCategory.KOTLIN
+			),
+			GHRepository(
+				id = 2,
+				name = "Kotlin",
+				fullName = "Kotlin",
+				url = "https://www.bing.com/search?q=kotlin",
+				user = GHUser(
+					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
+				),
+				languages = mapOf(
+					"Kotlin" to 100
+				),
+				tags = listOf(),
+				mainCategory = MainCategory.KOTLIN
+			)
+		)
+
+		every { depository.getAllDepository() } returns testList
+
+		assertEquals(testList, controller.getStoredRepository())
 	}
 })
