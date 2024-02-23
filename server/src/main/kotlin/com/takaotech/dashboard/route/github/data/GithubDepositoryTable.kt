@@ -1,8 +1,7 @@
 package com.takaotech.dashboard.route.github.data
 
-import com.sun.tools.javac.Main
+import com.takaotech.dashboard.data.MainCategory
 import com.takaotech.dashboard.route.github.data.TagsTable.clientDefault
-import com.takaotech.dashboard.route.github.data.TagsTable.default
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
@@ -57,13 +56,13 @@ class GithubDepositoryEntity(id: EntityID<Long>) : LongEntity(id) {
 	var name by GithubDepositoryTable.name
 	var fullName by GithubDepositoryTable.fullName
 	var url by GithubDepositoryTable.url
-	var user by GithubDepositoryTable.user
+	var user by GithubUserEntity referencedOn GithubDepositoryTable.user
 
 	//val userRef by GithubUserEntity referrersOn GithubUserTable.id
 	var languages by GithubDepositoryTable.languages
 
 	//Mitigation because default enu on db isn't currently supported
-	val category by GithubDepositoryTable.category.clientDefault { MainCategory.NONE }
+	var category by GithubDepositoryTable.category.clientDefault { MainCategory.NONE }
 
 	var tags by TagsEntity via GithubDepositoryTagsTable
 

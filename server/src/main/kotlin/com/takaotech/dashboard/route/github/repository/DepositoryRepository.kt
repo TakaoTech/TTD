@@ -1,10 +1,12 @@
 package com.takaotech.dashboard.route.github.repository
 
+import com.takaotech.dashboard.data.MainCategory
 import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.route.github.data.GithubDepositoryTable
 import com.takaotech.dashboard.route.github.data.GithubUserEntity
 import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.route.github.model.GHRepository
+import com.takaotech.dashboard.route.github.model.GHUser
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.selectAll
@@ -49,7 +51,7 @@ class DepositoryRepository(private val database: Database) {
 			for (repo in repositoryList) {
 				val searchedUser = users.first { user ->
 					user.id.value == repo.user.id
-				}.id
+				}
 
 				GithubDepositoryEntity.new(repo.id) {
 					name = repo.name
@@ -57,6 +59,11 @@ class DepositoryRepository(private val database: Database) {
 					url = repo.url
 					user = searchedUser
 					languages = repo.languages
+					category = if (repo.languages.containsKey("Kotlin")) {
+						MainCategory.KOTLIN
+					} else {
+						MainCategory.NONE
+					}
 				}
 			}
 		}
@@ -70,10 +77,31 @@ class DepositoryRepository(private val database: Database) {
 		}
 	}
 
-	fun getAllDepository(): List<GithubDepositoryEntity> {
+	fun getAllDepository(): List<GHRepository> {
 		return transaction(database) {
 			GithubDepositoryEntity.all()
 				.toList()
+		}.map {
+			GHRepository(
+				id = it.id.value,
+				name = it.name,
+				fullName = it.fullName,
+				url = it.url,
+				user = transaction(database) {
+					with(it.user) {
+						GHUser(
+							id = id.value,
+							name = name,
+							url = url
+						)
+					}
+				},
+				languages = it.languages,
+				mainCategory = it.category,
+				tags = transaction(database) {
+					it.tags.toList().map { it.name }
+				}
+			)
 		}
 	}
 
