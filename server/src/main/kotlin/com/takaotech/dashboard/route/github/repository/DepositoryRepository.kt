@@ -3,6 +3,7 @@ package com.takaotech.dashboard.route.github.repository
 import com.takaotech.dashboard.model.GHRepository
 import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
+import com.takaotech.dashboard.model.Tag
 import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.route.github.data.GithubDepositoryTable
 import com.takaotech.dashboard.route.github.data.GithubUserEntity
@@ -99,7 +100,9 @@ class DepositoryRepository(private val database: Database) {
 				languages = it.languages,
 				mainCategory = it.category,
 				tags = transaction(database) {
-					it.tags.toList().map { it.name }
+					it.tags.map { entity ->
+						Tag(entity.id.value)
+					}
 				}
 			)
 		}

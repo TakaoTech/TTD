@@ -18,7 +18,7 @@ data class GHRepository(
 	@SerialName("languages")
 	val languages: Map<String, Long>,
 	@SerialName("tags")
-	val tags: List<String>,
+	val tags: List<Tag>,
 	//TODO In teoria è obbligatorio,
 	@SerialName("mainCategory")
 	val mainCategory: MainCategory = MainCategory.NONE

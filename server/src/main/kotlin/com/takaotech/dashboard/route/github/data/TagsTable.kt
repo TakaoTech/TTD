@@ -1,18 +1,14 @@
 package com.takaotech.dashboard.route.github.data
 
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
+import com.takaotech.dashboard.utils.StringEntity
+import com.takaotech.dashboard.utils.StringEntityClass
+import com.takaotech.dashboard.utils.StringIdTable
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.Column
 
-//TODO Convert IntIdTable to StringIdTable and use name as primary key
-object TagsTable : IntIdTable() {
-	val name: Column<String> = varchar("name", 50)
+object TagsTable : StringIdTable(name = "tagName") {
+
 }
 
-class TagsEntity(id: EntityID<Int>) : IntEntity(id) {
-	companion object : IntEntityClass<TagsEntity>(TagsTable)
-
-	var name by TagsTable.name
+class TagsEntity(id: EntityID<String>) : StringEntity(id) {
+	companion object : StringEntityClass<TagsEntity>(TagsTable)
 }

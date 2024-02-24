@@ -10,9 +10,7 @@ class TagsRepository(private val database: Database) {
 
 	fun addTag(tagName: String) {
 		transaction(database) {
-			TagsEntity.new {
-				name = tagName
-			}
+			TagsEntity.new(id = tagName) { }
 		}
 	}
 
