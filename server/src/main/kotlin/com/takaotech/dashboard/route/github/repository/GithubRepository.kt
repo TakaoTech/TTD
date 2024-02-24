@@ -22,33 +22,45 @@ class GithubRepository(
 
 		val mapJobs = mutableListOf<Deferred<List<GHRepository>>>()
 
-		//TODO fix downloadedRepository < 4 explode
-		downloadedRepository.chunked(downloadedRepository.size / 4).forEach {
-			mapJobs.add(
-				async(Dispatchers.Default) {
-					it.map { repository ->
-						logger.info("Processing repository ID=${repository.id} Name=${repository.name} ")
-						GHRepository(
-							id = repository.id,
-							name = repository.name,
-							fullName = repository.fullName,
-							url = repository.url.toString(),
-							user = repository.owner.let { user ->
-								GHUser(
-									user.id,
-									user.login,
-									user.url.toString()
-								)
-							},
-							languages = repository.listLanguages(),
-							//Use default on data recovery
-							mainCategory = MainCategory.NONE,
-							//Use default on data recovery
-							tags = listOf()
-						)
-					}
+		try {
+			downloadedRepository.let {
+				//TODO Make split size a constant
+				if (it.size < 4) {
+					listOf(it)
+				} else {
+					it.chunked(it.size / 4)
 				}
-			)
+			}.forEach {
+				mapJobs.add(
+					async(Dispatchers.Default) {
+						it.map { repository ->
+							logger.info("Processing repository ID=${repository.id} Name=${repository.name} ")
+							GHRepository(
+								id = repository.id,
+								name = repository.name,
+								fullName = repository.fullName,
+								url = repository.url.toString(),
+								user = repository.owner.let { user ->
+									GHUser(
+										user.id,
+										user.login,
+										user.url.toString()
+									)
+								},
+								languages = repository.listLanguages(),
+								//Use default on data recovery
+								mainCategory = MainCategory.NONE,
+								//Use default on data recovery
+								tags = listOf()
+							)
+						}
+					}
+				)
+			}
+		} catch (ex: Exception) {
+			logger.error("Error download getAllStars", ex)
+			//TODO throw correct exception
+			throw ex
 		}
 
 		mapJobs.awaitAll().flatten()
@@ -65,7 +77,6 @@ class GithubRepository(
 			logger.error("Error getAllStartsRemote", ex)
 			it.resumeWithException(ex)
 		}
-
 	}
 
 	suspend fun getLanguagesByRepository(repositoryId: Long) = suspendCoroutine<Map<String, Long>> {
