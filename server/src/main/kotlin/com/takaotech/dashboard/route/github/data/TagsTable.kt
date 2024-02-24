@@ -6,7 +6,7 @@ import com.takaotech.dashboard.utils.StringIdTable
 import org.jetbrains.exposed.dao.id.EntityID
 
 object TagsTable : StringIdTable(name = "tagName") {
-
+	override val primaryKey = PrimaryKey(id)
 }
 
 class TagsEntity(id: EntityID<String>) : StringEntity(id) {
