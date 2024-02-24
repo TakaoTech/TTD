@@ -1,8 +1,8 @@
 package com.takaotech.dashboard.route.github.controller
 
-import com.takaotech.dashboard.data.MainCategory
-import com.takaotech.dashboard.route.github.model.GHRepository
-import com.takaotech.dashboard.route.github.model.GHUser
+import com.takaotech.dashboard.model.GHRepository
+import com.takaotech.dashboard.model.GHUser
+import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
 import io.kotest.core.spec.style.FunSpec

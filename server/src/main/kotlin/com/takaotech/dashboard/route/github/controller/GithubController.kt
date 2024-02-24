@@ -1,6 +1,6 @@
 package com.takaotech.dashboard.route.github.controller
 
-import com.takaotech.dashboard.route.github.model.GHRepository
+import com.takaotech.dashboard.model.GHRepository
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
 import kotlinx.coroutines.coroutineScope

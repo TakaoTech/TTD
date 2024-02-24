@@ -1,8 +1,8 @@
 package com.takaotech.dashboard.route.github.repository
 
-import com.takaotech.dashboard.data.MainCategory
-import com.takaotech.dashboard.route.github.model.GHRepository
-import com.takaotech.dashboard.route.github.model.GHUser
+import com.takaotech.dashboard.model.GHRepository
+import com.takaotech.dashboard.model.GHUser
+import com.takaotech.dashboard.model.MainCategory
 import io.ktor.util.logging.*
 import kotlinx.coroutines.*
 import org.kohsuke.github.GitHub

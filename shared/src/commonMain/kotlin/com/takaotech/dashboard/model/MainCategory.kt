@@ -1,4 +1,4 @@
-package com.takaotech.dashboard.data
+package com.takaotech.dashboard.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

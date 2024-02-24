@@ -1,6 +1,5 @@
-package com.takaotech.dashboard.route.github.model
+package com.takaotech.dashboard.model
 
-import com.takaotech.dashboard.data.MainCategory
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

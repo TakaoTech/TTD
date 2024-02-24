@@ -1,12 +1,12 @@
 package com.takaotech.dashboard.route.github.repository
 
-import com.takaotech.dashboard.data.MainCategory
+import com.takaotech.dashboard.model.GHRepository
+import com.takaotech.dashboard.model.GHUser
+import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.route.github.data.GithubDepositoryTable
 import com.takaotech.dashboard.route.github.data.GithubUserEntity
 import com.takaotech.dashboard.route.github.data.TagsEntity
-import com.takaotech.dashboard.route.github.model.GHRepository
-import com.takaotech.dashboard.route.github.model.GHUser
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.selectAll

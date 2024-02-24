@@ -1,6 +1,6 @@
 package com.takaotech.dashboard.route.github.data
 
-import com.takaotech.dashboard.data.MainCategory
+import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.route.github.data.TagsTable.clientDefault
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.dao.LongEntity
