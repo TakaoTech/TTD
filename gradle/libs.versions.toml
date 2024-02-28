@@ -84,6 +84,7 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 github-api = { module = "org.kohsuke:github-api", version = "1.318" }
 
 db-h2 = { module = "com.h2database:h2", version = "2.2.224" }
+hikari = { module = "com.zaxxer:HikariCP", version = "5.1.0" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }

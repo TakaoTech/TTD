@@ -44,7 +44,7 @@ class GithubController(
 
 	}
 
-	fun getStoredRepository(): List<GHRepository> {
+	suspend fun getStoredRepository(): List<GHRepository> {
 		return githubDepositoryRepository.getAllDepository()
 	}
 }

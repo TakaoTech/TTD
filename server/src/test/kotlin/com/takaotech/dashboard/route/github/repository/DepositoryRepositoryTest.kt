@@ -9,18 +9,14 @@ import com.takaotech.dashboard.di.getGeneralModule
 import com.takaotech.dashboard.model.GHRepository
 import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.route.github.data.GithubDepositoryTable
-import com.takaotech.dashboard.route.github.data.GithubDepositoryTagsTable
-import com.takaotech.dashboard.route.github.data.GithubUserTable
-import com.takaotech.dashboard.route.github.data.TagsTable
+import com.takaotech.dashboard.utils.HikariDatabase
 import com.takaotech.dashboard.utils.LOGGER
+import com.takaotech.dashboard.utils.dbTables
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
-import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.ksp.generated.defaultModule
 import org.koin.test.KoinTest
 import org.koin.test.inject
@@ -61,12 +57,12 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 	init {
 		beforeEach {
 			val dbConfiguration by inject<DbConfiguration>()
-			val database by inject<Database>()
+			val database by inject<HikariDatabase>()
 			connectToDatabase(dbConfiguration)
-			transaction(database) {
+			database.dbExec {
 				addLogger(StdOutSqlLogger)
-				SchemaUtils.drop(TagsTable, GithubDepositoryTable, GithubUserTable, GithubDepositoryTagsTable)
-				SchemaUtils.create(TagsTable, GithubDepositoryTable, GithubUserTable, GithubDepositoryTagsTable)
+				SchemaUtils.drop(*dbTables)
+				SchemaUtils.create(*dbTables)
 				commit()
 			}
 		}

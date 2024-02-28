@@ -66,6 +66,7 @@ dependencies {
 	implementation(libs.exposed.json)
 	implementation(libs.exposed.datetime)
 	implementation(libs.db.h2)
+	implementation(libs.hikari)
 
 	implementation(libs.koin.ktor)
 	implementation(libs.koin.logger)

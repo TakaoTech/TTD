@@ -6,7 +6,6 @@ import com.takaotech.dashboard.configuration.GithubConfiguration
 import io.ktor.server.auth.*
 import io.ktor.util.*
 import io.ktor.util.logging.*
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
 import org.kohsuke.github.GitHubBuilder
 import org.koin.core.module.Module
@@ -30,12 +29,6 @@ fun getGeneralModule(
 		GitHubBuilder().apply {
 			withOAuthToken(githubConfiguration.githubToken)
 		}.build()
-	}
-
-	single<Database> {
-		runBlocking {
-			connectToDatabase(dbConfiguration)
-		}
 	}
 
 	single<UserHashedTableAuth> {

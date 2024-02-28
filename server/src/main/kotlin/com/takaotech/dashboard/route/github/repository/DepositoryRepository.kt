@@ -8,17 +8,18 @@ import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.route.github.data.GithubDepositoryTable
 import com.takaotech.dashboard.route.github.data.GithubUserEntity
 import com.takaotech.dashboard.route.github.data.TagsEntity
-import org.jetbrains.exposed.sql.Database
+import com.takaotech.dashboard.utils.HikariDatabase
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.core.annotation.Factory
 
 @Factory
-class DepositoryRepository(private val database: Database) {
+class DepositoryRepository(
+	private val database: HikariDatabase
+) {
 
-	fun saveRepositoriesToDB(repositoryList: List<GHRepository>) {
-		transaction(database) {
+	suspend fun saveRepositoriesToDB(repositoryList: List<GHRepository>) {
+		database.dbExec {
 			var repositoryListFiltered = repositoryList
 			if (!GithubDepositoryTable.selectAll().empty()) {
 				repositoryListFiltered = repositoryList.map {
@@ -71,16 +72,16 @@ class DepositoryRepository(private val database: Database) {
 		}
 	}
 
-	fun setTagsAtRepository(repositoryId: Long, tags: List<TagsEntity>) {
-		transaction(database) {
+	suspend fun setTagsAtRepository(repositoryId: Long, tags: List<TagsEntity>) {
+		database.dbExec {
 			GithubDepositoryEntity.findById(repositoryId)?.let {
 				it.tags = SizedCollection(tags)
 			}
 		}
 	}
 
-	fun getAllDepository(): List<GHRepository> {
-		return transaction(database) {
+	suspend fun getAllDepository(): List<GHRepository> {
+		return database.dbExec {
 			GithubDepositoryEntity.all()
 				.toList()
 		}.map {
@@ -89,7 +90,7 @@ class DepositoryRepository(private val database: Database) {
 				name = it.name,
 				fullName = it.fullName,
 				url = it.url,
-				user = transaction(database) {
+				user = database.dbExec {
 					with(it.user) {
 						GHUser(
 							id = id.value,
@@ -100,7 +101,7 @@ class DepositoryRepository(private val database: Database) {
 				},
 				languages = it.languages,
 				mainCategory = it.category,
-				tags = transaction(database) {
+				tags = database.dbExec {
 					it.tags.map { entity ->
 						Tag(entity.id.value)
 					}
@@ -112,8 +113,8 @@ class DepositoryRepository(private val database: Database) {
 	/**
 	 * Check if a repository exists in db
 	 */
-	fun ghRepositoryExist(id: Long): Boolean {
-		return transaction(database) {
+	suspend fun ghRepositoryExist(id: Long): Boolean {
+		return database.dbExec {
 			GithubDepositoryEntity.findById(id) != null
 		}
 	}

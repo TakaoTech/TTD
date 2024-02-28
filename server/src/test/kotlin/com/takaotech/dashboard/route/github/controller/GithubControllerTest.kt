@@ -6,7 +6,10 @@ import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
 import io.kotest.core.spec.style.FunSpec
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coJustRun
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlin.test.assertEquals
 
 
@@ -54,15 +57,15 @@ class GithubControllerTest : FunSpec({
 
 		coEvery { githubRepository.getAllStars() } returns testList
 
-		every {
+		coEvery {
 			depository.ghRepositoryExist(any())
 		} returns false
 
-		justRun { depository.saveRepositoriesToDB(any()) }
+		coJustRun { depository.saveRepositoriesToDB(any()) }
 
 		controller.getStarsFromZeroAndStore()
 
-		verify {
+		coVerify {
 			depository.saveRepositoriesToDB(testList)
 		}
 	}
@@ -101,15 +104,15 @@ class GithubControllerTest : FunSpec({
 
 		coEvery { githubRepository.getAllStars() } returns testList.toList()
 
-		every {
+		coEvery {
 			depository.ghRepositoryExist(any())
 		} returns true
 
-		justRun { depository.saveRepositoriesToDB(any()) }
+		coJustRun { depository.saveRepositoriesToDB(any()) }
 
 		controller.getStarsFromZeroAndStore()
 
-		verify {
+		coVerify {
 			depository.saveRepositoriesToDB(emptyList())
 		}
 	}
@@ -149,19 +152,19 @@ class GithubControllerTest : FunSpec({
 
 		coEvery { githubRepository.getAllStars() } returns testList
 
-		every {
+		coEvery {
 			depository.ghRepositoryExist(1)
 		} returns true
 
-		every {
+		coEvery {
 			depository.ghRepositoryExist(2)
 		} returns false
 
-		justRun { depository.saveRepositoriesToDB(any()) }
+		coJustRun { depository.saveRepositoriesToDB(any()) }
 
 		controller.getStarsFromZeroAndStore()
 
-		verify {
+		coEvery {
 			depository.saveRepositoriesToDB(listOf(newObj))
 		}
 	}
@@ -198,7 +201,7 @@ class GithubControllerTest : FunSpec({
 			)
 		)
 
-		every { depository.getAllDepository() } returns testList
+		coEvery { depository.getAllDepository() } returns testList
 
 		assertEquals(testList, controller.getStoredRepository())
 	}
