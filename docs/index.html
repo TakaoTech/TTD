@@ -10792,6 +10792,79 @@
 <script>
     // Script section to load models into a JS Var
     var defs = {}
+    defs["GHRepository"] = {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "integer",
+                "description": "The unique identifier of the repository"
+            },
+            "name": {
+                "type": "string",
+                "description": "The name of the repository"
+            },
+            "fullName": {
+                "type": "string",
+                "description": "The full name of the repository"
+            },
+            "url": {
+                "type": "string",
+                "description": "The URL of the repository",
+                "format": "uri"
+            },
+            "user": {
+                "$ref": "#/components/schemas/GHUser"
+            },
+            "languages": {
+                "type": "object",
+                "additionalProperties": {
+                    "type": "integer"
+                },
+                "description": "A map of languages used in the repository and their line counts"
+            },
+            "tags": {
+                "type": "array",
+                "description": "A list of tags associated with the repository",
+                "items": {
+                    "$ref": "#/components/schemas/Tag"
+                }
+            },
+            "mainCategory": {
+                "$ref": "#/components/schemas/MainCategory"
+            }
+        }
+    };
+    defs["GHUser"] = {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "integer",
+                "description": "The unique identifier of the user"
+            },
+            "name": {
+                "type": "string",
+                "description": "The name of the user"
+            },
+            "url": {
+                "type": "string",
+                "description": "The URL of the user's profile",
+                "format": "uri"
+            }
+        }
+    };
+    defs["MainCategory"] = {
+        "type": "string",
+        "enum": ["NONE", "KOTLIN", "SELF_HOSTED", "OTHER"]
+    };
+    defs["Tag"] = {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string",
+                "description": "The name of the tag"
+            }
+        }
+    };
 </script>
 
 <div class="container-fluid">
@@ -10809,8 +10882,8 @@
                     <li class="nav-fixed nav-header active" data-group="_"><a href="#api-_">API Summary</a></li>
 
                     <li class="nav-header" data-group="Default"><a href="#api-Default">API Methods - Default</a></li>
-                    <li data-group="Default" data-name="rootGet" class="">
-                        <a href="#api-Default-rootGet">rootGet</a>
+                    <li data-group="Default" data-name="githubGet" class="">
+                        <a href="#api-Default-githubGet">githubGet</a>
                     </li>
                 </ul>
             </nav>
@@ -10833,44 +10906,44 @@
             <div id="sections">
                 <section id="api-Default">
                     <h1>Default</h1>
-                    <div id="api-Default-rootGet">
-                        <article id="api-Default-rootGet-0" data-group="User" data-name="rootGet" data-version="0">
+                    <div id="api-Default-githubGet">
+                        <article id="api-Default-githubGet-0" data-group="User" data-name="githubGet" data-version="0">
                             <div class="pull-left">
-                                <h1>rootGet</h1>
-                                <p></p>
+                                <h1>githubGet</h1>
+                                <p>Get GitHub Repositories</p>
                             </div>
                             <div class="pull-right"></div>
                             <div class="clearfix"></div>
                             <p></p>
-                            <p class="marked">Hello World!</p>
+                            <p class="marked">Retrieve a list of GitHub repositories</p>
                             <p></p>
                             <br/>
                             <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span
-                                    class="pln">/</span></code></pre>
+                                    class="pln">/github</span></code></pre>
                             <p>
                             <h3>Usage and SDK Samples</h3>
                             </p>
                             <ul class="nav nav-tabs nav-tabs-examples">
-                                <li class="active"><a href="#examples-Default-rootGet-0-curl">Curl</a></li>
-                                <li class=""><a href="#examples-Default-rootGet-0-java">Java</a></li>
-                                <li class=""><a href="#examples-Default-rootGet-0-android">Android</a></li>
-                                <!--<li class=""><a href="#examples-Default-rootGet-0-groovy">Groovy</a></li>-->
-                                <li class=""><a href="#examples-Default-rootGet-0-objc">Obj-C</a></li>
-                                <li class=""><a href="#examples-Default-rootGet-0-javascript">JavaScript</a></li>
-                                <!--<li class=""><a href="#examples-Default-rootGet-0-angular">Angular</a></li>-->
-                                <li class=""><a href="#examples-Default-rootGet-0-csharp">C#</a></li>
-                                <li class=""><a href="#examples-Default-rootGet-0-php">PHP</a></li>
-                                <li class=""><a href="#examples-Default-rootGet-0-perl">Perl</a></li>
-                                <li class=""><a href="#examples-Default-rootGet-0-python">Python</a></li>
+                                <li class="active"><a href="#examples-Default-githubGet-0-curl">Curl</a></li>
+                                <li class=""><a href="#examples-Default-githubGet-0-java">Java</a></li>
+                                <li class=""><a href="#examples-Default-githubGet-0-android">Android</a></li>
+                                <!--<li class=""><a href="#examples-Default-githubGet-0-groovy">Groovy</a></li>-->
+                                <li class=""><a href="#examples-Default-githubGet-0-objc">Obj-C</a></li>
+                                <li class=""><a href="#examples-Default-githubGet-0-javascript">JavaScript</a></li>
+                                <!--<li class=""><a href="#examples-Default-githubGet-0-angular">Angular</a></li>-->
+                                <li class=""><a href="#examples-Default-githubGet-0-csharp">C#</a></li>
+                                <li class=""><a href="#examples-Default-githubGet-0-php">PHP</a></li>
+                                <li class=""><a href="#examples-Default-githubGet-0-perl">Perl</a></li>
+                                <li class=""><a href="#examples-Default-githubGet-0-python">Python</a></li>
                             </ul>
 
                             <div class="tab-content">
-                                <div class="tab-pane active" id="examples-Default-rootGet-0-curl">
+                                <div class="tab-pane active" id="examples-Default-githubGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
--H "Accept: text/plain"\
-"http://0.0.0.0:8080/"</code></pre>
+-H "Accept: application/json"\
+"http://127.0.0.1:8080/github"</code></pre>
                                 </div>
-                                <div class="tab-pane" id="examples-Default-rootGet-0-java">
+                                <div class="tab-pane" id="examples-Default-githubGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
 import io.swagger.client.auth.*;
 import io.swagger.client.model.*;
@@ -10885,17 +10958,17 @@ public class DefaultApiExample {
 
         DefaultApi apiInstance = new DefaultApi();
         try {
-            'String' result = apiInstance.rootGet();
+            array[GHRepository] result = apiInstance.githubGet();
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling DefaultApi#rootGet");
+            System.err.println("Exception when calling DefaultApi#githubGet");
             e.printStackTrace();
         }
     }
 }</code></pre>
                                 </div>
 
-                                <div class="tab-pane" id="examples-Default-rootGet-0-android">
+                                <div class="tab-pane" id="examples-Default-githubGet-0-android">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.DefaultApi;
 
 public class DefaultApiExample {
@@ -10903,25 +10976,26 @@ public class DefaultApiExample {
     public static void main(String[] args) {
         DefaultApi apiInstance = new DefaultApi();
         try {
-            'String' result = apiInstance.rootGet();
+            array[GHRepository] result = apiInstance.githubGet();
             System.out.println(result);
         } catch (ApiException e) {
-            System.err.println("Exception when calling DefaultApi#rootGet");
+            System.err.println("Exception when calling DefaultApi#githubGet");
             e.printStackTrace();
         }
     }
 }</code></pre>
                                 </div>
                                 <!--
-  <div class="tab-pane" id="examples-Default-rootGet-0-groovy">
+  <div class="tab-pane" id="examples-Default-githubGet-0-groovy">
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
-                                <div class="tab-pane" id="examples-Default-rootGet-0-objc">
+                                <div class="tab-pane" id="examples-Default-githubGet-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">
 DefaultApi *apiInstance = [[DefaultApi alloc] init];
 
-[apiInstance rootGetWithCompletionHandler:
-              ^('String' output, NSError* error) {
+// Get GitHub Repositories
+[apiInstance githubGetWithCompletionHandler:
+              ^(array[GHRepository] output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
                             }
@@ -10932,7 +11006,7 @@ DefaultApi *apiInstance = [[DefaultApi alloc] init];
 </code></pre>
                                 </div>
 
-                                <div class="tab-pane" id="examples-Default-rootGet-0-javascript">
+                                <div class="tab-pane" id="examples-Default-githubGet-0-javascript">
                               <pre class="prettyprint"><code class="language-js">var ApplicationApi = require('application_api');
 
 var api = new ApplicationApi.DefaultApi()
@@ -10943,14 +11017,14 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.rootGet(callback);
+api.githubGet(callback);
 </code></pre>
                                 </div>
 
-                                <!--<div class="tab-pane" id="examples-Default-rootGet-0-angular">
+                                <!--<div class="tab-pane" id="examples-Default-githubGet-0-angular">
               <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
             </div>-->
-                                <div class="tab-pane" id="examples-Default-rootGet-0-csharp">
+                                <div class="tab-pane" id="examples-Default-githubGet-0-csharp">
                               <pre class="prettyprint"><code class="language-cs">using System;
 using System.Diagnostics;
 using IO.Swagger.Api;
@@ -10959,7 +11033,7 @@ using IO.Swagger.Model;
 
 namespace Example
 {
-    public class rootGetExample
+    public class githubGetExample
     {
         public void main()
         {
@@ -10968,12 +11042,13 @@ namespace Example
 
             try
             {
-                'String' result = apiInstance.rootGet();
+                // Get GitHub Repositories
+                array[GHRepository] result = apiInstance.githubGet();
                 Debug.WriteLine(result);
             }
             catch (Exception e)
             {
-                Debug.Print("Exception when calling DefaultApi.rootGet: " + e.Message );
+                Debug.Print("Exception when calling DefaultApi.githubGet: " + e.Message );
             }
         }
     }
@@ -10981,22 +11056,22 @@ namespace Example
 </code></pre>
                                 </div>
 
-                                <div class="tab-pane" id="examples-Default-rootGet-0-php">
+                                <div class="tab-pane" id="examples-Default-githubGet-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiDefaultApi();
 
 try {
-    $result = $api_instance->rootGet();
+    $result = $api_instance->githubGet();
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling DefaultApi->rootGet: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling DefaultApi->githubGet: ', $e->getMessage(), PHP_EOL;
 }
 ?></code></pre>
                                 </div>
 
-                                <div class="tab-pane" id="examples-Default-rootGet-0-perl">
+                                <div class="tab-pane" id="examples-Default-githubGet-0-perl">
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::DefaultApi;
@@ -11004,15 +11079,15 @@ use WWW::SwaggerClient::DefaultApi;
 my $api_instance = WWW::SwaggerClient::DefaultApi->new();
 
 eval {
-    my $result = $api_instance->rootGet();
+    my $result = $api_instance->githubGet();
     print Dumper($result);
 };
 if ($@) {
-    warn "Exception when calling DefaultApi->rootGet: $@\n";
+    warn "Exception when calling DefaultApi->githubGet: $@\n";
 }</code></pre>
                                 </div>
 
-                                <div class="tab-pane" id="examples-Default-rootGet-0-python">
+                                <div class="tab-pane" id="examples-Default-githubGet-0-python">
                               <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
 import time
 import swagger_client
@@ -11023,10 +11098,11 @@ from pprint import pprint
 api_instance = swagger_client.DefaultApi()
 
 try:
-    api_response = api_instance.root_get()
+    # Get GitHub Repositories
+    api_response = api_instance.github_get()
     pprint(api_response)
 except ApiException as e:
-    print("Exception when calling DefaultApi->rootGet: %s\n" % e)</code></pre>
+    print("Exception when calling DefaultApi->githubGet: %s\n" % e)</code></pre>
                                 </div>
                             </div>
 
@@ -11034,38 +11110,36 @@ except ApiException as e:
 
 
                             <h2>Responses</h2>
-                            <h3> Status: 200 - OK </h3>
+                            <h3> Status: 200 - Successful response </h3>
 
                             <ul class="nav nav-tabs nav-tabs-examples">
                                 <li class="active">
-                                    <a data-toggle="tab" href="#responses-rootGet-200-schema">Schema</a>
+                                    <a data-toggle="tab" href="#responses-githubGet-200-schema">Schema</a>
                                 </li>
 
                             </ul>
 
                             <div class="tab-content" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-rootGet-200-schema">
-                                    <div id='responses-rootGet-200-schema-200'
+                                <div class="tab-pane active" id="responses-githubGet-200-schema">
+                                    <div id='responses-githubGet-200-schema-200'
                                          style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
                                         <script>
                                             $(document).ready(function () {
                                                 var schemaWrapper = {
-                                                    "description": "OK",
+                                                    "description": "Successful response",
                                                     "content": {
-                                                        "text/plain": {
+                                                        "application/json": {
                                                             "schema": {
-                                                                "type": "string",
-                                                                "x-content-type": "text/plain"
-                                                            },
-                                                            "examples": {
-                                                                "Example#1": {
-                                                                    "value": "Hello World!"
-                                                                }
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "$ref": "#/components/schemas/GHRepository"
+                                                                },
+                                                                "x-content-type": "application/json"
                                                             }
                                                         }
                                                     }
                                                 };
-                                                var schema = schemaWrapper.content["text/plain"].schema;
+                                                var schema = schemaWrapper.content["application/json"].schema;
                                                 if (schema.$ref != null) {
                                                     schema = defsParser.$refs.get(schema.$ref);
                                                 } else {
@@ -11078,14 +11152,14 @@ except ApiException as e:
 
                                                 //console.log(JSON.stringify(schema));
                                                 var view = new JSONSchemaView(schema, 3);
-                                                $('#responses-rootGet-200-schema-data').val(stringify(schema));
-                                                var result = $('#responses-rootGet-200-schema-200');
+                                                $('#responses-githubGet-200-schema-data').val(stringify(schema));
+                                                var result = $('#responses-githubGet-200-schema-200');
                                                 result.empty();
                                                 result.append(view.render());
                                             });
                                         </script>
                                     </div>
-                                    <input id='responses-rootGet-200-schema-data' type='hidden' value=''></input>
+                                    <input id='responses-githubGet-200-schema-data' type='hidden' value=''></input>
                                 </div>
                             </div>
 

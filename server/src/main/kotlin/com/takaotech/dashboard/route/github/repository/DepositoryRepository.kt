@@ -60,6 +60,7 @@ class DepositoryRepository(private val database: Database) {
 					url = repo.url
 					user = searchedUser
 					languages = repo.languages
+					//TODO Make "Kotlin" costant
 					category = if (repo.languages.containsKey("Kotlin")) {
 						MainCategory.KOTLIN
 					} else {

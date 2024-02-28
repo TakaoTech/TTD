@@ -4,20 +4,77 @@ info:
   description: "Application API"
   version: "1.0.0"
 servers:
-  - url: "http://0.0.0.0:8080"
+  - url: "http://127.0.0.1:8080"
 paths:
-  /:
+  /github:
     get:
-      description: "Hello World!"
+      summary: Get GitHub Repositories
+      description: Retrieve a list of GitHub repositories
       responses:
-        "200":
-          description: "OK"
+        '200':
+          description: Successful response
           content:
-            text/plain:
+            application/json:
               schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Hello World!"
+                type: array
+                items:
+                  $ref: '#/components/schemas/GHRepository'
 components:
   schemas:
+    GHRepository:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the repository
+        name:
+          type: string
+          description: The name of the repository
+        fullName:
+          type: string
+          description: The full name of the repository
+        url:
+          type: string
+          format: uri
+          description: The URL of the repository
+        user:
+          $ref: '#/components/schemas/GHUser'
+        languages:
+          type: object
+          additionalProperties:
+            type: integer
+          description: A map of languages used in the repository and their line counts
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+          description: A list of tags associated with the repository
+        mainCategory:
+          $ref: '#/components/schemas/MainCategory'
+          description: The main category of the repository
+    GHUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the user
+        name:
+          type: string
+          description: The name of the user
+        url:
+          type: string
+          format: uri
+          description: The URL of the user's profile
+    Tag:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the tag
+    MainCategory:
+      type: string
+      enum:
+        - NONE
+        - KOTLIN
+        - SELF_HOSTED
+        - OTHER

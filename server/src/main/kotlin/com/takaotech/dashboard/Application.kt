@@ -8,8 +8,6 @@ import com.takaotech.dashboard.plugins.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.tomcat.*
-import org.jetbrains.exposed.sql.Database
-import java.util.*
 
 fun main() {
 	embeddedServer(Tomcat, port = 8080, host = "0.0.0.0", module = Application::module)
@@ -17,6 +15,7 @@ fun main() {
 }
 
 fun Application.module() {
+	//https://ktor.io/docs/connection-pooling-caching.html#connection-settings-config
 	val dbConfiguration = DbConfiguration(
 		url = System.getenv("DB_URL"),
 		driver = System.getenv("DB_DRIVER"),
@@ -39,6 +38,7 @@ fun Application.module() {
 		)
 	)
 
+	installCors()
 	configureKoin(
 		dbConfiguration = dbConfiguration,
 		githubConfiguration = githubConfiguration,
