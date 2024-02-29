@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.route.github
 
+import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.route.github.controller.GithubController
 import io.ktor.http.*
 import io.ktor.resources.*
@@ -16,7 +17,7 @@ fun Application.githubRoute() {
 	routing {
 		get<GithubRoute> {
 			try {
-				call.respond(controller.getStoredRepository())
+				call.respond(controller.getStoredRepository(it.category))
 			} catch (ex: Exception) {
 				call.respond(HttpStatusCode.BadRequest)
 			}
@@ -37,7 +38,9 @@ fun Application.githubRoute() {
 
 @Serializable
 @Resource("/github")
-class GithubRoute() {
+class GithubRoute(
+	val category: MainCategory? = null
+) {
 	@Serializable
 	@Resource("/refresh")
 	class Refresh(val parent: GithubRoute = GithubRoute())

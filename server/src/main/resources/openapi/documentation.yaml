@@ -10,6 +10,13 @@ paths:
     get:
       summary: Get GitHub Repositories
       description: Retrieve a list of GitHub repositories
+      parameters:
+        - name: category
+          in: query
+          description: Filter repositories by category
+          schema:
+            type: string
+            enum: [ NONE, KOTLIN, SELF_HOSTED, OTHER ]
       responses:
         '200':
           description: Successful response
@@ -19,6 +26,15 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/GHRepository'
+  /github/refresh:
+    get:
+      summary: Refresh GitHub Repositories
+      description: Refresh the list of GitHub repositories
+      responses:
+        '200':
+          description: Refresh successful
+        '401':
+          description: Unauthorized request
 components:
   schemas:
     GHRepository:

@@ -10885,6 +10885,9 @@
                     <li data-group="Default" data-name="githubGet" class="">
                         <a href="#api-Default-githubGet">githubGet</a>
                     </li>
+                    <li data-group="Default" data-name="githubRefreshGet" class="">
+                        <a href="#api-Default-githubRefreshGet">githubRefreshGet</a>
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -10941,7 +10944,7 @@
                                 <div class="tab-pane active" id="examples-Default-githubGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
-"http://127.0.0.1:8080/github"</code></pre>
+"http://127.0.0.1:8080/github?category="</code></pre>
                                 </div>
                                 <div class="tab-pane" id="examples-Default-githubGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -10957,8 +10960,9 @@ public class DefaultApiExample {
     public static void main(String[] args) {
 
         DefaultApi apiInstance = new DefaultApi();
+        String category = category_example; // String | Filter repositories by category
         try {
-            array[GHRepository] result = apiInstance.githubGet();
+            array[GHRepository] result = apiInstance.githubGet(category);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DefaultApi#githubGet");
@@ -10975,8 +10979,9 @@ public class DefaultApiExample {
 
     public static void main(String[] args) {
         DefaultApi apiInstance = new DefaultApi();
+        String category = category_example; // String | Filter repositories by category
         try {
-            array[GHRepository] result = apiInstance.githubGet();
+            array[GHRepository] result = apiInstance.githubGet(category);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling DefaultApi#githubGet");
@@ -10990,12 +10995,13 @@ public class DefaultApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                                 <div class="tab-pane" id="examples-Default-githubGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">
+                              <pre class="prettyprint"><code class="language-cpp">String *category = category_example; // Filter repositories by category (optional)
+
 DefaultApi *apiInstance = [[DefaultApi alloc] init];
 
 // Get GitHub Repositories
-[apiInstance githubGetWithCompletionHandler:
-              ^(array[GHRepository] output, NSError* error) {
+[apiInstance githubGetWith:category
+              completionHandler: ^(array[GHRepository] output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
                             }
@@ -11010,6 +11016,9 @@ DefaultApi *apiInstance = [[DefaultApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var ApplicationApi = require('application_api');
 
 var api = new ApplicationApi.DefaultApi()
+var opts = {
+  'category': category_example // {{String}} Filter repositories by category
+};
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -11017,7 +11026,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.githubGet(callback);
+api.githubGet(opts, callback);
 </code></pre>
                                 </div>
 
@@ -11039,11 +11048,12 @@ namespace Example
         {
 
             var apiInstance = new DefaultApi();
+            var category = category_example;  // String | Filter repositories by category (optional)
 
             try
             {
                 // Get GitHub Repositories
-                array[GHRepository] result = apiInstance.githubGet();
+                array[GHRepository] result = apiInstance.githubGet(category);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -11061,9 +11071,10 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiDefaultApi();
+$category = category_example; // String | Filter repositories by category
 
 try {
-    $result = $api_instance->githubGet();
+    $result = $api_instance->githubGet($category);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling DefaultApi->githubGet: ', $e->getMessage(), PHP_EOL;
@@ -11077,9 +11088,10 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::DefaultApi;
 
 my $api_instance = WWW::SwaggerClient::DefaultApi->new();
+my $category = category_example; # String | Filter repositories by category
 
 eval {
-    my $result = $api_instance->githubGet();
+    my $result = $api_instance->githubGet(category => $category);
     print Dumper($result);
 };
 if ($@) {
@@ -11096,10 +11108,11 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.DefaultApi()
+category = category_example # String | Filter repositories by category (optional)
 
 try:
     # Get GitHub Repositories
-    api_response = api_instance.github_get()
+    api_response = api_instance.github_get(category=category)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling DefaultApi->githubGet: %s\n" % e)</code></pre>
@@ -11108,6 +11121,34 @@ except ApiException as e:
 
                             <h2>Parameters</h2>
 
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                    <th width="150px">Name</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td style="width:150px;">category</td>
+                                    <td>
+
+
+                                        <div id="d2e199_githubGet_category">
+                                            <div class="json-schema-view">
+                                                <div class="primitive">
+                                                <span class="type">
+                                                    String
+                                                </span>
+
+                                                    <div class="inner description">
+                                                        Filter repositories by category
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
 
                             <h2>Responses</h2>
                             <h3> Status: 200 - Successful response </h3>
@@ -11161,6 +11202,221 @@ except ApiException as e:
                                     </div>
                                     <input id='responses-githubGet-200-schema-data' type='hidden' value=''></input>
                                 </div>
+                            </div>
+
+                        </article>
+                    </div>
+                    <hr>
+                    <div id="api-Default-githubRefreshGet">
+                        <article id="api-Default-githubRefreshGet-0" data-group="User" data-name="githubRefreshGet"
+                                 data-version="0">
+                            <div class="pull-left">
+                                <h1>githubRefreshGet</h1>
+                                <p>Refresh GitHub Repositories</p>
+                            </div>
+                            <div class="pull-right"></div>
+                            <div class="clearfix"></div>
+                            <p></p>
+                            <p class="marked">Refresh the list of GitHub repositories</p>
+                            <p></p>
+                            <br/>
+                            <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span
+                                    class="pln">/github/refresh</span></code></pre>
+                            <p>
+                            <h3>Usage and SDK Samples</h3>
+                            </p>
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                                <li class="active"><a href="#examples-Default-githubRefreshGet-0-curl">Curl</a></li>
+                                <li class=""><a href="#examples-Default-githubRefreshGet-0-java">Java</a></li>
+                                <li class=""><a href="#examples-Default-githubRefreshGet-0-android">Android</a></li>
+                                <!--<li class=""><a href="#examples-Default-githubRefreshGet-0-groovy">Groovy</a></li>-->
+                                <li class=""><a href="#examples-Default-githubRefreshGet-0-objc">Obj-C</a></li>
+                                <li class=""><a href="#examples-Default-githubRefreshGet-0-javascript">JavaScript</a>
+                                </li>
+                                <!--<li class=""><a href="#examples-Default-githubRefreshGet-0-angular">Angular</a></li>-->
+                                <li class=""><a href="#examples-Default-githubRefreshGet-0-csharp">C#</a></li>
+                                <li class=""><a href="#examples-Default-githubRefreshGet-0-php">PHP</a></li>
+                                <li class=""><a href="#examples-Default-githubRefreshGet-0-perl">Perl</a></li>
+                                <li class=""><a href="#examples-Default-githubRefreshGet-0-python">Python</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="examples-Default-githubRefreshGet-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+"http://127.0.0.1:8080/github/refresh"</code></pre>
+                                </div>
+                                <div class="tab-pane" id="examples-Default-githubRefreshGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.DefaultApi;
+
+import java.io.File;
+import java.util.*;
+
+public class DefaultApiExample {
+
+    public static void main(String[] args) {
+
+        DefaultApi apiInstance = new DefaultApi();
+        try {
+            apiInstance.githubRefreshGet();
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DefaultApi#githubRefreshGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Default-githubRefreshGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.DefaultApi;
+
+public class DefaultApiExample {
+
+    public static void main(String[] args) {
+        DefaultApi apiInstance = new DefaultApi();
+        try {
+            apiInstance.githubRefreshGet();
+        } catch (ApiException e) {
+            System.err.println("Exception when calling DefaultApi#githubRefreshGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                                </div>
+                                <!--
+  <div class="tab-pane" id="examples-Default-githubRefreshGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                                <div class="tab-pane" id="examples-Default-githubRefreshGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+DefaultApi *apiInstance = [[DefaultApi alloc] init];
+
+// Refresh GitHub Repositories
+[apiInstance githubRefreshGetWithCompletionHandler:
+              ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Default-githubRefreshGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApplicationApi = require('application_api');
+
+var api = new ApplicationApi.DefaultApi()
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.githubRefreshGet(callback);
+</code></pre>
+                                </div>
+
+                                <!--<div class="tab-pane" id="examples-Default-githubRefreshGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                                <div class="tab-pane" id="examples-Default-githubRefreshGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class githubRefreshGetExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new DefaultApi();
+
+            try
+            {
+                // Refresh GitHub Repositories
+                apiInstance.githubRefreshGet();
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling DefaultApi.githubRefreshGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Default-githubRefreshGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiDefaultApi();
+
+try {
+    $api_instance->githubRefreshGet();
+} catch (Exception $e) {
+    echo 'Exception when calling DefaultApi->githubRefreshGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Default-githubRefreshGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::DefaultApi;
+
+my $api_instance = WWW::SwaggerClient::DefaultApi->new();
+
+eval {
+    $api_instance->githubRefreshGet();
+};
+if ($@) {
+    warn "Exception when calling DefaultApi->githubRefreshGet: $@\n";
+}</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Default-githubRefreshGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.DefaultApi()
+
+try:
+    # Refresh GitHub Repositories
+    api_instance.github_refresh_get()
+except ApiException as e:
+    print("Exception when calling DefaultApi->githubRefreshGet: %s\n" % e)</code></pre>
+                                </div>
+                            </div>
+
+                            <h2>Parameters</h2>
+
+
+                            <h2>Responses</h2>
+                            <h3> Status: 200 - Refresh successful </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 401 - Unauthorized request </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
                             </div>
 
                         </article>

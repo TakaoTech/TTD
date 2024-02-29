@@ -74,6 +74,34 @@ class GithubRepository(
 				.toList()
 			it.resume(stars)
 		} catch (ex: Throwable) {
+			/**
+			 * org.kohsuke.github.HttpException: {"message":"Bad credentials","documentation_url":"https://docs.github.com/rest"}
+			 * 	at org.kohsuke.github.GitHubConnectorResponseErrorHandler$1.onError(GitHubConnectorResponseErrorHandler.java:62)
+			 * 	at org.kohsuke.github.GitHubClient.detectKnownErrors(GitHubClient.java:504)
+			 * 	at org.kohsuke.github.GitHubClient.sendRequest(GitHubClient.java:464)
+			 * 	at org.kohsuke.github.GitHubClient.sendRequest(GitHubClient.java:427)
+			 * 	at org.kohsuke.github.Requester.fetch(Requester.java:85)
+			 * 	at org.kohsuke.github.GitHub.setMyself(GitHub.java:583)
+			 * 	at org.kohsuke.github.GitHub.getMyself(GitHub.java:577)
+			 * 	at com.takaotech.dashboard.route.github.repository.GithubRepository.getAllStarsRemote(GithubRepository.kt:72)
+			 * 	at com.takaotech.dashboard.route.github.repository.GithubRepository.access$getAllStarsRemote(GithubRepository.kt:15)
+			 * 	at com.takaotech.dashboard.route.github.repository.GithubRepository$getAllStars$2.invokeSuspend(GithubRepository.kt:21)
+			 * 	at com.takaotech.dashboard.route.github.repository.GithubRepository$getAllStars$2.invoke(GithubRepository.kt)
+			 * 	at com.takaotech.dashboard.route.github.repository.GithubRepository$getAllStars$2.invoke(GithubRepository.kt)
+			 * 	at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndispatchedOrReturn(Undispatched.kt:78)
+			 * 	at kotlinx.coroutines.CoroutineScopeKt.coroutineScope(CoroutineScope.kt:264)
+			 * 	at com.takaotech.dashboard.route.github.repository.GithubRepository.getAllStars(GithubRepository.kt:20)
+			 * 	at com.takaotech.dashboard.route.github.controller.GithubController$getStarsFromZeroAndStore$2.invokeSuspend(GithubController.kt:20)
+			 * 	at com.takaotech.dashboard.route.github.controller.GithubController$getStarsFromZeroAndStore$2.invoke(GithubController.kt)
+			 * 	at com.takaotech.dashboard.route.github.controller.GithubController$getStarsFromZeroAndStore$2.invoke(GithubController.kt)
+			 * 	at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndispatchedOrReturn(Undispatched.kt:78)
+			 * 	at kotlinx.coroutines.CoroutineScopeKt.coroutineScope(CoroutineScope.kt:264)
+			 * 	at com.takaotech.dashboard.route.github.controller.GithubController.getStarsFromZeroAndStore(GithubController.kt:18)
+			 * 	at com.takaotech.dashboard.route.github.GithubRouteKt$githubRoute$1$2.invokeSuspend(GithubRoute.kt:28)
+			 * 	at com.takaotech.dashboard.route.github.GithubRouteKt$githubRoute$1$2.invoke(GithubRoute.kt)
+			 * 	at com.takaotech.dashboard.route.github.GithubRouteKt$githubRoute$1$2.invoke(GithubRoute.kt
+			 */
+
 			logger.error("Error getAllStartsRemote", ex)
 			it.resumeWithException(ex)
 		}
