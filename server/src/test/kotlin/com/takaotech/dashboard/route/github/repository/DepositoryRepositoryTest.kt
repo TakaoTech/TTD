@@ -133,7 +133,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 			)
 
 			depositoryRepository.saveRepositoriesToDB(inputRepository)
-			val recoveredRepo = depositoryRepository.getAllDepository()
+			val recoveredRepo = depositoryRepository.getDepository()
 			assertTrue { recoveredRepo.isNotEmpty() }
 			assertEquals(outputRepository, recoveredRepo)
 			assertTrue { recoveredRepo.find { it.id == 1L }!!.mainCategory == MainCategory.KOTLIN }
@@ -161,7 +161,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 			)
 
 			depositoryRepository.saveRepositoriesToDB(repository)
-			val recoveredRepo = depositoryRepository.getAllDepository()
+			val recoveredRepo = depositoryRepository.getDepository()
 			assertTrue { recoveredRepo.isNotEmpty() }
 			assertFalse { depositoryRepository.ghRepositoryExist(2) }
 
@@ -202,7 +202,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 			)
 
 			depositoryRepository.saveRepositoriesToDB(repository)
-			val recoveredRepo = depositoryRepository.getAllDepository()
+			val recoveredRepo = depositoryRepository.getDepository()
 			assertTrue { recoveredRepo.isNotEmpty() }
 			assertTrue { depositoryRepository.ghRepositoryExist(2) }
 		}

@@ -1,6 +1,7 @@
 package com.takaotech.dashboard.route.github.controller
 
 import com.takaotech.dashboard.model.GHRepository
+import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
 import kotlinx.coroutines.coroutineScope
@@ -44,7 +45,7 @@ class GithubController(
 
 	}
 
-	suspend fun getStoredRepository(): List<GHRepository> {
-		return githubDepositoryRepository.getAllDepository()
+	suspend fun getStoredRepository(category: MainCategory? = null): List<GHRepository> {
+		return githubDepositoryRepository.getDepository(category)
 	}
 }

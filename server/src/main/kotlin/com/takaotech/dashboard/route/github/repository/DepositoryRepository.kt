@@ -80,10 +80,17 @@ class DepositoryRepository(
 		}
 	}
 
-	suspend fun getAllDepository(): List<GHRepository> {
+	suspend fun getDepository(
+		category: MainCategory? = null
+	): List<GHRepository> {
 		return database.dbExec {
-			GithubDepositoryEntity.all()
-				.toList()
+			GithubDepositoryEntity.all().let {
+				if (category != null) {
+					it.filter { it.category == category }
+				} else {
+					it
+				}
+			}.toList()
 		}.map {
 			GHRepository(
 				id = it.id.value,
