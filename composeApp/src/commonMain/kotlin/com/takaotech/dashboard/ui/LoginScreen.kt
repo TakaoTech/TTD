@@ -3,10 +3,10 @@ package com.takaotech.dashboard.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text2.BasicSecureTextField
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconToggleButton
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
@@ -19,7 +19,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
-import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
@@ -64,10 +63,10 @@ object LoginScreen : Tab {
 }
 
 @Composable
-private fun LoginScreenUi(
-	modifier: Modifier,
+internal fun LoginScreenUi(
 	username: TextFieldValue,
 	password: TextFieldValue,
+	modifier: Modifier = Modifier,
 	onUsernameChanged: (TextFieldValue) -> Unit,
 	onPasswordChanged: (TextFieldValue) -> Unit
 ) {
