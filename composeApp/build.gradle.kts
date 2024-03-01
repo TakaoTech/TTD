@@ -1,8 +1,4 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
-import org.jetbrains.compose.ExperimentalComposeLibrary
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 val projectPackage: String by project
 
@@ -50,6 +46,9 @@ kotlin {
 
 		androidMain.dependencies {
 			implementation(libs.compose.ui.tooling.preview)
+			implementation(libs.androidx.activity.compose)
+			api(compose.preview)
+			api(compose.uiTooling)
 			implementation(libs.androidx.activity.compose)
 			implementation(libs.koin.android)
 		}
@@ -113,6 +112,12 @@ android {
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_1_8
 		targetCompatibility = JavaVersion.VERSION_1_8
+	}
+	buildFeatures {
+		compose = true
+	}
+	composeOptions {
+		kotlinCompilerExtensionVersion = "1.5.2"
 	}
 	dependencies {
 		debugImplementation(libs.compose.ui.tooling)
