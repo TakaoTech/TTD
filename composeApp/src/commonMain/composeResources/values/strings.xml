@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">My awesome app</string>
     <string name="title">Some title</string>
+
+    <string name="ghrepository_no_tags">No Tags</string>
+    <string name="ghrepository_tags_label">Tags</string>
 </resources>

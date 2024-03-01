@@ -1,6 +1,6 @@
 package com.takaotech.dashboard.route.github.controller
 
-import com.takaotech.dashboard.model.GHRepository
+import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
@@ -25,7 +25,7 @@ class GithubControllerTest : FunSpec({
 
 	test("Insert new data, all data inserted") {
 		val testList = listOf(
-			GHRepository(
+			GHRepositoryDao(
 				id = 1,
 				name = "Kotlin",
 				fullName = "Kotlin",
@@ -42,7 +42,7 @@ class GithubControllerTest : FunSpec({
 				tags = listOf(),
 				mainCategory = MainCategory.KOTLIN
 			),
-			GHRepository(
+			GHRepositoryDao(
 				id = 2,
 				name = "Kotlin",
 				fullName = "Kotlin",
@@ -78,7 +78,7 @@ class GithubControllerTest : FunSpec({
 
 	test("Insert new data, no data inserted because exist") {
 		val testList = listOf(
-			GHRepository(
+			GHRepositoryDao(
 				id = 1,
 				name = "Kotlin",
 				fullName = "Kotlin",
@@ -95,7 +95,7 @@ class GithubControllerTest : FunSpec({
 				tags = listOf(),
 				mainCategory = MainCategory.KOTLIN
 			),
-			GHRepository(
+			GHRepositoryDao(
 				id = 2,
 				name = "Kotlin",
 				fullName = "Kotlin",
@@ -130,7 +130,7 @@ class GithubControllerTest : FunSpec({
 	}
 
 	test("Insert new data, filter ID=1 because exist") {
-		val newObj = GHRepository(
+		val newObj = GHRepositoryDao(
 			id = 2,
 			name = "Kotlin",
 			fullName = "Kotlin",
@@ -148,7 +148,7 @@ class GithubControllerTest : FunSpec({
 			mainCategory = MainCategory.KOTLIN
 		)
 		val testList = listOf(
-			GHRepository(
+			GHRepositoryDao(
 				id = 1,
 				name = "Kotlin",
 				fullName = "Kotlin",
@@ -189,7 +189,7 @@ class GithubControllerTest : FunSpec({
 
 	test("Get Stored Depository, not empty") {
 		val testList = listOf(
-			GHRepository(
+			GHRepositoryDao(
 				id = 1,
 				name = "Kotlin",
 				fullName = "Kotlin",
@@ -206,7 +206,7 @@ class GithubControllerTest : FunSpec({
 				tags = listOf(),
 				mainCategory = MainCategory.KOTLIN
 			),
-			GHRepository(
+			GHRepositoryDao(
 				id = 2,
 				name = "Kotlin",
 				fullName = "Kotlin",

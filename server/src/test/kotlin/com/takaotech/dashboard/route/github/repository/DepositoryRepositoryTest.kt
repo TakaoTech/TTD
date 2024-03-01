@@ -6,7 +6,7 @@ import com.takaotech.dashboard.configuration.GithubConfiguration
 import com.takaotech.dashboard.configuration.SessionConfig
 import com.takaotech.dashboard.di.connectToDatabase
 import com.takaotech.dashboard.di.getGeneralModule
-import com.takaotech.dashboard.model.GHRepository
+import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.utils.HikariDatabase
@@ -71,7 +71,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 			val depositoryRepository by inject<DepositoryRepository>()
 
 			val inputRepository = listOf(
-				GHRepository(
+				GHRepositoryDao(
 					id = 1,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
@@ -88,7 +88,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					tags = listOf(),
 					mainCategory = MainCategory.NONE
 				),
-				GHRepository(
+				GHRepositoryDao(
 					id = 2,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
@@ -108,7 +108,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 			)
 
 			val outputRepository = listOf(
-				GHRepository(
+				GHRepositoryDao(
 					id = 1,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
@@ -125,7 +125,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					tags = listOf(),
 					mainCategory = MainCategory.KOTLIN
 				),
-				GHRepository(
+				GHRepositoryDao(
 					id = 2,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
@@ -156,7 +156,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 			val depositoryRepository by inject<DepositoryRepository>()
 
 			val repository = listOf(
-				GHRepository(
+				GHRepositoryDao(
 					id = 1,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
@@ -186,7 +186,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 			val depositoryRepository by inject<DepositoryRepository>()
 
 			val repository = listOf(
-				GHRepository(
+				GHRepositoryDao(
 					id = 1,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
@@ -203,7 +203,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					tags = listOf(),
 					mainCategory = MainCategory.NONE
 				),
-				GHRepository(
+				GHRepositoryDao(
 					id = 2,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",

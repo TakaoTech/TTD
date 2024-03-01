@@ -2,13 +2,22 @@ package com.takaotech.dashboard.di
 
 import com.takaotech.dashboard.AppBuildKonfig
 import com.takaotech.dashboard.repository.AuthApi
+import com.takaotech.dashboard.repository.api.GHApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
 import org.koin.core.KoinApplication
 import org.koin.dsl.module
 
 fun getApiModule(baseUrl: String) = module {
-	single { HttpClient() }
+	single {
+		HttpClient {
+			install(ContentNegotiation) {
+				json()
+			}
+		}
+	}
 
 	single {
 		Ktorfit.Builder()
@@ -19,6 +28,10 @@ fun getApiModule(baseUrl: String) = module {
 
 	single {
 		get<Ktorfit>().create<AuthApi>()
+	}
+
+	single {
+		get<Ktorfit>().create<GHApi>()
 	}
 }
 

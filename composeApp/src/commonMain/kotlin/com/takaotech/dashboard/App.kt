@@ -1,16 +1,15 @@
 package com.takaotech.dashboard
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
-import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
-import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.takaotech.dashboard.ui.LoginScreen
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
@@ -18,20 +17,28 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 @Composable
 fun App() {
 	MaterialTheme {
-		TabNavigator(LoginScreen) {
+		Navigator(LoginScreen) {
 			Scaffold(
-				content = {
-					Box(modifier = Modifier.padding(it)) {
-						CurrentTab()
-					}
-				},
-				bottomBar = {
-					BottomNavigation {
-						TabNavigationItem(LoginScreen)
-					}
-				}
+				topBar = { /* ... */ },
+				content = { CurrentScreen() },
+				bottomBar = { /* ... */ }
 			)
 		}
+
+//		TabNavigator(LoginScreen) {
+//			Scaffold(
+//				content = {
+//					Box(modifier = Modifier.padding(it)) {
+//						CurrentTab()
+//					}
+//				},
+//				bottomBar = {
+//					BottomNavigation {
+//						TabNavigationItem(LoginScreen)
+//					}
+//				}
+//			)
+//		}
 	}
 }
 

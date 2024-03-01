@@ -14,17 +14,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.takaotech.dashboard.model.GHRepository
+import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.model.Tag
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
+import ttd.composeapp.generated.resources.Res
+import ttd.composeapp.generated.resources.ghrepository_no_tags
+import ttd.composeapp.generated.resources.ghrepository_tags_label
 
 @Composable
 fun GHRepositoryList(
-	list: List<GHRepository>
+	list: List<GHRepositoryDao>,
+	modifier: Modifier = Modifier,
 ) {
-	LazyColumn {
+	LazyColumn(modifier = modifier) {
 		items(key = { it.id }, items = list) {
 			GHRepositoryCard(
+				modifier = Modifier.padding(8.dp),
 				fullName = it.fullName,
 				tags = it.tags,
 				mainCategory = it.mainCategory,
@@ -36,7 +43,7 @@ fun GHRepositoryList(
 	}
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalResourceApi::class)
 @Composable
 internal fun GHRepositoryCard(
 	fullName: String,
@@ -58,18 +65,27 @@ internal fun GHRepositoryCard(
 
 			}
 
-			Text("Tags")
+			Text(stringResource(Res.string.ghrepository_tags_label))
 			Row {
-				LazyRow(
-					modifier = Modifier.weight(1f),
-					horizontalArrangement = Arrangement.spacedBy(4.dp)
-				) {
-					items(tags) {
-						Chip(onClick = {}) {
-							Text(it.name)
+				if (tags.isEmpty()) {
+					Text(
+						modifier = Modifier.weight(1f),
+						text = stringResource(Res.string.ghrepository_no_tags)
+					)
+				} else {
+					LazyRow(
+						modifier = Modifier.weight(1f),
+						horizontalArrangement = Arrangement.spacedBy(4.dp)
+					) {
+						items(tags) {
+							Chip(onClick = {}) {
+								Text(it.name)
+							}
 						}
 					}
 				}
+
+
 
 				IconButton(
 					onClick = onTagsEditClicked

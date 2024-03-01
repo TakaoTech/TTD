@@ -9,6 +9,7 @@ plugins {
 	alias(libs.plugins.ksp)
 	alias(libs.plugins.ktorfit)
 	alias(libs.plugins.buildkonfig)
+	alias(libs.plugins.serialization)
 }
 
 kotlin {
@@ -65,7 +66,11 @@ kotlin {
 				implementation(compose.components.resources)
 				//https://github.com/DevSrSouza/compose-icons
 				implementation(projects.shared)
+
 				implementation(libs.ktorfit.lib)
+				implementation(libs.ktor.client.content.negotiation)
+				implementation(libs.ktor.client.serialization)
+
 				implementation(libs.koin.core)
 				implementation(libs.koin.annotation)
 

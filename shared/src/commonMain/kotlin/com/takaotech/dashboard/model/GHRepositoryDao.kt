@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GHRepository(
+data class GHRepositoryDao(
 	@SerialName("id")
 	val id: Long,
 	@SerialName("name")

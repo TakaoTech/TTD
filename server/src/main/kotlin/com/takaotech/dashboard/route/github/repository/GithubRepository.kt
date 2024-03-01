@@ -1,6 +1,6 @@
 package com.takaotech.dashboard.route.github.repository
 
-import com.takaotech.dashboard.model.GHRepository
+import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
 import io.ktor.util.logging.*
@@ -20,7 +20,7 @@ class GithubRepository(
 	suspend fun getAllStars() = coroutineScope {
 		val downloadedRepository = getAllStarsRemote()
 
-		val mapJobs = mutableListOf<Deferred<List<GHRepository>>>()
+		val mapJobs = mutableListOf<Deferred<List<GHRepositoryDao>>>()
 
 		try {
 			downloadedRepository.let {
@@ -36,7 +36,7 @@ class GithubRepository(
 						try {
 							it.map { repository ->
 								logger.info("Processing repository ID=${repository.id} Name=${repository.name} ")
-								GHRepository(
+								GHRepositoryDao(
 									id = repository.id,
 									name = repository.name,
 									fullName = repository.fullName,

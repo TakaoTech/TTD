@@ -1,6 +1,6 @@
 package com.takaotech.dashboard.route.github.repository
 
-import com.takaotech.dashboard.model.GHRepository
+import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.model.Tag
@@ -18,7 +18,7 @@ class DepositoryRepository(
 	private val database: HikariDatabase
 ) {
 
-	suspend fun saveRepositoriesToDB(repositoryList: List<GHRepository>) {
+	suspend fun saveRepositoriesToDB(repositoryList: List<GHRepositoryDao>) {
 		database.dbExec {
 			var repositoryListFiltered = repositoryList
 			if (!GithubDepositoryTable.selectAll().empty()) {
@@ -87,7 +87,7 @@ class DepositoryRepository(
 
 	suspend fun getDepository(
 		category: MainCategory? = null
-	): List<GHRepository> {
+	): List<GHRepositoryDao> {
 		return database.dbExec {
 			GithubDepositoryEntity.all().let {
 				if (category != null) {
@@ -97,7 +97,7 @@ class DepositoryRepository(
 				}
 			}.toList()
 		}.map {
-			GHRepository(
+			GHRepositoryDao(
 				id = it.id.value,
 				name = it.name,
 				fullName = it.fullName,

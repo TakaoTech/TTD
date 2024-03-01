@@ -1,6 +1,6 @@
 package com.takaotech.dashboard.route.github.controller
 
-import com.takaotech.dashboard.model.GHRepository
+import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
@@ -45,7 +45,7 @@ class GithubController(
 
 	}
 
-	suspend fun getStoredRepository(category: MainCategory? = null): List<GHRepository> {
+	suspend fun getStoredRepository(category: MainCategory? = null): List<GHRepositoryDao> {
 		return githubDepositoryRepository.getDepository(category)
 	}
 }
