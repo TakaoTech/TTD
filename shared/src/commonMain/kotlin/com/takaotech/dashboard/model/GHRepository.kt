@@ -11,15 +11,21 @@ data class GHRepository(
 	val name: String,
 	@SerialName("fullName")
 	val fullName: String,
+	@SerialName("description")
+	val description: String?,
 	@SerialName("url")
 	val url: String,
+	@SerialName("license")
+	val license: String?,
+	@SerialName("licenseUrl")
+	val licenseUrl: String?,
+	//TODO In teoria è obbligatorio,
 	@SerialName("user")
 	val user: GHUser,
 	@SerialName("languages")
 	val languages: Map<String, Long>,
 	@SerialName("tags")
 	val tags: List<Tag>,
-	//TODO In teoria è obbligatorio,
 	@SerialName("mainCategory")
 	val mainCategory: MainCategory = MainCategory.NONE
 )

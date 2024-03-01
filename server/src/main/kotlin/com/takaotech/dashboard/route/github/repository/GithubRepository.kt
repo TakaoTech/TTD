@@ -39,7 +39,12 @@ class GithubRepository(
 								id = repository.id,
 								name = repository.name,
 								fullName = repository.fullName,
+								description = repository.description,
 								url = repository.url.toString(),
+//								license = repository.license?.name,
+								license = null,
+//								licenseUrl = repository.licenseContent?.htmlUrl,
+								licenseUrl = null,
 								user = repository.owner.let { user ->
 									GHUser(
 										user.id,

@@ -19,13 +19,19 @@ object GithubDepositoryTable : IdTable<Long>() {
 	/**
 	 * Repository name
 	 */
-	val name: Column<String> = text("name")
+	val name: Column<String> = varchar("name", 100)
 
 	/**
 	 * Full name of repository
 	 * <user/organization>/<name repository>
 	 */
-	val fullName: Column<String> = text("full_name")
+	val fullName: Column<String> = varchar("full_name", 100)
+
+	/**
+	 * Full name of repository
+	 * <user/organization>/<name repository>
+	 */
+	val description: Column<String?> = text("description").nullable()
 
 	/**
 	 * Url of repository
@@ -40,12 +46,22 @@ object GithubDepositoryTable : IdTable<Long>() {
 	val user: Column<EntityID<Long>> = reference("user_id", GithubUserTable)
 
 	/**
+	 *
+	 */
+	val license = text("license").nullable()
+
+	/**
+	 *
+	 */
+	val licenseUrl = text("license_url").nullable()
+
+	/**
 	 * Map of repository programming languages
 	 */
 	//TODO Use Ktor JSON
 	val languages: Column<Map<String, Long>> = json("languages", Json.Default)
 
-	val category: Column<MainCategory> = enumerationByName("category", 50)
+	val category: Column<MainCategory> = enumerationByName("category", 20)
 
 	override val primaryKey = PrimaryKey(id)
 }
@@ -55,6 +71,7 @@ class GithubDepositoryEntity(id: EntityID<Long>) : LongEntity(id) {
 
 	var name by GithubDepositoryTable.name
 	var fullName by GithubDepositoryTable.fullName
+	var description by GithubDepositoryTable.description
 	var url by GithubDepositoryTable.url
 	var user by GithubUserEntity referencedOn GithubDepositoryTable.user
 
@@ -65,5 +82,8 @@ class GithubDepositoryEntity(id: EntityID<Long>) : LongEntity(id) {
 	var category by GithubDepositoryTable.category.clientDefault { MainCategory.NONE }
 
 	var tags by TagsEntity via GithubDepositoryTagsTable
+
+	var license by GithubDepositoryTable.license
+	var licenseUrl by GithubDepositoryTable.licenseUrl
 
 }

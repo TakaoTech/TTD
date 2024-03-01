@@ -58,6 +58,7 @@ class DepositoryRepository(
 				GithubDepositoryEntity.new(repo.id) {
 					name = repo.name
 					fullName = repo.fullName
+					description = repo.description
 					url = repo.url
 					user = searchedUser
 					languages = repo.languages
@@ -67,6 +68,10 @@ class DepositoryRepository(
 					} else {
 						MainCategory.NONE
 					}
+
+					license = repo.license
+					licenseUrl = repo.licenseUrl
+
 				}
 			}
 		}
@@ -96,7 +101,10 @@ class DepositoryRepository(
 				id = it.id.value,
 				name = it.name,
 				fullName = it.fullName,
+				description = it.description,
 				url = it.url,
+				license = it.license,
+				licenseUrl = it.licenseUrl,
 				user = database.dbExec {
 					with(it.user) {
 						GHUser(
@@ -107,12 +115,12 @@ class DepositoryRepository(
 					}
 				},
 				languages = it.languages,
-				mainCategory = it.category,
 				tags = database.dbExec {
 					it.tags.map { entity ->
 						Tag(entity.id.value)
 					}
-				}
+				},
+				mainCategory = it.category
 			)
 		}
 	}

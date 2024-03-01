@@ -75,7 +75,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					id = 1,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
+					description = "Test description",
 					url = "https://www.bing.com/search?q=splendide",
+					license = "Apache 2",
+					licenseUrl = "https://test.com",
 					user = GHUser(
 						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
@@ -89,7 +92,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					id = 2,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
+					description = "Test description",
 					url = "https://www.bing.com/search?q=splendide",
+					license = "Apache 2",
+					licenseUrl = "https://test.com",
 					user = GHUser(
 						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
@@ -106,7 +112,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					id = 1,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
+					description = "Test description",
 					url = "https://www.bing.com/search?q=splendide",
+					license = "Apache 2",
+					licenseUrl = "https://test.com",
 					user = GHUser(
 						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
@@ -120,7 +129,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					id = 2,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
+					description = "Test description",
 					url = "https://www.bing.com/search?q=splendide",
+					license = "Apache 2",
+					licenseUrl = "https://test.com",
 					user = GHUser(
 						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
@@ -148,7 +160,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					id = 1,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
+					description = "Test description",
 					url = "https://www.bing.com/search?q=splendide",
+					license = "Apache 2",
+					licenseUrl = "https://test.com",
 					user = GHUser(
 						id = 1, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
@@ -175,7 +190,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					id = 1,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
+					description = "Test description",
 					url = "https://www.bing.com/search?q=splendide",
+					license = "Apache 2",
+					licenseUrl = "https://test.com",
 					user = GHUser(
 						id = 1, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
@@ -189,7 +207,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					id = 2,
 					name = "Tracy Henson",
 					fullName = "Clay Olsen",
+					description = "Test description",
 					url = "https://www.bing.com/search?q=splendide",
+					license = "Apache 2",
+					licenseUrl = "https://test.com",
 					user = GHUser(
 						id = 2, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),

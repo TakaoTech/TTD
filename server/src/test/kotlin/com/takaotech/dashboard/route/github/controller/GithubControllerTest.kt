@@ -29,7 +29,10 @@ class GithubControllerTest : FunSpec({
 				id = 1,
 				name = "Kotlin",
 				fullName = "Kotlin",
+				description = "Test Description",
 				url = "https://www.bing.com/search?q=kotlin",
+				license = "Apache 2",
+				licenseUrl = "https://test.com",
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),
@@ -43,7 +46,10 @@ class GithubControllerTest : FunSpec({
 				id = 2,
 				name = "Kotlin",
 				fullName = "Kotlin",
+				description = "Test Description",
 				url = "https://www.bing.com/search?q=kotlin",
+				license = "Apache 2",
+				licenseUrl = "https://test.com",
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),
@@ -76,7 +82,10 @@ class GithubControllerTest : FunSpec({
 				id = 1,
 				name = "Kotlin",
 				fullName = "Kotlin",
+				description = "Test Description",
 				url = "https://www.bing.com/search?q=kotlin",
+				license = "Apache 2",
+				licenseUrl = "https://test.com",
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),
@@ -90,7 +99,10 @@ class GithubControllerTest : FunSpec({
 				id = 2,
 				name = "Kotlin",
 				fullName = "Kotlin",
+				description = "Test Description",
 				url = "https://www.bing.com/search?q=kotlin",
+				license = "Apache 2",
+				licenseUrl = "https://test.com",
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),
@@ -122,7 +134,10 @@ class GithubControllerTest : FunSpec({
 			id = 2,
 			name = "Kotlin",
 			fullName = "Kotlin",
+			description = "Test Description",
 			url = "https://www.bing.com/search?q=kotlin",
+			license = "Apache 2",
+			licenseUrl = "https://test.com",
 			user = GHUser(
 				id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 			),
@@ -137,7 +152,10 @@ class GithubControllerTest : FunSpec({
 				id = 1,
 				name = "Kotlin",
 				fullName = "Kotlin",
+				description = "Test Description",
 				url = "https://www.bing.com/search?q=kotlin",
+				license = "Apache 2",
+				licenseUrl = "https://test.com",
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),
@@ -175,7 +193,10 @@ class GithubControllerTest : FunSpec({
 				id = 1,
 				name = "Kotlin",
 				fullName = "Kotlin",
+				description = "Test Description",
 				url = "https://www.bing.com/search?q=kotlin",
+				license = "Apache 2",
+				licenseUrl = "https://test.com",
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),
@@ -189,7 +210,10 @@ class GithubControllerTest : FunSpec({
 				id = 2,
 				name = "Kotlin",
 				fullName = "Kotlin",
+				description = "Test Description",
 				url = "https://www.bing.com/search?q=kotlin",
+				license = "Apache 2",
+				licenseUrl = "https://test.com",
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),

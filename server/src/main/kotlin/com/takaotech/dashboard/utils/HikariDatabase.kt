@@ -7,6 +7,7 @@ import com.takaotech.dashboard.route.github.data.GithubUserTable
 import com.takaotech.dashboard.route.github.data.TagsTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import io.ktor.util.logging.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
@@ -18,7 +19,8 @@ import org.koin.core.annotation.Singleton
 
 @Singleton
 class HikariDatabase(
-	private val dbConfiguration: DbConfiguration
+	private val dbConfiguration: DbConfiguration,
+	private val logger: Logger
 ) {
 	lateinit var database: Database
 

@@ -8,11 +8,12 @@ import io.ktor.server.application.*
 import io.ktor.server.resources.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.serialization.Serializable
+import io.ktor.util.logging.*
 import org.koin.ktor.ext.inject
 
 fun Application.githubRoute() {
 	val controller by inject<GithubController>()
+	val logger by inject<Logger>()
 
 	routing {
 		get<GithubRoute> {
@@ -23,25 +24,24 @@ fun Application.githubRoute() {
 			}
 		}
 
-		get<GithubRoute.Refresh>() {
+		get<GithubRoute.Refresh> {
 			//TODO Catch exception for correct error body
 			try {
 				controller.getStarsFromZeroAndStore()
 
 				call.respond(HttpStatusCode.OK)
 			} catch (ex: Exception) {
+				logger.error(ex)
 				call.respond(HttpStatusCode.BadRequest)
 			}
 		}
 	}
 }
 
-@Serializable
 @Resource("/github")
 class GithubRoute(
 	val category: MainCategory? = null
 ) {
-	@Serializable
 	@Resource("/refresh")
 	class Refresh(val parent: GithubRoute = GithubRoute())
 }
