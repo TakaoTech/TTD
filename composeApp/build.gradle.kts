@@ -60,6 +60,7 @@ kotlin {
 				implementation(compose.foundation)
 				implementation(compose.material)
 				implementation(compose.ui)
+				implementation(compose.components.uiToolingPreview)
 				implementation(compose.materialIconsExtended)
 				implementation(compose.components.resources)
 				//https://github.com/DevSrSouza/compose-icons
@@ -120,7 +121,7 @@ android {
 		kotlinCompilerExtensionVersion = "1.5.2"
 	}
 	dependencies {
-		debugImplementation(libs.compose.ui.tooling)
+//		debugImplementation(libs.compose.ui.tooling)
 	}
 }
 
