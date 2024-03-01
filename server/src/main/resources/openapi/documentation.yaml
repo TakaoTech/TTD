@@ -68,6 +68,16 @@ components:
         mainCategory:
           $ref: '#/components/schemas/MainCategory'
           description: The main category of the repository
+        license:
+          type: string
+          description: The license of the repository (optional)
+        licenseUrl:
+          type: string
+          format: uri
+          description: The URL to the license of the repository (optional)
+        description:
+          type: string
+          description: A description of the repository (optional)
     GHUser:
       type: object
       properties:
