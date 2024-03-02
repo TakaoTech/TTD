@@ -1,8 +1,12 @@
 package com.takaotech.dashboard.ui.admin.github
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Chip
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
@@ -12,48 +16,48 @@ import com.takaotech.dashboard.model.MainCategory
 
 class GHRepositoryScreen : Screen {
 
-	@OptIn(ExperimentalMaterialApi::class)
+	@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 	@Composable
 	override fun Content() {
 		val viewModel = getScreenModel<GHRepositoryListViewModel>()
 		val uiState by viewModel.uiState.collectAsState()
 
 
+		var openBottomSheet by rememberSaveable { mutableStateOf(false) }
+
+		if (openBottomSheet) {
+			MainCategoryBottomSheet(categoryList = uiState.mainCategoryUi.categoryList,
+				onDismissRequest = {
+					openBottomSheet = false
+				}
+			) {
+				viewModel.updateFilterMainCategory(it)
+			}
+		}
+
+
 
 		Column {
 			Row(modifier = Modifier.padding(4.dp)) {
 				Box {
-					var expanded by remember {
-						mutableStateOf(false)
-					}
-
-					Chip(onClick = { expanded = true }) {
-						Text("Prova")
-					}
-
-					DropdownMenu(
-						modifier = Modifier.fillMaxWidth(),
-						expanded = expanded, onDismissRequest = {
-							expanded = false
+					Chip(
+						onClick = {
+							openBottomSheet = true
 						}
 					) {
-						MainCategory.entries.forEach {
-							DropdownMenuItem(
-								onClick = {
-									expanded = false
-								}
-							) {
-								Text(it.name)
-							}
-						}
+						Text(uiState.mainCategoryUi.selectedCategory?.name ?: "--")
 					}
 				}
 			}
 
 			GHRepositoryList(
 				modifier = Modifier.fillMaxWidth(),
-				list = uiState.ghRepositoryData
-			)
+				ghRepositoryState = uiState.ghRepositoryListState,
+				onCategoryChangeClicked = { id: Long, newCategory: MainCategory ->
+					viewModel.updateGHRepositoryCategory(id, newCategory)
+				},
+
+				)
 		}
 	}
 }

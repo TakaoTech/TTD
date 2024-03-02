@@ -10,7 +10,11 @@ class GHRepository(
 	private val githubApi: GHApi
 ) {
 
-	suspend fun getRepositories(category: MainCategory? = null): List<GHRepositoryDao> {
-		return githubApi.getRepositories(category = category)
+	suspend fun getRepositories(mainCategory: MainCategory? = null): List<GHRepositoryDao> {
+		return githubApi.getRepositories(category = mainCategory)
+	}
+
+	suspend fun updateCategoryRepository(id: Long, newCategory: MainCategory) {
+		githubApi.updateRepositoryCategory(id, newCategory)
 	}
 }

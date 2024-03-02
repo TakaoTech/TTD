@@ -21,18 +21,71 @@ class GHRepositoryListViewModel(
 	val uiState = mUiState.asStateFlow()
 
 	init {
-		screenModelScope.launch(Dispatchers.IO) {
-			val list = ghRepository.getRepositories()
+		getRepositoryList()
+	}
 
+	fun updateFilterMainCategory(mainCategory: MainCategory?) {
+		screenModelScope.launch {
 			mUiState.update {
-				it.copy(ghRepositoryData = list)
+				it.copy(
+					mainCategoryUi = with(it.mainCategoryUi) {
+						copy(
+							selectedCategory = mainCategory
+						)
+					}
+				)
 			}
 
+			getRepositoryList()
+		}
+	}
+
+	private fun getRepositoryList() {
+		screenModelScope.launch(Dispatchers.IO) {
+			mUiState.update {
+				it.copy(ghRepositoryListState = GHRepositoryListUiState.GhRepositoryListState.Loading)
+			}
+
+			val mainCategory = uiState.value.mainCategoryUi.selectedCategory
+			val list = ghRepository.getRepositories(mainCategory = mainCategory)
+
+			mUiState.update {
+				it.copy(ghRepositoryListState = GHRepositoryListUiState.GhRepositoryListState.Success(list))
+			}
+
+		}
+	}
+
+	fun updateGHRepositoryCategory(id: Long, newCategory: MainCategory) {
+		screenModelScope.launch {
+			ghRepository.updateCategoryRepository(id, newCategory)
 		}
 	}
 }
 
 data class GHRepositoryListUiState(
-	val ghRepositoryData: List<GHRepositoryDao> = listOf(),
+	val mainCategoryUi: MainCategoryUi = MainCategoryUi(),
+	val ghRepositoryListState: GhRepositoryListState = GhRepositoryListState.Loading,
 	val mainCategorySelected: MainCategory? = null
-)
+) {
+
+	data class MainCategoryUi(
+		val categoryList: List<MainCategory?> = MainCategory.entries
+			.toMutableList().let {
+				it as MutableList<MainCategory?>
+			}.let {
+				it.add(0, null)
+				it
+			},
+		val selectedCategory: MainCategory? = null
+	)
+
+	sealed interface GhRepositoryListState {
+		data class Success(
+			val ghRepositoryData: List<GHRepositoryDao> = listOf()
+		) : GhRepositoryListState
+
+		data object Error : GhRepositoryListState
+		data object Loading : GhRepositoryListState
+	}
+}

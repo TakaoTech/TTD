@@ -1,9 +1,6 @@
 package com.takaotech.dashboard.ui.admin.github
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -11,10 +8,13 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.model.Tag
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -25,22 +25,56 @@ import ttd.composeapp.generated.resources.ghrepository_tags_label
 
 @Composable
 fun GHRepositoryList(
-	list: List<GHRepositoryDao>,
+	ghRepositoryState: GHRepositoryListUiState.GhRepositoryListState,
 	modifier: Modifier = Modifier,
+	onCategoryChangeClicked: (repoId: Long, newCategory: MainCategory) -> Unit
 ) {
-	LazyColumn(modifier = modifier) {
-		items(key = { it.id }, items = list) {
-			GHRepositoryCard(
-				modifier = Modifier.padding(8.dp),
-				fullName = it.fullName,
-				tags = it.tags,
-				mainCategory = it.mainCategory,
-				onTagsEditClicked = {
+	when (ghRepositoryState) {
+		GHRepositoryListUiState.GhRepositoryListState.Error -> {
+			//TODO
+		}
 
-				}
+		GHRepositoryListUiState.GhRepositoryListState.Loading -> {
+			LinearProgressIndicator(
+				modifier = Modifier.fillMaxWidth()
 			)
 		}
+
+		is GHRepositoryListUiState.GhRepositoryListState.Success -> {
+
+			val repoList = ghRepositoryState.ghRepositoryData
+			LazyColumn(modifier = modifier) {
+				items(key = { it.id }, items = repoList) {
+					var openBottomSheet by rememberSaveable { mutableStateOf(false) }
+
+					if (openBottomSheet) {
+						MainCategoryBottomSheet(
+							categoryList = MainCategory.entries,
+							onDismissRequest = {
+								openBottomSheet = false
+							},
+							onCategoryClicked = { newCategory ->
+								//not null because parameter entries not have nulls
+								onCategoryChangeClicked(it.id, newCategory!!)
+							}
+						)
+					}
+
+					GHRepositoryCard(
+						modifier = Modifier.padding(8.dp),
+						fullName = it.fullName,
+						tags = it.tags,
+						mainCategory = it.mainCategory,
+						onTagsEditClicked = {
+							openBottomSheet = true
+						}
+					)
+				}
+			}
+		}
 	}
+
+
 }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalResourceApi::class)
@@ -59,7 +93,9 @@ internal fun GHRepositoryCard(
 					modifier = Modifier.weight(1f),
 					text = fullName
 				)
-				Chip(onClick = {}) {
+				Chip(onClick = {
+					onTagsEditClicked()
+				}) {
 					Text(mainCategory.name)
 				}
 
