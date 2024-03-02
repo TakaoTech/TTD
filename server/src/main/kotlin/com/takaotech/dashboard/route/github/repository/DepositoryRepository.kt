@@ -85,7 +85,7 @@ class DepositoryRepository(
 		}
 	}
 
-	suspend fun getDepository(
+	suspend fun getGHRepository(
 		category: MainCategory? = null
 	): List<GHRepositoryDao> {
 		return database.dbExec {
@@ -97,31 +97,14 @@ class DepositoryRepository(
 				}
 			}.toList()
 		}.map {
-			GHRepositoryDao(
-				id = it.id.value,
-				name = it.name,
-				fullName = it.fullName,
-				description = it.description,
-				url = it.url,
-				license = it.license,
-				licenseUrl = it.licenseUrl,
-				user = database.dbExec {
-					with(it.user) {
-						GHUser(
-							id = id.value,
-							name = name,
-							url = url
-						)
-					}
-				},
-				languages = it.languages,
-				tags = database.dbExec {
-					it.tags.map { entity ->
-						Tag(entity.id.value)
-					}
-				},
-				mainCategory = it.category
-			)
+			it.convertGRepository()
+		}
+	}
+
+	suspend fun getGHRepositoryById(id: Long): GHRepositoryDao? {
+		return database.dbExec {
+			GithubDepositoryEntity.findById(id)
+				?.convertGRepository()
 		}
 	}
 
@@ -133,4 +116,42 @@ class DepositoryRepository(
 			GithubDepositoryEntity.findById(id) != null
 		}
 	}
+
+
+	suspend fun updateGhRepositoryMainCategory(id: Long, mainCategory: MainCategory) {
+		database.dbExec {
+			GithubDepositoryEntity.findById(id)?.category = mainCategory
+		}
+	}
+
+
+	private suspend fun GithubDepositoryEntity.convertGRepository(): GHRepositoryDao {
+		return GHRepositoryDao(
+			id = id.value,
+			name = name,
+			fullName = fullName,
+			description = description,
+			url = url,
+			license = license,
+			licenseUrl = licenseUrl,
+			user = database.dbExec {
+				with(user) {
+					GHUser(
+						id = id.value,
+						name = name,
+						url = url
+					)
+				}
+			},
+			languages = languages,
+			tags = database.dbExec {
+				tags.map { entity ->
+					Tag(entity.id.value)
+				}
+			},
+			mainCategory = category
+		)
+	}
+
+
 }

@@ -18,7 +18,7 @@ fun Application.githubRoute() {
 	routing {
 		get<GithubRoute> {
 			try {
-				call.respond(controller.getStoredRepository(it.category))
+				call.respond(controller.getRepository(it.category))
 			} catch (ex: Exception) {
 				call.respond(HttpStatusCode.BadRequest)
 			}
@@ -35,6 +35,26 @@ fun Application.githubRoute() {
 				call.respond(HttpStatusCode.BadRequest)
 			}
 		}
+
+		get<GithubRoute.Id> {
+			try {
+				val id = it.id
+				if (id == null) {
+					call.respond(HttpStatusCode.BadRequest)
+					return@get
+				}
+
+				val repository = controller.getRepositoryById(it.id)
+				if (repository == null) {
+					call.respond(HttpStatusCode.NotFound)
+				} else {
+					call.respond(repository)
+				}
+			} catch (ex: Exception) {
+				logger.error(ex)
+				call.respond(HttpStatusCode.BadRequest)
+			}
+		}
 	}
 }
 
@@ -42,6 +62,9 @@ fun Application.githubRoute() {
 class GithubRoute(
 	val category: MainCategory? = null
 ) {
+	@Resource("{id}")
+	class Id(val parent: GithubRoute = GithubRoute(), val id: Long? = null)
+
 	@Resource("/refresh")
 	class Refresh(val parent: GithubRoute = GithubRoute())
 }

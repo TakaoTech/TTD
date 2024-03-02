@@ -25,7 +25,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/GHRepository'
+                  $ref: '#/components/schemas/GHRepositoryDao'
   /github/refresh:
     get:
       summary: Refresh GitHub Repositories
@@ -35,9 +35,30 @@ paths:
           description: Refresh successful
         '401':
           description: Unauthorized request
+  /github/{id}:
+    get:
+      summary: Get GitHub Repository by ID
+      description: Retrieve a GitHub repository by its ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of the GitHub repository to retrieve
+          required: true
+          schema:
+            type: integer
+            default: 3432266
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GHRepositoryDao'
+        '404':
+          description: Repository not found
 components:
   schemas:
-    GHRepository:
+    GHRepositoryDao:
       type: object
       properties:
         id:

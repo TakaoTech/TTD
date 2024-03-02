@@ -45,7 +45,15 @@ class GithubController(
 
 	}
 
-	suspend fun getStoredRepository(category: MainCategory? = null): List<GHRepositoryDao> {
-		return githubDepositoryRepository.getDepository(category)
+	suspend fun getRepository(category: MainCategory? = null): List<GHRepositoryDao> {
+		return githubDepositoryRepository.getGHRepository(category)
+	}
+
+	suspend fun getRepositoryById(id: Long): GHRepositoryDao? {
+		return githubDepositoryRepository.getGHRepositoryById(id)
+	}
+
+	suspend fun updateMainCategoryAtRepository(repositoryId: Long, category: MainCategory?) {
+
 	}
 }
