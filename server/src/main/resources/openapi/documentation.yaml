@@ -56,6 +56,31 @@ paths:
                 $ref: '#/components/schemas/GHRepositoryDao'
         '404':
           description: Repository not found
+  /github/{id}/updateCategory:
+    post:
+      summary: Update GitHub Repository Category
+      description: Update the category of a GitHub repository
+      parameters:
+        - name: id
+          in: path
+          description: ID of the GitHub repository to update
+          required: true
+          schema:
+            type: integer
+            default: 3432266
+        - name: newCategory
+          in: query
+          description: New category for the GitHub repository
+          schema:
+            type: string
+            enum: [ NONE, KOTLIN, SELF_HOSTED, OTHER ]
+      responses:
+        '200':
+          description: Category updated successfully
+        '404':
+          description: Repository not found
+        '400':
+          description: Invalid category provided
 components:
   schemas:
     GHRepositoryDao:

@@ -53,7 +53,7 @@ class GithubController(
 		return githubDepositoryRepository.getGHRepositoryById(id)
 	}
 
-	suspend fun updateMainCategoryAtRepository(repositoryId: Long, category: MainCategory?) {
-
+	suspend fun updateMainCategoryAtRepository(repositoryId: Long, category: MainCategory) {
+		githubDepositoryRepository.updateGhRepositoryMainCategory(repositoryId, category)
 	}
 }

@@ -6,6 +6,7 @@ import io.ktor.http.*
 import io.ktor.resources.*
 import io.ktor.server.application.*
 import io.ktor.server.resources.*
+import io.ktor.server.resources.post
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.logging.*
@@ -55,6 +56,16 @@ fun Application.githubRoute() {
 				call.respond(HttpStatusCode.BadRequest)
 			}
 		}
+
+		post<GithubRoute.Id.UpdateCategory> {
+			val id = it.parent.id
+			if (id == null) {
+				call.respond(HttpStatusCode.BadRequest)
+			} else {
+				controller.updateMainCategoryAtRepository(it.parent.id, it.newCategory)
+				call.respond(HttpStatusCode.OK)
+			}
+		}
 	}
 }
 
@@ -63,7 +74,11 @@ class GithubRoute(
 	val category: MainCategory? = null
 ) {
 	@Resource("{id}")
-	class Id(val parent: GithubRoute = GithubRoute(), val id: Long? = null)
+	class Id(val parent: GithubRoute = GithubRoute(), val id: Long? = null) {
+		@Resource("updateCategory")
+		//TODO newCategory as query param?
+		class UpdateCategory(val parent: Id = Id(), val newCategory: MainCategory)
+	}
 
 	@Resource("/refresh")
 	class Refresh(val parent: GithubRoute = GithubRoute())
