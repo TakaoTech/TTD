@@ -7,8 +7,15 @@ import org.jetbrains.exposed.dao.id.EntityID
 
 object TagsTable : StringIdTable(name = "tagName") {
 	override val primaryKey = PrimaryKey(id)
+
+	/**
+	 * The description of tag
+	 */
+	val description = text("description").nullable()
 }
 
 class TagsEntity(id: EntityID<String>) : StringEntity(id) {
 	companion object : StringEntityClass<TagsEntity>(TagsTable)
+
+	var description by TagsTable.description
 }
