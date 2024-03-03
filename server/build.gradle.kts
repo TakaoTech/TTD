@@ -8,6 +8,7 @@ plugins {
 	alias(libs.plugins.ktor)
 	alias(libs.plugins.ksp)
 	alias(libs.plugins.serialization)
+	alias(libs.plugins.kover)
 	application
 }
 
@@ -84,4 +85,20 @@ dependencies {
 	testImplementation(libs.koin.test)
 	testImplementation(libs.koin.junit)
 	testImplementation(libs.mockk)
+}
+
+koverReport {
+	filters {
+		excludes {
+			packages("org.koin.ksp.generated")
+		}
+	}
+
+	verify {
+		// verification rules for all reports
+	}
+
+	defaults {
+
+	}
 }

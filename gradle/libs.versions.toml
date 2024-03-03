@@ -123,3 +123,4 @@ serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref 
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 i18n4k = { id = "de.comahe.i18n4k", version.ref = "i18n4k" }
+kover = { id = "org.jetbrains.kotlinx.kover", version = "0.7.6" }

@@ -10,6 +10,7 @@ plugins {
 	alias(libs.plugins.serialization) apply false
 	alias(libs.plugins.ktorfit) apply false
 	alias(libs.plugins.buildkonfig) apply false
+	alias(libs.plugins.kover) apply false
 //	alias(libs.plugins.i18n4k) apply false
 
 }
