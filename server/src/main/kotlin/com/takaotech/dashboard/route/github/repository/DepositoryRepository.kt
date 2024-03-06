@@ -1,13 +1,12 @@
 package com.takaotech.dashboard.route.github.repository
 
 import com.takaotech.dashboard.model.GHRepositoryDao
-import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.model.Tag
 import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.route.github.data.GithubDepositoryTable
 import com.takaotech.dashboard.route.github.data.GithubUserEntity
 import com.takaotech.dashboard.route.github.data.TagsEntity
+import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepository
 import com.takaotech.dashboard.utils.HikariDatabase
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.selectAll
@@ -97,14 +96,14 @@ class DepositoryRepository(
 				}
 			}.toList()
 		}.map {
-			it.convertGRepository()
+			it.convertToGHRepository(database)
 		}
 	}
 
 	suspend fun getGHRepositoryById(id: Long): GHRepositoryDao? {
 		return database.dbExec {
 			GithubDepositoryEntity.findById(id)
-				?.convertGRepository()
+				?.convertToGHRepository(database)
 		}
 	}
 
@@ -124,34 +123,6 @@ class DepositoryRepository(
 		}
 	}
 
-
-	private suspend fun GithubDepositoryEntity.convertGRepository(): GHRepositoryDao {
-		return GHRepositoryDao(
-			id = id.value,
-			name = name,
-			fullName = fullName,
-			description = description,
-			url = url,
-			license = license,
-			licenseUrl = licenseUrl,
-			user = database.dbExec {
-				with(user) {
-					GHUser(
-						id = id.value,
-						name = name,
-						url = url
-					)
-				}
-			},
-			languages = languages,
-			tags = database.dbExec {
-				tags.map { entity ->
-					Tag(entity.id.value)
-				}
-			},
-			mainCategory = category
-		)
-	}
 
 
 }

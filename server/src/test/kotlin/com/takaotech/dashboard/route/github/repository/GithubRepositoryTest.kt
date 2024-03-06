@@ -1,64 +1,185 @@
 package com.takaotech.dashboard.route.github.repository
 
-import com.takaotech.dashboard.configuration.CredentialConfig
-import com.takaotech.dashboard.configuration.DbConfiguration
-import com.takaotech.dashboard.configuration.GithubConfiguration
-import com.takaotech.dashboard.configuration.SessionConfig
-import com.takaotech.dashboard.di.getGeneralModule
+import com.takaotech.dashboard.model.GHRepositoryDao
+import com.takaotech.dashboard.model.GHUser
+import com.takaotech.dashboard.model.MainCategory
+import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryWithDefaults
 import com.takaotech.dashboard.utils.LOGGER
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.koin.KoinExtension
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import org.koin.ksp.generated.defaultModule
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
 import org.koin.test.KoinTest
-import org.koin.test.inject
+import java.net.URL
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.kohsuke.github.GHRepository as GHRepositoryExternal
+import org.kohsuke.github.GHUser as GHUserExternal
 
-class GithubRepositoryTest : FunSpec(), KoinTest {
-	override fun extensions() = listOf(
-		KoinExtension(
-			listOf(
-				getGeneralModule(
-					LOGGER,
-					dbConfiguration = DbConfiguration(
-						url = System.getenv("DB_URL"),
-						driver = System.getenv("DB_DRIVER"),
-						user = System.getenv("DB_USER"),
-						password = System.getenv("DB_PASSWORD")
-					),
-					githubConfiguration = GithubConfiguration(
-						githubToken = System.getenv("GITHUB_TOKEN")
-					),
-					credentialConfig = CredentialConfig(
-						digestAlgorithm = System.getenv("auth.digest.alg"),
-						digest = System.getenv("auth.digest"),
-						username = System.getenv("auth.username"),
-						password = System.getenv("auth.password"),
-						sessionConfig = SessionConfig(
-							name = System.getenv("auth.session.name"),
-							realm = System.getenv("auth.session.realm")
-						)
-					)
-				), defaultModule
-			)
-		)
+class GithubRepositoryTest : FunSpec({
+	var githubClient = mockk<GithubClientInterface>()
+
+	var githubRepository = GithubRepository(
+		LOGGER,
+		githubClient
 	)
 
-	val githubRepository by inject<GithubRepository>()
+	beforeEach {
+		githubClient = mockk<GithubClientInterface>()
 
-	init {
-		test("Get Repository Start List") {
-			val repoStars = githubRepository.getAllStars()
-			assertTrue { repoStars.isNotEmpty() }
-		}
-
-		test("Get Languages of Repository") {
-			//It's Ktofit ID
-			val languages = githubRepository.getLanguagesByRepository(203655484)
-			LOGGER.info(Json.encodeToString(languages))
-			assertTrue { languages.isNotEmpty() }
-		}
+		githubRepository = GithubRepository(
+			LOGGER,
+			githubClient
+		)
 	}
 
-}
+
+	test("Get Repository Start List") {
+		val testList = listOf(
+			GHRepositoryDao(
+				id = 3041,
+				name = "Margery Miles",
+				fullName = "Taylor Alford",
+				description = null,
+				url = "http://www.bing.com/search?q=vivamus",
+				license = null,
+				licenseUrl = null,
+				user = GHUser(
+					id = 9763,
+					name = "Delmar Bowers",
+					url = "https://duckduckgo.com/?q=pellentesque"
+				),
+				languages = mapOf(),
+				tags = listOf(),
+				mainCategory = MainCategory.OTHER
+			)
+		)
+
+		coEvery { githubClient.getAllStarsRemote() } returns testList
+
+		val repoStars = githubRepository.getAllStars()
+		assertTrue { repoStars.isNotEmpty() }
+		assertEquals(testList, repoStars)
+	}
+
+	test("Get Repository Start List Empty") {
+		val testList = listOf<GHRepositoryDao>()
+
+		coEvery { githubClient.getAllStarsRemote() } returns testList
+
+		val repoStars = githubRepository.getAllStars()
+		assertTrue { repoStars.isEmpty() }
+		assertEquals(testList, repoStars)
+	}
+
+	test("Test getRepositoryLanguages filled") {
+		coEvery { githubClient.getLanguagesByRepository(any()) } returns mapOf("Kotlin" to 100L, "Java" to 100L)
+
+		val languagesList = githubRepository.getRepositoryLanguages(0)
+
+		assertTrue { languagesList.isNotEmpty() }
+		assertEquals(mapOf("Kotlin" to 100L, "Java" to 100L), languagesList)
+	}
+
+	test("Test convertToGHRepositoryWithDefaults field all filled") {
+		val ghExternalMockk = mockk<GHRepositoryExternal>()
+
+		val ghUserExternalMockk = mockk<GHUserExternal>()
+		//region GHUserExternal mockk
+		every { ghUserExternalMockk.id } returns 123L
+		every { ghUserExternalMockk.login } returns "TakaoTech"
+		every { ghUserExternalMockk.url } returns URL("https://duckduckgo.com/?q=pellentesque")
+		//endregion GHUserExternal mockk
+
+		every { ghExternalMockk.id } returns 456L
+		every { ghExternalMockk.owner } returns ghUserExternalMockk
+		every { ghExternalMockk.name } returns "Kotlin"
+		every { ghExternalMockk.fullName } returns "Jetbrains/Kotlin"
+		every { ghExternalMockk.description } returns "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur kasd"
+		every { ghExternalMockk.url } returns URL("https://duckduckgo.com/?q=takaotech")
+		every { ghExternalMockk.license.name } returns "Apache 2.0"
+		every { ghExternalMockk.license.htmlUrl } returns URL("https://duckduckgo.com/?q=apache2License")
+		every { ghExternalMockk.listLanguages() } returns mapOf("Kotlin" to 100L)
+
+		val convertedMockk = ghExternalMockk.convertToGHRepositoryWithDefaults()!!
+
+		convertedMockk.user.let { user ->
+			assertEquals(123L, user.id)
+			assertEquals("TakaoTech", user.name)
+			assertEquals("https://duckduckgo.com/?q=pellentesque", user.url)
+		}
+
+		assertEquals(456L, convertedMockk.id)
+		assertEquals("Kotlin", convertedMockk.name)
+		assertEquals("Jetbrains/Kotlin", convertedMockk.fullName)
+		assertEquals(
+			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur kasd",
+			convertedMockk.description
+		)
+		assertEquals("https://duckduckgo.com/?q=takaotech", convertedMockk.url)
+		assertEquals("Apache 2.0", convertedMockk.license)
+		assertEquals("https://duckduckgo.com/?q=apache2License", convertedMockk.licenseUrl)
+		assertEquals(mapOf("Kotlin" to 100L), convertedMockk.languages)
+		assertEquals(MainCategory.NONE, convertedMockk.mainCategory)
+		assertTrue { convertedMockk.tags.isEmpty() }
+	}
+
+	test("Test convertToGHRepositoryWithDefaults field licence null") {
+		val ghExternalMockk = mockk<GHRepositoryExternal>()
+
+		val ghUserExternalMockk = mockk<GHUserExternal>()
+		//region GHUserExternal mockk
+		every { ghUserExternalMockk.id } returns 123L
+		every { ghUserExternalMockk.login } returns "TakaoTech"
+		every { ghUserExternalMockk.url } returns URL("https://duckduckgo.com/?q=pellentesque")
+		//endregion GHUserExternal mockk
+
+		every { ghExternalMockk.id } returns 456L
+		every { ghExternalMockk.owner } returns ghUserExternalMockk
+		every { ghExternalMockk.name } returns "Kotlin"
+		every { ghExternalMockk.fullName } returns "Jetbrains/Kotlin"
+		every { ghExternalMockk.description } returns "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur kasd"
+		every { ghExternalMockk.url } returns URL("https://duckduckgo.com/?q=takaotech")
+		every { ghExternalMockk.license } returns null
+		every { ghExternalMockk.listLanguages() } returns mapOf("Kotlin" to 100L)
+
+		val convertedMockk = ghExternalMockk.convertToGHRepositoryWithDefaults()!!
+
+		convertedMockk.user.let { user ->
+			assertEquals(123L, user.id)
+			assertEquals("TakaoTech", user.name)
+			assertEquals("https://duckduckgo.com/?q=pellentesque", user.url)
+		}
+
+		assertEquals(456L, convertedMockk.id)
+		assertEquals("Kotlin", convertedMockk.name)
+		assertEquals("Jetbrains/Kotlin", convertedMockk.fullName)
+		assertEquals(
+			"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur kasd",
+			convertedMockk.description
+		)
+		assertEquals("https://duckduckgo.com/?q=takaotech", convertedMockk.url)
+		assertEquals(null, convertedMockk.license)
+		assertEquals(null, convertedMockk.licenseUrl)
+		assertEquals(mapOf("Kotlin" to 100L), convertedMockk.languages)
+		assertEquals(MainCategory.NONE, convertedMockk.mainCategory)
+		assertTrue { convertedMockk.tags.isEmpty() }
+	}
+
+	test("Test convertToGHRepositoryWithDefaults user null return GHRepository null") {
+		val ghExternalMockk = mockk<GHRepositoryExternal>()
+
+		every { ghExternalMockk.id } returns 456L
+		every { ghExternalMockk.owner } returns null
+		every { ghExternalMockk.name } returns "Kotlin"
+		every { ghExternalMockk.fullName } returns "Jetbrains/Kotlin"
+		every { ghExternalMockk.description } returns "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur kasd"
+		every { ghExternalMockk.url } returns URL("https://duckduckgo.com/?q=takaotech")
+		every { ghExternalMockk.license.name } returns "Apache 2.0"
+		every { ghExternalMockk.license.htmlUrl } returns URL("https://duckduckgo.com/?q=apache2License")
+		every { ghExternalMockk.listLanguages() } returns mapOf("Kotlin" to 100L)
+
+		val convertedMockk = ghExternalMockk.convertToGHRepositoryWithDefaults()
+		assertTrue { convertedMockk == null }
+	}
+}), KoinTest
