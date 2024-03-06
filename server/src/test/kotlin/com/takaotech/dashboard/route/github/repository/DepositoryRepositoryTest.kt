@@ -1,23 +1,18 @@
 package com.takaotech.dashboard.route.github.repository
 
-import com.takaotech.dashboard.configuration.CredentialConfig
 import com.takaotech.dashboard.configuration.DbConfiguration
-import com.takaotech.dashboard.configuration.GithubConfiguration
-import com.takaotech.dashboard.configuration.SessionConfig
 import com.takaotech.dashboard.di.connectToDatabase
-import com.takaotech.dashboard.di.getGeneralModule
 import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.utils.HikariDatabase
-import com.takaotech.dashboard.utils.LOGGER
 import com.takaotech.dashboard.utils.dbTables
+import com.takaotech.dashboard.utils.getBaseTestKoin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
-import org.koin.ksp.generated.defaultModule
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import kotlin.test.assertEquals
@@ -26,32 +21,7 @@ import kotlin.test.assertTrue
 
 class DepositoryRepositoryTest : FunSpec(), KoinTest {
 	override fun extensions() = listOf(
-		KoinExtension(
-			listOf(
-				getGeneralModule(
-					log = LOGGER,
-					dbConfiguration = DbConfiguration(
-						url = System.getenv("DB_URL"),
-						driver = System.getenv("DB_DRIVER"),
-						user = System.getenv("DB_USER"),
-						password = System.getenv("DB_PASSWORD")
-					),
-					githubConfiguration = GithubConfiguration(
-						githubToken = System.getenv("GITHUB_TOKEN")
-					),
-					credentialConfig = CredentialConfig(
-						digestAlgorithm = System.getenv("auth.digest.alg"),
-						digest = System.getenv("auth.digest"),
-						username = System.getenv("auth.username"),
-						password = System.getenv("auth.password"),
-						sessionConfig = SessionConfig(
-							name = System.getenv("auth.session.name"),
-							realm = System.getenv("auth.session.realm")
-						)
-					)
-				), defaultModule
-			)
-		)
+		KoinExtension(getBaseTestKoin())
 	)
 
 	init {
