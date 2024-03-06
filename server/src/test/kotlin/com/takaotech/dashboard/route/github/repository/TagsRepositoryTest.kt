@@ -2,6 +2,7 @@ package com.takaotech.dashboard.route.github.repository
 
 import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.di.connectToDatabase
+import com.takaotech.dashboard.model.Tag
 import com.takaotech.dashboard.route.github.data.TagsTable
 import com.takaotech.dashboard.utils.HikariDatabase
 import com.takaotech.dashboard.utils.dbTables
@@ -38,7 +39,7 @@ class TagsRepositoryTest : FunSpec(), KoinTest {
 		test("Add Tag") {
 			val tagsRepository by inject<TagsRepository>()
 			val database by inject<HikariDatabase>()
-			tagsRepository.addTag("Kotlin Official")
+			tagsRepository.addTag(Tag("Kotlin Official"))
 
 			val isNotEmpty = database.dbExec {
 				TagsTable.selectAll().toList().isNotEmpty()
@@ -51,14 +52,35 @@ class TagsRepositoryTest : FunSpec(), KoinTest {
 		test("Add&Get Tag") {
 			val tagsRepository by inject<TagsRepository>()
 
-			val testList = listOf("Kotlin Official", "Recommended")
+			val testList = listOf(Tag("Kotlin Official"), Tag("Recommended"))
 
 			tagsRepository.addTag(testList[0])
 			tagsRepository.addTag(testList[1])
 
 			val tags = tagsRepository.getTags()
 
-			assertEquals(testList, tags.map { it.id.value })
+			assertEquals(testList, tags)
+
+		}
+
+		test("Add&Get&Remove Tag") {
+			val tagsRepository by inject<TagsRepository>()
+			val lastTag = Tag("Recommended")
+
+			val testList = listOf(Tag("Kotlin Official"), lastTag)
+
+			tagsRepository.addTag(testList[0])
+			tagsRepository.addTag(testList[1])
+
+			val tags = tagsRepository.getTags()
+
+			assertEquals(testList, tags)
+
+			tagsRepository.removeTag(testList[0].name)
+
+			val tags2 = tagsRepository.getTags()
+
+			assertEquals(listOf(lastTag), tags2)
 
 		}
 	}

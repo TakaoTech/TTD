@@ -5,6 +5,7 @@ import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
+import com.takaotech.dashboard.route.github.repository.TagsRepository
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.coEvery
 import io.mockk.coJustRun
@@ -16,11 +17,14 @@ import kotlin.test.assertEquals
 class GithubControllerTest : FunSpec({
 	var githubRepository = mockk<GithubRepository>()
 	var depository = mockk<DepositoryRepository>()
-	var controller = GithubController(githubRepository, depository)
+	var tagsRepository = mockk<TagsRepository>()
+	var controller = GithubController(githubRepository, depository, tagsRepository)
+
 	beforeEach {
 		githubRepository = mockk<GithubRepository>()
 		depository = mockk<DepositoryRepository>()
-		controller = GithubController(githubRepository, depository)
+		tagsRepository = mockk<TagsRepository>()
+		controller = GithubController(githubRepository, depository, tagsRepository)
 	}
 
 	test("Insert new data, all data inserted") {

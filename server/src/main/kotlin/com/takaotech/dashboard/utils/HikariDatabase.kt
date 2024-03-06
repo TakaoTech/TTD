@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.SchemaUtils.withDataBaseLock
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -45,7 +46,9 @@ class HikariDatabase(
 
 	private fun setupSchema() {
 		transaction(database) {
-			SchemaUtils.create(*dbTables)
+			withDataBaseLock {
+				SchemaUtils.createMissingTablesAndColumns(*dbTables)
+			}
 		}
 	}
 

@@ -2,15 +2,18 @@ package com.takaotech.dashboard.route.github.controller
 
 import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.MainCategory
+import com.takaotech.dashboard.model.Tag
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
+import com.takaotech.dashboard.route.github.repository.TagsRepository
 import kotlinx.coroutines.coroutineScope
 import org.koin.core.annotation.Factory
 
 @Factory
 class GithubController(
 	private val githubRepository: GithubRepository,
-	private val githubDepositoryRepository: DepositoryRepository
+	private val githubDepositoryRepository: DepositoryRepository,
+	private val tagsRepository: TagsRepository
 ) {
 
 	/**
@@ -55,5 +58,17 @@ class GithubController(
 
 	suspend fun updateMainCategoryAtRepository(repositoryId: Long, category: MainCategory) {
 		githubDepositoryRepository.updateGhRepositoryMainCategory(repositoryId, category)
+	}
+
+	suspend fun getTags(): List<Tag> {
+		return tagsRepository.getTags()
+	}
+
+	suspend fun addTag(newTag: Tag) {
+		tagsRepository.addTag(newTag)
+	}
+
+	suspend fun removeTagById(tagName: String) {
+		tagsRepository.removeTag(tagName)
 	}
 }

@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.route.github.repository
 
+import com.takaotech.dashboard.model.Tag
 import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.utils.HikariDatabase
 import org.koin.core.annotation.Factory
@@ -7,18 +8,28 @@ import org.koin.core.annotation.Factory
 @Factory
 class TagsRepository(private val database: HikariDatabase) {
 
-	suspend fun addTag(tagName: String) {
+	suspend fun addTag(tag: Tag) {
 		database.dbExec {
-			TagsEntity.new(id = tagName) {
+			TagsEntity.new(id = tag.name) {
 
 			}
 		}
 	}
 
-	suspend fun getTags(): List<TagsEntity> {
+	suspend fun getTags(): List<Tag> {
 		return database.dbExec {
 			TagsEntity.all()
-				.toList()
+				.toList().map {
+					Tag(
+						name = it.id.value
+					)
+				}
+		}
+	}
+
+	suspend fun removeTag(tagName: String) {
+		database.dbExec {
+			TagsEntity.findById(tagName)?.delete()
 		}
 	}
 }

@@ -8,6 +8,8 @@ servers:
 paths:
   /github:
     get:
+      tags:
+        - Github Repository
       summary: Get GitHub Repositories
       description: Retrieve a list of GitHub repositories
       parameters:
@@ -28,6 +30,8 @@ paths:
                   $ref: '#/components/schemas/GHRepositoryDao'
   /github/refresh:
     get:
+      tags:
+        - Github Repository
       summary: Refresh GitHub Repositories
       description: Refresh the list of GitHub repositories
       responses:
@@ -37,6 +41,8 @@ paths:
           description: Unauthorized request
   /github/{id}:
     get:
+      tags:
+        - Github Repository
       summary: Get GitHub Repository by ID
       description: Retrieve a GitHub repository by its ID
       parameters:
@@ -58,6 +64,8 @@ paths:
           description: Repository not found
   /github/{id}/updateCategory:
     post:
+      tags:
+        - Github Repository
       summary: Update GitHub Repository Category
       description: Update the category of a GitHub repository
       parameters:
@@ -81,6 +89,53 @@ paths:
           description: Repository not found
         '400':
           description: Invalid category provided
+  /github/tags:
+    get:
+      tags:
+        - Tags
+      summary: Get Tags
+      description: Retrieve a list of tags associated with GitHub repositories
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+    put:
+      tags:
+        - Tags
+      summary: Add Tag
+      description: Add a new tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      responses:
+        '200':
+          description: Tag added successfully
+        '400':
+          description: Bad request
+    delete:
+      tags:
+        - Tags
+      summary: Delete Tag
+      description: Delete a tag by its name
+      parameters:
+        - name: tagName
+          in: query
+          description: Name of the tag to delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tag deleted successfully
+        '404':
+          description: Tag not found
 components:
   schemas:
     GHRepositoryDao:
@@ -143,6 +198,9 @@ components:
         name:
           type: string
           description: The name of the tag
+        description:
+          type: string
+          description: The description of the tag
     MainCategory:
       type: string
       enum:
