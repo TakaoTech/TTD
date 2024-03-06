@@ -1,21 +1,22 @@
 package com.takaotech.dashboard.route.github.repository
 
 import com.takaotech.dashboard.route.github.data.TagsEntity
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.transactions.transaction
+import com.takaotech.dashboard.utils.HikariDatabase
 import org.koin.core.annotation.Factory
 
 @Factory
-class TagsRepository(private val database: Database) {
+class TagsRepository(private val database: HikariDatabase) {
 
-	fun addTag(tagName: String) {
-		transaction(database) {
-			TagsEntity.new(id = tagName) { }
+	suspend fun addTag(tagName: String) {
+		database.dbExec {
+			TagsEntity.new(id = tagName) {
+
+			}
 		}
 	}
 
-	fun getTags(): List<TagsEntity> {
-		return transaction(database) {
+	suspend fun getTags(): List<TagsEntity> {
+		return database.dbExec {
 			TagsEntity.all()
 				.toList()
 		}
