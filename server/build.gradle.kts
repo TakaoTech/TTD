@@ -40,6 +40,14 @@ tasks.withType<Test>().configureEach {
 	environment(*propertiesMap)
 }
 
+kotlin {
+	compilerOptions {
+		if (extra["development"].toString().toBoolean()) {
+			freeCompilerArgs.add("-Xdebug")
+		}
+	}
+}
+
 dependencies {
 	implementation(projects.shared)
 	implementation(libs.logback)
