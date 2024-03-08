@@ -2,6 +2,7 @@ package com.takaotech.dashboard.repository
 
 import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.MainCategory
+import com.takaotech.dashboard.model.Tag
 import com.takaotech.dashboard.repository.api.GHApi
 import org.koin.core.annotation.Single
 
@@ -16,5 +17,9 @@ class GHRepository(
 
 	suspend fun updateCategoryRepository(id: Long, newCategory: MainCategory) {
 		githubApi.updateRepositoryCategory(id, newCategory)
+	}
+
+	suspend fun getTags(): List<Tag> {
+		return githubApi.getTags()
 	}
 }

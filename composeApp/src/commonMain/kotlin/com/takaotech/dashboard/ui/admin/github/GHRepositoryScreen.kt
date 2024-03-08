@@ -23,41 +23,51 @@ class GHRepositoryScreen : Screen {
 		val uiState by viewModel.uiState.collectAsState()
 
 
-		var openBottomSheet by rememberSaveable { mutableStateOf(false) }
+		GHRepositoryScreen(uiState, viewModel)
+	}
 
-		if (openBottomSheet) {
-			MainCategoryBottomSheet(categoryList = uiState.mainCategoryUi.categoryList,
-				onDismissRequest = {
-					openBottomSheet = false
-				}
-			) {
-				viewModel.updateFilterMainCategory(it)
+
+}
+
+@Composable
+@OptIn(ExperimentalMaterialApi::class)
+internal fun GHRepositoryScreen(
+	uiState: GHRepositoryListUiState,
+	viewModel: GHRepositoryListViewModel
+) {
+	var openBottomSheet by rememberSaveable { mutableStateOf(false) }
+
+	if (openBottomSheet) {
+		MainCategoryBottomSheet(categoryList = uiState.mainCategoryUi.categoryList,
+			onDismissRequest = {
+				openBottomSheet = false
 			}
+		) {
+			viewModel.updateFilterMainCategory(it)
 		}
+	}
 
 
 
-		Column {
-			Row(modifier = Modifier.padding(4.dp)) {
-				Box {
-					Chip(
-						onClick = {
-							openBottomSheet = true
-						}
-					) {
-						Text(uiState.mainCategoryUi.selectedCategory?.name ?: "--")
+	Column {
+		Row(modifier = Modifier.padding(4.dp)) {
+			Box {
+				Chip(
+					onClick = {
+						openBottomSheet = true
 					}
+				) {
+					Text(uiState.mainCategoryUi.selectedCategory?.name ?: "--")
 				}
 			}
-
-			GHRepositoryList(
-				modifier = Modifier.fillMaxWidth(),
-				ghRepositoryState = uiState.ghRepositoryListState,
-				onCategoryChangeClicked = { id: Long, newCategory: MainCategory ->
-					viewModel.updateGHRepositoryCategory(id, newCategory)
-				},
-
-				)
 		}
+
+		GHRepositoryList(
+			modifier = Modifier.fillMaxWidth(),
+			ghRepositoryState = uiState.ghRepositoryListState,
+			onCategoryChangeClicked = { id: Long, newCategory: MainCategory ->
+				viewModel.updateGHRepositoryCategory(id, newCategory)
+			}
+		)
 	}
 }
