@@ -10,5 +10,5 @@ import org.koin.ksp.generated.defaultModule
 class AndroidModule
 
 actual fun KoinApplication.platformModules() {
-	modules(appModules(), defaultModule)
+	modules(defaultModule, *appModules())
 }
