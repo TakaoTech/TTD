@@ -27,4 +27,10 @@ class GHRepository(
 			githubApi.getTags()
 		}
 	}
+
+	suspend fun getTagById(tagId: String): Result<Tag, Throwable> {
+		return Result.of<Tag, Throwable> {
+			githubApi.getTagById(tagId)
+		}
+	}
 }

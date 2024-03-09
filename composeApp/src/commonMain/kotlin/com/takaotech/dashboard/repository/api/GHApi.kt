@@ -24,4 +24,7 @@ interface GHApi {
 
 	@GET("github/tags")
 	suspend fun getTags(): List<Tag>
+
+	@GET("github/tags/{id}")
+	suspend fun getTagById(@Path("id") tagId: String): Tag
 }

@@ -71,4 +71,8 @@ class GithubController(
 	suspend fun removeTagById(tagName: String) {
 		tagsRepository.removeTag(tagName)
 	}
+
+	suspend fun getTagById(id: String): Tag? {
+		return tagsRepository.getTagById(id)
+	}
 }

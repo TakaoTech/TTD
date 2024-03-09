@@ -136,6 +136,28 @@ paths:
           description: Tag deleted successfully
         '404':
           description: Tag not found
+  /github/tags/{id}:
+    get:
+      tags:
+        - Tags
+      summary: Get Tag by ID
+      description: Retrieve a tag by its ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of the tag to retrieve
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '404':
+          description: Tag not found
 components:
   schemas:
     GHRepositoryDao:

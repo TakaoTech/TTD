@@ -32,4 +32,14 @@ class TagsRepository(private val database: HikariDatabase) {
 			TagsEntity.findById(tagName)?.delete()
 		}
 	}
+
+	suspend fun getTagById(id: String): Tag? {
+		return database.dbExec {
+			TagsEntity.findById(id)?.let {
+				Tag(
+					name = it.id.value
+				)
+			}
+		}
+	}
 }

@@ -18,6 +18,15 @@ fun Application.tagsRoute() {
 		get<GithubRoute.Tags> {
 			call.respond(controller.getTags())
 		}
+		get<GithubRoute.Tags.Id> {
+			val tag = controller.getTagById(it.id)
+			if (tag != null) {
+				call.respond(tag)
+			} else {
+				call.respond(HttpStatusCode.NotFound)
+			}
+
+		}
 
 		put<GithubRoute.Tags> {
 			val newTag = call.receive<Tag>()

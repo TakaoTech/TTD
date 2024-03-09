@@ -20,12 +20,8 @@ data class TagEditScreen(val tagId: String) : Screen {
 		TagEdit(
 			titleTag = uiState.title,
 			descriptionTag = uiState.description,
-			onTitleTagChanged = {
-
-			},
-			onDescriptionTagChanged = {
-
-			}
+			onTitleTagChanged = viewModel::onTitleChange,
+			onDescriptionTagChanged = viewModel::onDescriptionChange
 		)
 	}
 }
