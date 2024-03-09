@@ -68,9 +68,13 @@ kotlin {
 				//https://github.com/DevSrSouza/compose-icons
 				implementation(projects.shared)
 
+				implementation(libs.kotlin.result)
+				implementation(libs.kermit)
+
 				implementation(libs.ktorfit.lib)
 				implementation(libs.ktor.client.content.negotiation)
 				implementation(libs.ktor.client.serialization)
+				implementation(libs.ktor.client.logging)
 
 				implementation(libs.koin.core)
 				implementation(libs.koin.annotation)
