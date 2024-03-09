@@ -2,11 +2,9 @@ package com.takaotech.dashboard.repository.api
 
 import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.model.Tag
-import de.jensklingenberg.ktorfit.http.GET
-import de.jensklingenberg.ktorfit.http.POST
-import de.jensklingenberg.ktorfit.http.Path
-import de.jensklingenberg.ktorfit.http.Query
+import com.takaotech.dashboard.model.TagDao
+import com.takaotech.dashboard.model.TagNewDao
+import de.jensklingenberg.ktorfit.http.*
 
 interface GHApi {
 
@@ -23,8 +21,14 @@ interface GHApi {
 	)
 
 	@GET("github/tags")
-	suspend fun getTags(): List<Tag>
+	suspend fun getTags(): List<TagDao>
 
 	@GET("github/tags/{id}")
-	suspend fun getTagById(@Path("id") tagId: String): Tag
+	suspend fun getTagById(@Path("id") tagId: String): TagDao
+
+	@PUT("github/tags")
+	suspend fun addTag(@Body tag: TagNewDao)
+
+	@POST("github/tags")
+	suspend fun updateTag(@Body tag: TagDao)
 }

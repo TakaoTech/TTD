@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,6 +18,7 @@ import org.jetbrains.compose.resources.stringResource
 import ttd.composeapp.generated.resources.Res
 import ttd.composeapp.generated.resources.ghrepository_tag_edit_description_label
 import ttd.composeapp.generated.resources.ghrepository_tag_edit_title_label
+import ttd.composeapp.generated.resources.save
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -23,25 +26,34 @@ fun TagEdit(
 	titleTag: TextFieldValue,
 	descriptionTag: TextFieldValue,
 	onTitleTagChanged: (TextFieldValue) -> Unit,
-	onDescriptionTagChanged: (TextFieldValue) -> Unit
+	onDescriptionTagChanged: (TextFieldValue) -> Unit,
+	onSaveClicked: () -> Unit
 ) {
-	Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-		OutlinedTextField(
-			label = {
-				Text(stringResource(Res.string.ghrepository_tag_edit_title_label))
-			},
-			value = titleTag,
-			onValueChange = onTitleTagChanged
-		)
+	Scaffold(
+		bottomBar = {
+			Button(onClick = onSaveClicked) {
+				Text(stringResource(Res.string.save))
+			}
+		}
+	) {
+		Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+			OutlinedTextField(
+				label = {
+					Text(stringResource(Res.string.ghrepository_tag_edit_title_label))
+				},
+				value = titleTag,
+				onValueChange = onTitleTagChanged
+			)
 
-		Spacer(Modifier.height(8.dp))
+			Spacer(Modifier.height(8.dp))
 
-		OutlinedTextField(
-			label = {
-				Text(stringResource(Res.string.ghrepository_tag_edit_description_label))
-			},
-			value = descriptionTag,
-			onValueChange = onDescriptionTagChanged
-		)
+			OutlinedTextField(
+				label = {
+					Text(stringResource(Res.string.ghrepository_tag_edit_description_label))
+				},
+				value = descriptionTag,
+				onValueChange = onDescriptionTagChanged
+			)
+		}
 	}
 }

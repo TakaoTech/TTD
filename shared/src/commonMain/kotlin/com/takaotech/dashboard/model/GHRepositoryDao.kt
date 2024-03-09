@@ -25,7 +25,7 @@ data class GHRepositoryDao(
 	@SerialName("languages")
 	val languages: Map<String, Long>,
 	@SerialName("tags")
-	val tags: List<Tag>,
+	val tags: List<TagDao>,
 	@SerialName("mainCategory")
 	val mainCategory: MainCategory = MainCategory.NONE
 )

@@ -18,8 +18,8 @@ class GithubRoute(
 	class Refresh(val parent: GithubRoute = GithubRoute())
 
 	@Resource("/tags")
-	class Tags(val parent: GithubRoute = GithubRoute(), val tagName: String? = null) {
+	class Tags(val parent: GithubRoute = GithubRoute()) {
 		@Resource("{id}")
-		class Id(val parent: Tags = Tags(), val id: String)
+		class Id(val parent: Tags = Tags(), val id: Int)
 	}
 }

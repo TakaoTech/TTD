@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.model.Tag
+import com.takaotech.dashboard.model.TagDao
 
 @Preview
 @Composable
@@ -22,11 +22,11 @@ private fun GHRepositoryCardPreview() {
 			modifier = Modifier.fillMaxWidth(),
 			fullName = "JetBrains/kotlin",
 			tags = buildList {
-				add(Tag("chart"))
-				add(Tag("jetbrains"))
-				add(Tag("experimental"))
-				add(Tag("experimental2"))
-				add(Tag("experimental3"))
+				add(TagDao(1, name = "Annmarie Whitfield", description = null))
+				add(TagDao(id = 2111, name = "Lorraine Sherman", description = null))
+				add(TagDao(id = 1645, name = "Buddy Simpson", description = null))
+				add(TagDao(id = 9869, name = "Tia Holcomb", description = null))
+				add(TagDao(id = 9137, name = "Kelly Barker", description = null))
 			},
 			mainCategory = MainCategory.KOTLIN,
 			onTagsEditClicked = {}

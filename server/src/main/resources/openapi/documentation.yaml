@@ -103,7 +103,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tag'
+                  $ref: '#/components/schemas/TagDao'
     put:
       tags:
         - Tags
@@ -114,28 +114,28 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Tag'
+              $ref: '#/components/schemas/TagNewDao'
+      responses:
+        '201':
+          description: Tag added successfully
+        '400':
+          description: Bad request
+    post:
+      tags:
+        - Tags
+      summary: Update Tag
+      description: Update a tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagDao'
       responses:
         '200':
           description: Tag added successfully
         '400':
           description: Bad request
-    delete:
-      tags:
-        - Tags
-      summary: Delete Tag
-      description: Delete a tag by its name
-      parameters:
-        - name: tagName
-          in: query
-          description: Name of the tag to delete
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Tag deleted successfully
-        '404':
-          description: Tag not found
   /github/tags/{id}:
     get:
       tags:
@@ -155,7 +155,23 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tag'
+                $ref: '#/components/schemas/TagDao'
+        '404':
+          description: Tag not found
+    delete:
+      tags:
+        - Tags
+      summary: Delete Tag
+      description: Delete a tag by its name
+      parameters:
+        - name: id
+          in: query
+          description: Name of the tag to delete
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tag deleted successfully
         '404':
           description: Tag not found
 components:
@@ -186,7 +202,7 @@ components:
         tags:
           type: array
           items:
-            $ref: '#/components/schemas/Tag'
+            $ref: '#/components/schemas/TagDao'
           description: A list of tags associated with the repository
         mainCategory:
           $ref: '#/components/schemas/MainCategory'
@@ -214,7 +230,19 @@ components:
           type: string
           format: uri
           description: The URL of the user's profile
-    Tag:
+    TagDao:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The id of the tag
+        name:
+          type: string
+          description: The name of the tag
+        description:
+          type: string
+          description: The description of the tag
+    TagNewDao:
       type: object
       properties:
         name:

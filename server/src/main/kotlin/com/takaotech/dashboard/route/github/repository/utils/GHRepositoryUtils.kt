@@ -3,7 +3,7 @@ package com.takaotech.dashboard.route.github.repository.utils
 import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.model.Tag
+import com.takaotech.dashboard.model.TagDao
 import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.utils.HikariDatabase
 import org.kohsuke.github.GHRepository as GHRepositoryExternal
@@ -29,7 +29,11 @@ internal suspend fun GithubDepositoryEntity.convertToGHRepository(database: Hika
 		languages = languages,
 		tags = database.dbExec {
 			tags.map { entity ->
-				Tag(entity.id.value)
+				TagDao(
+					id = entity.id.value,
+					name = entity.name,
+					description = entity.description
+				)
 			}
 		},
 		mainCategory = category

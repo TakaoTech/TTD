@@ -7,8 +7,10 @@ import com.takaotech.dashboard.repository.AuthApi
 import com.takaotech.dashboard.repository.api.GHApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import org.koin.core.KoinApplication
 import org.koin.dsl.module
@@ -30,6 +32,12 @@ fun getApiModule(baseUrl: String) = module {
 				}
 
 				level = LogLevel.ALL
+			}
+
+			defaultRequest {
+				headers {
+					contentType(ContentType.Application.Json)
+				}
 			}
 		}
 	}

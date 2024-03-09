@@ -2,7 +2,8 @@ package com.takaotech.dashboard.route.github.controller
 
 import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.model.Tag
+import com.takaotech.dashboard.model.TagDao
+import com.takaotech.dashboard.model.TagNewDao
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
 import com.takaotech.dashboard.route.github.repository.TagsRepository
@@ -60,19 +61,23 @@ class GithubController(
 		githubDepositoryRepository.updateGhRepositoryMainCategory(repositoryId, category)
 	}
 
-	suspend fun getTags(): List<Tag> {
+	suspend fun getTags(): List<TagDao> {
 		return tagsRepository.getTags()
 	}
 
-	suspend fun addTag(newTag: Tag) {
+	suspend fun updateTag(newTag: TagDao) {
+		tagsRepository.updateTag(newTag)
+	}
+
+	suspend fun addTag(newTag: TagNewDao) {
 		tagsRepository.addTag(newTag)
 	}
 
-	suspend fun removeTagById(tagName: String) {
-		tagsRepository.removeTag(tagName)
+	suspend fun removeTagById(tagId: Int) {
+		tagsRepository.removeTag(tagId)
 	}
 
-	suspend fun getTagById(id: String): Tag? {
+	suspend fun getTagById(id: Int): TagDao? {
 		return tagsRepository.getTagById(id)
 	}
 }

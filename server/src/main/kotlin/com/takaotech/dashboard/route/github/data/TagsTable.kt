@@ -1,12 +1,13 @@
 package com.takaotech.dashboard.route.github.data
 
-import com.takaotech.dashboard.utils.StringEntity
-import com.takaotech.dashboard.utils.StringEntityClass
-import com.takaotech.dashboard.utils.StringIdTable
+import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.IntIdTable
 
-object TagsTable : StringIdTable(name = "tagName") {
-	override val primaryKey = PrimaryKey(id)
+object TagsTable : IntIdTable() {
+
+	val name = varchar("tagName", 20)
 
 	/**
 	 * The description of tag
@@ -14,8 +15,9 @@ object TagsTable : StringIdTable(name = "tagName") {
 	val description = text("description").nullable()
 }
 
-class TagsEntity(id: EntityID<String>) : StringEntity(id) {
-	companion object : StringEntityClass<TagsEntity>(TagsTable)
+class TagsEntity(id: EntityID<Int>) : IntEntity(id) {
+	companion object : IntEntityClass<TagsEntity>(TagsTable)
 
+	var name by TagsTable.name
 	var description by TagsTable.description
 }

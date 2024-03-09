@@ -5,11 +5,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.github.kittinunf.result.isSuccess
+import com.takaotech.dashboard.model.TagNewDao
 import com.takaotech.dashboard.repository.GHRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
@@ -20,6 +23,10 @@ class TagEditViewModel(
 	@InjectedParam private val tagId: String,
 	private val ghRepository: GHRepository
 ) : ScreenModel {
+
+	private val mExitChannel = Channel<Unit>()
+	val exitChannel = mExitChannel.receiveAsFlow()
+
 	private val mUiState = MutableStateFlow(TagEditUiState())
 	val uiState = mUiState.asStateFlow()
 
@@ -51,6 +58,25 @@ class TagEditViewModel(
 	fun onDescriptionChange(value: TextFieldValue) {
 		mUiState.update {
 			it.copy(description = value)
+		}
+	}
+
+	fun saveTag() {
+		screenModelScope.launch {
+			val tagSaveResult = ghRepository.addTag(
+				with(uiState.value) {
+					TagNewDao(
+						name = title.text,
+						description = description.text
+					)
+				}
+			)
+
+			if (tagSaveResult.isSuccess()) {
+				mExitChannel.send(Unit)
+			} else {
+				//TODO Manage Failure
+			}
 		}
 	}
 }

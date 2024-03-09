@@ -10826,7 +10826,7 @@
                 "type": "array",
                 "description": "A list of tags associated with the repository",
                 "items": {
-                    "$ref": "#/components/schemas/Tag"
+                    "$ref": "#/components/schemas/TagDao"
                 }
             },
             "mainCategory": {
@@ -10869,7 +10869,24 @@
         "type": "string",
         "enum": ["NONE", "KOTLIN", "SELF_HOSTED", "OTHER"]
     };
-    defs["Tag"] = {
+    defs["TagDao"] = {
+        "type": "object",
+        "properties": {
+            "id": {
+                "type": "integer",
+                "description": "The id of the tag"
+            },
+            "name": {
+                "type": "string",
+                "description": "The name of the tag"
+            },
+            "description": {
+                "type": "string",
+                "description": "The description of the tag"
+            }
+        }
+    };
+    defs["TagNewDao"] = {
         "type": "object",
         "properties": {
             "name": {
@@ -10913,14 +10930,17 @@
                         <a href="#api-GithubRepository-githubRefreshGet">githubRefreshGet</a>
                     </li>
                     <li class="nav-header" data-group="Tags"><a href="#api-Tags">API Methods - Tags</a></li>
-                    <li data-group="Tags" data-name="githubTagsDelete" class="">
-                        <a href="#api-Tags-githubTagsDelete">githubTagsDelete</a>
-                    </li>
                     <li data-group="Tags" data-name="githubTagsGet" class="">
                         <a href="#api-Tags-githubTagsGet">githubTagsGet</a>
                     </li>
+                    <li data-group="Tags" data-name="githubTagsIdDelete" class="">
+                        <a href="#api-Tags-githubTagsIdDelete">githubTagsIdDelete</a>
+                    </li>
                     <li data-group="Tags" data-name="githubTagsIdGet" class="">
                         <a href="#api-Tags-githubTagsIdGet">githubTagsIdGet</a>
+                    </li>
+                    <li data-group="Tags" data-name="githubTagsPost" class="">
+                        <a href="#api-Tags-githubTagsPost">githubTagsPost</a>
                     </li>
                     <li data-group="Tags" data-name="githubTagsPut" class="">
                         <a href="#api-Tags-githubTagsPut">githubTagsPut</a>
@@ -12092,258 +12112,6 @@ except ApiException as e:
                 </section>
                 <section id="api-Tags">
                     <h1>Tags</h1>
-                    <div id="api-Tags-githubTagsDelete">
-                        <article id="api-Tags-githubTagsDelete-0" data-group="User" data-name="githubTagsDelete"
-                                 data-version="0">
-                            <div class="pull-left">
-                                <h1>githubTagsDelete</h1>
-                                <p>Delete Tag</p>
-                            </div>
-                            <div class="pull-right"></div>
-                            <div class="clearfix"></div>
-                            <p></p>
-                            <p class="marked">Delete a tag by its name</p>
-                            <p></p>
-                            <br/>
-                            <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span
-                                    class="pln">/github/tags</span></code></pre>
-                            <p>
-                            <h3>Usage and SDK Samples</h3>
-                            </p>
-                            <ul class="nav nav-tabs nav-tabs-examples">
-                                <li class="active"><a href="#examples-Tags-githubTagsDelete-0-curl">Curl</a></li>
-                                <li class=""><a href="#examples-Tags-githubTagsDelete-0-java">Java</a></li>
-                                <li class=""><a href="#examples-Tags-githubTagsDelete-0-android">Android</a></li>
-                                <!--<li class=""><a href="#examples-Tags-githubTagsDelete-0-groovy">Groovy</a></li>-->
-                                <li class=""><a href="#examples-Tags-githubTagsDelete-0-objc">Obj-C</a></li>
-                                <li class=""><a href="#examples-Tags-githubTagsDelete-0-javascript">JavaScript</a></li>
-                                <!--<li class=""><a href="#examples-Tags-githubTagsDelete-0-angular">Angular</a></li>-->
-                                <li class=""><a href="#examples-Tags-githubTagsDelete-0-csharp">C#</a></li>
-                                <li class=""><a href="#examples-Tags-githubTagsDelete-0-php">PHP</a></li>
-                                <li class=""><a href="#examples-Tags-githubTagsDelete-0-perl">Perl</a></li>
-                                <li class=""><a href="#examples-Tags-githubTagsDelete-0-python">Python</a></li>
-                            </ul>
-
-                            <div class="tab-content">
-                                <div class="tab-pane active" id="examples-Tags-githubTagsDelete-0-curl">
-                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
-"http://127.0.0.1:8080/github/tags?tagName="</code></pre>
-                                </div>
-                                <div class="tab-pane" id="examples-Tags-githubTagsDelete-0-java">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
-import io.swagger.client.auth.*;
-import io.swagger.client.model.*;
-import io.swagger.client.api.TagsApi;
-
-import java.io.File;
-import java.util.*;
-
-public class TagsApiExample {
-
-    public static void main(String[] args) {
-
-        TagsApi apiInstance = new TagsApi();
-        String tagName = tagName_example; // String | Name of the tag to delete
-        try {
-            apiInstance.githubTagsDelete(tagName);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling TagsApi#githubTagsDelete");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                                </div>
-
-                                <div class="tab-pane" id="examples-Tags-githubTagsDelete-0-android">
-                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.TagsApi;
-
-public class TagsApiExample {
-
-    public static void main(String[] args) {
-        TagsApi apiInstance = new TagsApi();
-        String tagName = tagName_example; // String | Name of the tag to delete
-        try {
-            apiInstance.githubTagsDelete(tagName);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling TagsApi#githubTagsDelete");
-            e.printStackTrace();
-        }
-    }
-}</code></pre>
-                                </div>
-                                <!--
-  <div class="tab-pane" id="examples-Tags-githubTagsDelete-0-groovy">
-  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-  </div> -->
-                                <div class="tab-pane" id="examples-Tags-githubTagsDelete-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *tagName = tagName_example; // Name of the tag to delete (optional)
-
-TagsApi *apiInstance = [[TagsApi alloc] init];
-
-// Delete Tag
-[apiInstance githubTagsDeleteWith:tagName
-              completionHandler: ^(NSError* error) {
-                            if (error) {
-                                NSLog(@"Error: %@", error);
-                            }
-                        }];
-</code></pre>
-                                </div>
-
-                                <div class="tab-pane" id="examples-Tags-githubTagsDelete-0-javascript">
-                              <pre class="prettyprint"><code class="language-js">var ApplicationApi = require('application_api');
-
-var api = new ApplicationApi.TagsApi()
-var opts = {
-  'tagName': tagName_example // {{String}} Name of the tag to delete
-};
-var callback = function(error, data, response) {
-  if (error) {
-    console.error(error);
-  } else {
-    console.log('API called successfully.');
-  }
-};
-api.githubTagsDelete(opts, callback);
-</code></pre>
-                                </div>
-
-                                <!--<div class="tab-pane" id="examples-Tags-githubTagsDelete-0-angular">
-              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
-            </div>-->
-                                <div class="tab-pane" id="examples-Tags-githubTagsDelete-0-csharp">
-                              <pre class="prettyprint"><code class="language-cs">using System;
-using System.Diagnostics;
-using IO.Swagger.Api;
-using IO.Swagger.Client;
-using IO.Swagger.Model;
-
-namespace Example
-{
-    public class githubTagsDeleteExample
-    {
-        public void main()
-        {
-
-            var apiInstance = new TagsApi();
-            var tagName = tagName_example;  // String | Name of the tag to delete (optional)
-
-            try
-            {
-                // Delete Tag
-                apiInstance.githubTagsDelete(tagName);
-            }
-            catch (Exception e)
-            {
-                Debug.Print("Exception when calling TagsApi.githubTagsDelete: " + e.Message );
-            }
-        }
-    }
-}
-</code></pre>
-                                </div>
-
-                                <div class="tab-pane" id="examples-Tags-githubTagsDelete-0-php">
-                              <pre class="prettyprint"><code class="language-php"><&#63;php
-require_once(__DIR__ . '/vendor/autoload.php');
-
-$api_instance = new Swagger\Client\ApiTagsApi();
-$tagName = tagName_example; // String | Name of the tag to delete
-
-try {
-    $api_instance->githubTagsDelete($tagName);
-} catch (Exception $e) {
-    echo 'Exception when calling TagsApi->githubTagsDelete: ', $e->getMessage(), PHP_EOL;
-}
-?></code></pre>
-                                </div>
-
-                                <div class="tab-pane" id="examples-Tags-githubTagsDelete-0-perl">
-                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
-use WWW::SwaggerClient::Configuration;
-use WWW::SwaggerClient::TagsApi;
-
-my $api_instance = WWW::SwaggerClient::TagsApi->new();
-my $tagName = tagName_example; # String | Name of the tag to delete
-
-eval {
-    $api_instance->githubTagsDelete(tagName => $tagName);
-};
-if ($@) {
-    warn "Exception when calling TagsApi->githubTagsDelete: $@\n";
-}</code></pre>
-                                </div>
-
-                                <div class="tab-pane" id="examples-Tags-githubTagsDelete-0-python">
-                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
-import time
-import swagger_client
-from swagger_client.rest import ApiException
-from pprint import pprint
-
-# create an instance of the API class
-api_instance = swagger_client.TagsApi()
-tagName = tagName_example # String | Name of the tag to delete (optional)
-
-try:
-    # Delete Tag
-    api_instance.github_tags_delete(tagName=tagName)
-except ApiException as e:
-    print("Exception when calling TagsApi->githubTagsDelete: %s\n" % e)</code></pre>
-                                </div>
-                            </div>
-
-                            <h2>Parameters</h2>
-
-
-                            <div class="methodsubtabletitle">Query parameters</div>
-                            <table id="methodsubtable">
-                                <tr>
-                                    <th width="150px">Name</th>
-                                    <th>Description</th>
-                                </tr>
-                                <tr>
-                                    <td style="width:150px;">tagName</td>
-                                    <td>
-
-
-                                        <div id="d2e199_githubTagsDelete_tagName">
-                                            <div class="json-schema-view">
-                                                <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-
-                                                    <div class="inner description">
-                                                        Name of the tag to delete
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <h2>Responses</h2>
-                            <h3> Status: 200 - Tag deleted successfully </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples">
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                            <h3> Status: 404 - Tag not found </h3>
-
-                            <ul class="nav nav-tabs nav-tabs-examples">
-                            </ul>
-
-                            <div class="tab-content" style='margin-bottom: 10px;'>
-                            </div>
-
-                        </article>
-                    </div>
-                    <hr>
                     <div id="api-Tags-githubTagsGet">
                         <article id="api-Tags-githubTagsGet-0" data-group="User" data-name="githubTagsGet"
                                  data-version="0">
@@ -12397,7 +12165,7 @@ public class TagsApiExample {
 
         TagsApi apiInstance = new TagsApi();
         try {
-            array[Tag] result = apiInstance.githubTagsGet();
+            array[TagDao] result = apiInstance.githubTagsGet();
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TagsApi#githubTagsGet");
@@ -12415,7 +12183,7 @@ public class TagsApiExample {
     public static void main(String[] args) {
         TagsApi apiInstance = new TagsApi();
         try {
-            array[Tag] result = apiInstance.githubTagsGet();
+            array[TagDao] result = apiInstance.githubTagsGet();
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TagsApi#githubTagsGet");
@@ -12434,7 +12202,7 @@ TagsApi *apiInstance = [[TagsApi alloc] init];
 
 // Get Tags
 [apiInstance githubTagsGetWithCompletionHandler:
-              ^(array[Tag] output, NSError* error) {
+              ^(array[TagDao] output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
                             }
@@ -12482,7 +12250,7 @@ namespace Example
             try
             {
                 // Get Tags
-                array[Tag] result = apiInstance.githubTagsGet();
+                array[TagDao] result = apiInstance.githubTagsGet();
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -12571,7 +12339,7 @@ except ApiException as e:
                                                             "schema": {
                                                                 "type": "array",
                                                                 "items": {
-                                                                    "$ref": "#/components/schemas/Tag"
+                                                                    "$ref": "#/components/schemas/TagDao"
                                                                 },
                                                                 "x-content-type": "application/json"
                                                             }
@@ -12600,6 +12368,259 @@ except ApiException as e:
                                     </div>
                                     <input id='responses-githubTagsGet-200-schema-data' type='hidden' value=''></input>
                                 </div>
+                            </div>
+
+                        </article>
+                    </div>
+                    <hr>
+                    <div id="api-Tags-githubTagsIdDelete">
+                        <article id="api-Tags-githubTagsIdDelete-0" data-group="User" data-name="githubTagsIdDelete"
+                                 data-version="0">
+                            <div class="pull-left">
+                                <h1>githubTagsIdDelete</h1>
+                                <p>Delete Tag</p>
+                            </div>
+                            <div class="pull-right"></div>
+                            <div class="clearfix"></div>
+                            <p></p>
+                            <p class="marked">Delete a tag by its name</p>
+                            <p></p>
+                            <br/>
+                            <pre class="prettyprint language-html prettyprinted" data-type="delete"><code><span
+                                    class="pln">/github/tags/{id}</span></code></pre>
+                            <p>
+                            <h3>Usage and SDK Samples</h3>
+                            </p>
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                                <li class="active"><a href="#examples-Tags-githubTagsIdDelete-0-curl">Curl</a></li>
+                                <li class=""><a href="#examples-Tags-githubTagsIdDelete-0-java">Java</a></li>
+                                <li class=""><a href="#examples-Tags-githubTagsIdDelete-0-android">Android</a></li>
+                                <!--<li class=""><a href="#examples-Tags-githubTagsIdDelete-0-groovy">Groovy</a></li>-->
+                                <li class=""><a href="#examples-Tags-githubTagsIdDelete-0-objc">Obj-C</a></li>
+                                <li class=""><a href="#examples-Tags-githubTagsIdDelete-0-javascript">JavaScript</a>
+                                </li>
+                                <!--<li class=""><a href="#examples-Tags-githubTagsIdDelete-0-angular">Angular</a></li>-->
+                                <li class=""><a href="#examples-Tags-githubTagsIdDelete-0-csharp">C#</a></li>
+                                <li class=""><a href="#examples-Tags-githubTagsIdDelete-0-php">PHP</a></li>
+                                <li class=""><a href="#examples-Tags-githubTagsIdDelete-0-perl">Perl</a></li>
+                                <li class=""><a href="#examples-Tags-githubTagsIdDelete-0-python">Python</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="examples-Tags-githubTagsIdDelete-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X DELETE\
+"http://127.0.0.1:8080/github/tags/{id}?id="</code></pre>
+                                </div>
+                                <div class="tab-pane" id="examples-Tags-githubTagsIdDelete-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.TagsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class TagsApiExample {
+
+    public static void main(String[] args) {
+
+        TagsApi apiInstance = new TagsApi();
+        Integer id = 56; // Integer | Name of the tag to delete
+        try {
+            apiInstance.githubTagsIdDelete(id);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling TagsApi#githubTagsIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Tags-githubTagsIdDelete-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.TagsApi;
+
+public class TagsApiExample {
+
+    public static void main(String[] args) {
+        TagsApi apiInstance = new TagsApi();
+        Integer id = 56; // Integer | Name of the tag to delete
+        try {
+            apiInstance.githubTagsIdDelete(id);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling TagsApi#githubTagsIdDelete");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                                </div>
+                                <!--
+  <div class="tab-pane" id="examples-Tags-githubTagsIdDelete-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                                <div class="tab-pane" id="examples-Tags-githubTagsIdDelete-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">Integer *id = 56; // Name of the tag to delete (optional)
+
+TagsApi *apiInstance = [[TagsApi alloc] init];
+
+// Delete Tag
+[apiInstance githubTagsIdDeleteWith:id
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Tags-githubTagsIdDelete-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApplicationApi = require('application_api');
+
+var api = new ApplicationApi.TagsApi()
+var opts = {
+  'id': 56 // {{Integer}} Name of the tag to delete
+};
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.githubTagsIdDelete(opts, callback);
+</code></pre>
+                                </div>
+
+                                <!--<div class="tab-pane" id="examples-Tags-githubTagsIdDelete-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                                <div class="tab-pane" id="examples-Tags-githubTagsIdDelete-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class githubTagsIdDeleteExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new TagsApi();
+            var id = 56;  // Integer | Name of the tag to delete (optional)
+
+            try
+            {
+                // Delete Tag
+                apiInstance.githubTagsIdDelete(id);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling TagsApi.githubTagsIdDelete: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Tags-githubTagsIdDelete-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiTagsApi();
+$id = 56; // Integer | Name of the tag to delete
+
+try {
+    $api_instance->githubTagsIdDelete($id);
+} catch (Exception $e) {
+    echo 'Exception when calling TagsApi->githubTagsIdDelete: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Tags-githubTagsIdDelete-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::TagsApi;
+
+my $api_instance = WWW::SwaggerClient::TagsApi->new();
+my $id = 56; # Integer | Name of the tag to delete
+
+eval {
+    $api_instance->githubTagsIdDelete(id => $id);
+};
+if ($@) {
+    warn "Exception when calling TagsApi->githubTagsIdDelete: $@\n";
+}</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Tags-githubTagsIdDelete-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.TagsApi()
+id = 56 # Integer | Name of the tag to delete (optional)
+
+try:
+    # Delete Tag
+    api_instance.github_tags_id_delete(id=id)
+except ApiException as e:
+    print("Exception when calling TagsApi->githubTagsIdDelete: %s\n" % e)</code></pre>
+                                </div>
+                            </div>
+
+                            <h2>Parameters</h2>
+
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                    <th width="150px">Name</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td style="width:150px;">id</td>
+                                    <td>
+
+
+                                        <div id="d2e199_githubTagsIdDelete_id">
+                                            <div class="json-schema-view">
+                                                <div class="primitive">
+                                                <span class="type">
+                                                    Integer
+                                                </span>
+
+                                                    <div class="inner description">
+                                                        Name of the tag to delete
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <h2>Responses</h2>
+                            <h3> Status: 200 - Tag deleted successfully </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 404 - Tag not found </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
                             </div>
 
                         </article>
@@ -12659,7 +12680,7 @@ public class TagsApiExample {
         TagsApi apiInstance = new TagsApi();
         Integer id = 56; // Integer | ID of the tag to retrieve
         try {
-            Tag result = apiInstance.githubTagsIdGet(id);
+            TagDao result = apiInstance.githubTagsIdGet(id);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TagsApi#githubTagsIdGet");
@@ -12678,7 +12699,7 @@ public class TagsApiExample {
         TagsApi apiInstance = new TagsApi();
         Integer id = 56; // Integer | ID of the tag to retrieve
         try {
-            Tag result = apiInstance.githubTagsIdGet(id);
+            TagDao result = apiInstance.githubTagsIdGet(id);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TagsApi#githubTagsIdGet");
@@ -12698,7 +12719,7 @@ TagsApi *apiInstance = [[TagsApi alloc] init];
 
 // Get Tag by ID
 [apiInstance githubTagsIdGetWith:id
-              completionHandler: ^(Tag output, NSError* error) {
+              completionHandler: ^(TagDao output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
                             }
@@ -12749,7 +12770,7 @@ namespace Example
             try
             {
                 // Get Tag by ID
-                Tag result = apiInstance.githubTagsIdGet(id);
+                TagDao result = apiInstance.githubTagsIdGet(id);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -12870,7 +12891,7 @@ except ApiException as e:
                                                     "content": {
                                                         "application/json": {
                                                             "schema": {
-                                                                "$ref": "#/components/schemas/Tag"
+                                                                "$ref": "#/components/schemas/TagDao"
                                                             }
                                                         }
                                                     }
@@ -12901,6 +12922,276 @@ except ApiException as e:
                             </div>
 
                             <h3> Status: 404 - Tag not found </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                    </div>
+                    <hr>
+                    <div id="api-Tags-githubTagsPost">
+                        <article id="api-Tags-githubTagsPost-0" data-group="User" data-name="githubTagsPost"
+                                 data-version="0">
+                            <div class="pull-left">
+                                <h1>githubTagsPost</h1>
+                                <p>Update Tag</p>
+                            </div>
+                            <div class="pull-right"></div>
+                            <div class="clearfix"></div>
+                            <p></p>
+                            <p class="marked">Update a tag</p>
+                            <p></p>
+                            <br/>
+                            <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span
+                                    class="pln">/github/tags</span></code></pre>
+                            <p>
+                            <h3>Usage and SDK Samples</h3>
+                            </p>
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                                <li class="active"><a href="#examples-Tags-githubTagsPost-0-curl">Curl</a></li>
+                                <li class=""><a href="#examples-Tags-githubTagsPost-0-java">Java</a></li>
+                                <li class=""><a href="#examples-Tags-githubTagsPost-0-android">Android</a></li>
+                                <!--<li class=""><a href="#examples-Tags-githubTagsPost-0-groovy">Groovy</a></li>-->
+                                <li class=""><a href="#examples-Tags-githubTagsPost-0-objc">Obj-C</a></li>
+                                <li class=""><a href="#examples-Tags-githubTagsPost-0-javascript">JavaScript</a></li>
+                                <!--<li class=""><a href="#examples-Tags-githubTagsPost-0-angular">Angular</a></li>-->
+                                <li class=""><a href="#examples-Tags-githubTagsPost-0-csharp">C#</a></li>
+                                <li class=""><a href="#examples-Tags-githubTagsPost-0-php">PHP</a></li>
+                                <li class=""><a href="#examples-Tags-githubTagsPost-0-perl">Perl</a></li>
+                                <li class=""><a href="#examples-Tags-githubTagsPost-0-python">Python</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="examples-Tags-githubTagsPost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Content-Type: application/json"\
+"http://127.0.0.1:8080/github/tags"</code></pre>
+                                </div>
+                                <div class="tab-pane" id="examples-Tags-githubTagsPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.TagsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class TagsApiExample {
+
+    public static void main(String[] args) {
+
+        TagsApi apiInstance = new TagsApi();
+        TagDao body = ; // TagDao |
+        try {
+            apiInstance.githubTagsPost(body);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling TagsApi#githubTagsPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Tags-githubTagsPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.TagsApi;
+
+public class TagsApiExample {
+
+    public static void main(String[] args) {
+        TagsApi apiInstance = new TagsApi();
+        TagDao body = ; // TagDao |
+        try {
+            apiInstance.githubTagsPost(body);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling TagsApi#githubTagsPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                                </div>
+                                <!--
+  <div class="tab-pane" id="examples-Tags-githubTagsPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                                <div class="tab-pane" id="examples-Tags-githubTagsPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">TagDao *body = ; //
+
+TagsApi *apiInstance = [[TagsApi alloc] init];
+
+// Update Tag
+[apiInstance githubTagsPostWith:body
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Tags-githubTagsPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApplicationApi = require('application_api');
+
+var api = new ApplicationApi.TagsApi()
+var body = ; // {{TagDao}}
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.githubTagsPost(body, callback);
+</code></pre>
+                                </div>
+
+                                <!--<div class="tab-pane" id="examples-Tags-githubTagsPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                                <div class="tab-pane" id="examples-Tags-githubTagsPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class githubTagsPostExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new TagsApi();
+            var body = new TagDao(); // TagDao |
+
+            try
+            {
+                // Update Tag
+                apiInstance.githubTagsPost(body);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling TagsApi.githubTagsPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Tags-githubTagsPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiTagsApi();
+$body = ; // TagDao |
+
+try {
+    $api_instance->githubTagsPost($body);
+} catch (Exception $e) {
+    echo 'Exception when calling TagsApi->githubTagsPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Tags-githubTagsPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::TagsApi;
+
+my $api_instance = WWW::SwaggerClient::TagsApi->new();
+my $body = WWW::SwaggerClient::Object::TagDao->new(); # TagDao |
+
+eval {
+    $api_instance->githubTagsPost(body => $body);
+};
+if ($@) {
+    warn "Exception when calling TagsApi->githubTagsPost: $@\n";
+}</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-Tags-githubTagsPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.TagsApi()
+body =  # TagDao |
+
+try:
+    # Update Tag
+    api_instance.github_tags_post(body)
+except ApiException as e:
+    print("Exception when calling TagsApi->githubTagsPost: %s\n" % e)</code></pre>
+                                </div>
+                            </div>
+
+                            <h2>Parameters</h2>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                    <th width="150px">Name</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td style="width:150px;">body <span style="color:red;">*</span></td>
+                                    <td>
+
+
+                                        <script>
+                                            $(document).ready(function () {
+                                                var schemaWrapper = {
+                                                    "content": {
+                                                        "application/json": {
+                                                            "schema": {
+                                                                "$ref": "#/components/schemas/TagDao"
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": true
+                                                };
+                                                var schema = schemaWrapper.content["application/json"].schema;
+                                                if (schema.$ref != null) {
+                                                    schema = defsParser.$refs.get(schema.$ref);
+                                                } else {
+                                                    schemaWrapper.components = {};
+                                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                                    $RefParser.dereference(schemaWrapper).catch(function (err) {
+                                                        console.log(err);
+                                                    });
+                                                }
+
+                                                var view = new JSONSchemaView(schema, 2, {isBodyParam: true});
+                                                var result = $('#d2e199_githubTagsPost_body');
+                                                result.empty();
+                                                result.append(view.render());
+                                            });
+                                        </script>
+                                        <div id="d2e199_githubTagsPost_body"></div>
+                                    </td>
+                                </tr>
+                            </table>
+
+
+                            <h2>Responses</h2>
+                            <h3> Status: 200 - Tag added successfully </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 400 - Bad request </h3>
 
                             <ul class="nav nav-tabs nav-tabs-examples">
                             </ul>
@@ -12963,7 +13254,7 @@ public class TagsApiExample {
     public static void main(String[] args) {
 
         TagsApi apiInstance = new TagsApi();
-        Tag body = ; // Tag |
+        TagNewDao body = ; // TagNewDao |
         try {
             apiInstance.githubTagsPut(body);
         } catch (ApiException e) {
@@ -12981,7 +13272,7 @@ public class TagsApiExample {
 
     public static void main(String[] args) {
         TagsApi apiInstance = new TagsApi();
-        Tag body = ; // Tag |
+        TagNewDao body = ; // TagNewDao |
         try {
             apiInstance.githubTagsPut(body);
         } catch (ApiException e) {
@@ -12996,7 +13287,7 @@ public class TagsApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                                 <div class="tab-pane" id="examples-Tags-githubTagsPut-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">Tag *body = ; //
+                              <pre class="prettyprint"><code class="language-cpp">TagNewDao *body = ; //
 
 TagsApi *apiInstance = [[TagsApi alloc] init];
 
@@ -13014,7 +13305,7 @@ TagsApi *apiInstance = [[TagsApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var ApplicationApi = require('application_api');
 
 var api = new ApplicationApi.TagsApi()
-var body = ; // {{Tag}}
+var body = ; // {{TagNewDao}}
 
 var callback = function(error, data, response) {
   if (error) {
@@ -13045,7 +13336,7 @@ namespace Example
         {
 
             var apiInstance = new TagsApi();
-            var body = new Tag(); // Tag |
+            var body = new TagNewDao(); // TagNewDao |
 
             try
             {
@@ -13067,7 +13358,7 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiTagsApi();
-$body = ; // Tag |
+$body = ; // TagNewDao |
 
 try {
     $api_instance->githubTagsPut($body);
@@ -13083,7 +13374,7 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::TagsApi;
 
 my $api_instance = WWW::SwaggerClient::TagsApi->new();
-my $body = WWW::SwaggerClient::Object::Tag->new(); # Tag |
+my $body = WWW::SwaggerClient::Object::TagNewDao->new(); # TagNewDao |
 
 eval {
     $api_instance->githubTagsPut(body => $body);
@@ -13102,7 +13393,7 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.TagsApi()
-body =  # Tag |
+body =  # TagNewDao |
 
 try:
     # Add Tag
@@ -13133,7 +13424,7 @@ except ApiException as e:
                                                     "content": {
                                                         "application/json": {
                                                             "schema": {
-                                                                "$ref": "#/components/schemas/Tag"
+                                                                "$ref": "#/components/schemas/TagNewDao"
                                                             }
                                                         }
                                                     },
@@ -13163,7 +13454,7 @@ except ApiException as e:
 
 
                             <h2>Responses</h2>
-                            <h3> Status: 200 - Tag added successfully </h3>
+                            <h3> Status: 201 - Tag added successfully </h3>
 
                             <ul class="nav nav-tabs nav-tabs-examples">
                             </ul>

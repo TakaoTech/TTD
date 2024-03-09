@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.model.Tag
+import com.takaotech.dashboard.model.TagDao
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import ttd.composeapp.generated.resources.Res
@@ -82,7 +82,7 @@ fun GHRepositoryList(
 internal fun GHRepositoryCard(
 	fullName: String,
 	mainCategory: MainCategory,
-	tags: List<Tag>,
+	tags: List<TagDao>,
 	onTagsEditClicked: () -> Unit,
 	modifier: Modifier = Modifier,
 ) {

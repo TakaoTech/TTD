@@ -8,4 +8,6 @@
     <string name="ghrepository_tag_edit_title_label">Title</string>
     <string name="ghrepository_tag_edit_description_label">Description</string>
 
+    <string name="save">Save</string>
+
 </resources>

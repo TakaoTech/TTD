@@ -3,7 +3,7 @@ package com.takaotech.dashboard.ui.admin.tags.list
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.github.kittinunf.result.isSuccess
-import com.takaotech.dashboard.model.Tag
+import com.takaotech.dashboard.model.TagDao
 import com.takaotech.dashboard.repository.GHRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -38,7 +38,7 @@ class TagListViewModel(
 data class TagListUiState(val tagUi: TagListUi = TagListUi.Loading) {
 	sealed interface TagListUi {
 		data class Success(
-			val tagList: List<Tag> = listOf()
+			val tagList: List<TagDao> = listOf()
 		) : TagListUi
 
 		data object Error : TagListUi

@@ -1,11 +1,13 @@
 package com.takaotech.dashboard.route.github
 
-import com.takaotech.dashboard.model.Tag
+import com.takaotech.dashboard.model.TagDao
+import com.takaotech.dashboard.model.TagNewDao
 import com.takaotech.dashboard.route.github.controller.GithubController
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.resources.*
+import io.ktor.server.resources.post
 import io.ktor.server.resources.put
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -29,19 +31,30 @@ fun Application.tagsRoute() {
 		}
 
 		put<GithubRoute.Tags> {
-			val newTag = call.receive<Tag>()
+			val newTag = call.receive<TagNewDao>()
 
 			try {
 				controller.addTag(newTag)
+				call.respond(HttpStatusCode.Created)
+			} catch (ex: Exception) {
+				call.respond(HttpStatusCode.InternalServerError)
+			}
+		}
+
+		post<GithubRoute.Tags> {
+			val tag = call.receive<TagDao>()
+
+			try {
+				controller.updateTag(tag)
 				call.respond(HttpStatusCode.OK)
 			} catch (ex: Exception) {
 				call.respond(HttpStatusCode.InternalServerError)
 			}
 		}
 
-		delete<GithubRoute.Tags> {
+		delete<GithubRoute.Tags.Id> {
 			try {
-				controller.removeTagById(it.tagName!!)
+				controller.removeTagById(it.id)
 				call.respond(HttpStatusCode.OK)
 			} catch (ex: Exception) {
 				call.respond(HttpStatusCode.BadRequest)
