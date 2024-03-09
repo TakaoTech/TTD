@@ -2,6 +2,7 @@ package com.takaotech.dashboard.ui.admin.github
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.github.kittinunf.result.isSuccess
 import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.repository.GHRepository
@@ -47,10 +48,14 @@ class GHRepositoryListViewModel(
 			}
 
 			val mainCategory = uiState.value.mainCategoryUi.selectedCategory
-			val list = ghRepository.getRepositories(mainCategory = mainCategory)
+			val listResult = ghRepository.getRepositories(mainCategory = mainCategory)
 
 			mUiState.update {
-				it.copy(ghRepositoryListState = GHRepositoryListUiState.GhRepositoryListState.Success(list))
+				if (listResult.isSuccess()) {
+					it.copy(ghRepositoryListState = GHRepositoryListUiState.GhRepositoryListState.Success(listResult.get()))
+				} else {
+					it.copy(ghRepositoryListState = GHRepositoryListUiState.GhRepositoryListState.Error)
+				}
 			}
 
 		}

@@ -1,7 +1,8 @@
-package com.takaotech.dashboard.ui.admin.tags
+package com.takaotech.dashboard.ui.admin.tags.list
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.github.kittinunf.result.isSuccess
 import com.takaotech.dashboard.model.Tag
 import com.takaotech.dashboard.repository.GHRepository
 import kotlinx.coroutines.Dispatchers
@@ -21,14 +22,14 @@ class TagListViewModel(
 
 	init {
 		screenModelScope.launch(Dispatchers.IO) {
-			val tagListUi = try {
-				TagListUiState.TagListUi.Success(ghRepository.getTags())
-			} catch (ex: Exception) {
-				TagListUiState.TagListUi.Error
-			}
+			val tagListResult = ghRepository.getTags()
 
 			mUiState.update {
-				it.copy(tagUi = tagListUi)
+				if (tagListResult.isSuccess()) {
+					it.copy(tagUi = TagListUiState.TagListUi.Success(tagListResult.get()))
+				} else {
+					it.copy(tagUi = TagListUiState.TagListUi.Error)
+				}
 			}
 		}
 	}
