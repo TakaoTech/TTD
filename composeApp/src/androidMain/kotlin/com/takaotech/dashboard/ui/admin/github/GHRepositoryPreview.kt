@@ -30,6 +30,6 @@ private fun GHRepositoryCardPreview() {
 			},
 			mainCategory = MainCategory.KOTLIN,
 			onTagsEditClicked = {}
-		)
+		) {}
 	}
 }

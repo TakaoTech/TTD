@@ -52,6 +52,8 @@ kotlin {
 			api(compose.uiTooling)
 			implementation(libs.androidx.activity.compose)
 			implementation(libs.koin.android)
+
+			implementation(libs.androidx.browser)
 		}
 		val commonMain by getting {
 			kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")

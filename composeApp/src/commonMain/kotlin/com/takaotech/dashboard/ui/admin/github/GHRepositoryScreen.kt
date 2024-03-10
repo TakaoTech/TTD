@@ -15,26 +15,35 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.ui.admin.tags.list.TagListScreen
+import com.takaotech.dashboard.ui.platform.LocalTTDUriHandler
+import org.koin.core.component.KoinComponent
 
 
-class GHRepositoryScreen : Screen {
+class GHRepositoryScreen : Screen, KoinComponent {
 
 	@Composable
 	override fun Content() {
 		val viewModel = getScreenModel<GHRepositoryListViewModel>()
+		val uriHandler = LocalTTDUriHandler.current
 		val uiState by viewModel.uiState.collectAsState()
 
-		GHRepositoryScreen(uiState, viewModel)
+
+		GHRepositoryScreen(
+			uiState = uiState,
+			viewModel = viewModel,
+			onCardClicked = {
+				uriHandler.openUrl(it)
+			}
+		)
 	}
-
-
 }
 
 @Composable
 @OptIn(ExperimentalMaterialApi::class)
 internal fun GHRepositoryScreen(
 	uiState: GHRepositoryListUiState,
-	viewModel: GHRepositoryListViewModel
+	viewModel: GHRepositoryListViewModel,
+	onCardClicked: (url: String) -> Unit
 ) {
 	val navigator = LocalNavigator.currentOrThrow
 	var openBottomSheet by rememberSaveable { mutableStateOf(false) }
@@ -48,8 +57,6 @@ internal fun GHRepositoryScreen(
 			viewModel.updateFilterMainCategory(it)
 		}
 	}
-
-
 
 	Column {
 		Row(modifier = Modifier.padding(4.dp)) {
@@ -75,6 +82,7 @@ internal fun GHRepositoryScreen(
 		GHRepositoryList(
 			modifier = Modifier.fillMaxWidth(),
 			ghRepositoryState = uiState.ghRepositoryListState,
+			onCardClicked = onCardClicked,
 			onCategoryChangeClicked = { id: Long, newCategory: MainCategory ->
 				viewModel.updateGHRepositoryCategory(id, newCategory)
 			}

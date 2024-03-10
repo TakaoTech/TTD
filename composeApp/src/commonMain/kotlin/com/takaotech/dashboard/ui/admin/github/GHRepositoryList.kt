@@ -27,6 +27,7 @@ import ttd.composeapp.generated.resources.ghrepository_tags_label
 fun GHRepositoryList(
 	ghRepositoryState: GHRepositoryListUiState.GhRepositoryListState,
 	modifier: Modifier = Modifier,
+	onCardClicked: (url: String) -> Unit,
 	onCategoryChangeClicked: (repoId: Long, newCategory: MainCategory) -> Unit
 ) {
 	when (ghRepositoryState) {
@@ -41,7 +42,6 @@ fun GHRepositoryList(
 		}
 
 		is GHRepositoryListUiState.GhRepositoryListState.Success -> {
-
 			val repoList = ghRepositoryState.ghRepositoryData
 			LazyColumn(modifier = modifier) {
 				items(key = { it.id }, items = repoList) {
@@ -60,6 +60,8 @@ fun GHRepositoryList(
 						)
 					}
 
+
+
 					GHRepositoryCard(
 						modifier = Modifier.padding(8.dp),
 						fullName = it.fullName,
@@ -67,6 +69,9 @@ fun GHRepositoryList(
 						mainCategory = it.mainCategory,
 						onTagsEditClicked = {
 							openBottomSheet = true
+						},
+						onCardClicked = {
+							onCardClicked(it.url)
 						}
 					)
 				}
@@ -85,8 +90,9 @@ internal fun GHRepositoryCard(
 	tags: List<TagDao>,
 	onTagsEditClicked: () -> Unit,
 	modifier: Modifier = Modifier,
+	onCardClicked: () -> Unit
 ) {
-	Card(modifier) {
+	Card(modifier = modifier, onClick = onCardClicked) {
 		Column(modifier = Modifier.padding(16.dp)) {
 			Row(verticalAlignment = Alignment.CenterVertically) {
 				Text(
