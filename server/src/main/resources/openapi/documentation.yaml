@@ -242,6 +242,9 @@ components:
         description:
           type: string
           description: The description of the tag
+        color:
+          type: string
+          description: The color of the tag
     TagNewDao:
       type: object
       properties:
@@ -251,6 +254,9 @@ components:
         description:
           type: string
           description: The description of the tag
+        color:
+          type: string
+          description: The color of the tag
     MainCategory:
       type: string
       enum:

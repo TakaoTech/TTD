@@ -10,7 +10,9 @@ data class TagDao(
 	@SerialName("name")
 	val name: String,
 	@SerialName("description")
-	val description: String? = null
+	val description: String? = null,
+	@SerialName("color")
+	val color: String? = null
 )
 
 @Serializable
@@ -18,5 +20,7 @@ data class TagNewDao(
 	@SerialName("name")
 	val name: String,
 	@SerialName("description")
-	val description: String? = null
+	val description: String? = null,
+	@SerialName("color")
+	val color: String? = null
 )

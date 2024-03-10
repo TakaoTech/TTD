@@ -15,7 +15,12 @@ internal fun TagListPreview() {
 		TagList(
 			tagListUi = TagListUiState.TagListUi.Success(
 				listOf(
-					TagDao(id = 5274, name = "Jewell Britt", description = null)
+					TagDao(
+						id = 5274,
+						name = "Jewell Britt",
+						description = null,
+						color = "000000"
+					)
 				)
 			),
 			onTagClicked = {}

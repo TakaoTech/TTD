@@ -4,9 +4,11 @@
 
     <string name="ghrepository_no_tags">No Tags</string>
     <string name="ghrepository_tags_label">Tags</string>
+    <string name="ghrepository_add_new_tag">Add new Tag</string>
 
     <string name="ghrepository_tag_edit_title_label">Title</string>
     <string name="ghrepository_tag_edit_description_label">Description</string>
+    <string name="ghrepository_tag_edit_color_label">Color</string>
 
     <string name="save">Save</string>
 

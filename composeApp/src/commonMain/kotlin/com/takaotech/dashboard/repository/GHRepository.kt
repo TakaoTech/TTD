@@ -32,7 +32,7 @@ class GHRepository(
 		}
 	}
 
-	suspend fun getTagById(tagId: String): Result<TagDao, Throwable> {
+	suspend fun getTagById(tagId: Int): Result<TagDao, Throwable> {
 		return Result.of<TagDao, Throwable> {
 			githubApi.getTagById(tagId)
 		}
@@ -41,10 +41,16 @@ class GHRepository(
 	suspend fun addTag(tag: TagNewDao): Result<Unit, Throwable> {
 		return Result.of<Unit, Throwable> {
 			githubApi.addTag(tag)
-		}.apply {
-			onFailure {
-				logger.e(it) { "Error Save Tag" }
-			}
+		}.onFailure {
+			logger.e(it) { "Error Save Tag" }
+		}
+	}
+
+	suspend fun updateTag(tag: TagDao): Result<Unit, Throwable> {
+		return Result.of<Unit, Throwable> {
+			githubApi.updateTag(tag)
+		}.onFailure {
+			logger.e(it) { "Error Update Tag" }
 		}
 	}
 }

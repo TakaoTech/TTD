@@ -5,6 +5,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.github.kittinunf.result.isSuccess
+import com.takaotech.dashboard.model.TagDao
 import com.takaotech.dashboard.model.TagNewDao
 import com.takaotech.dashboard.repository.GHRepository
 import kotlinx.coroutines.Dispatchers
@@ -18,9 +19,11 @@ import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.InjectedParam
 
+
 @Factory
 class TagEditViewModel(
-	@InjectedParam private val tagId: String,
+	@InjectedParam private val tagId: Int?,
+	@InjectedParam private val editMode: Boolean,
 	private val ghRepository: GHRepository
 ) : ScreenModel {
 
@@ -31,16 +34,29 @@ class TagEditViewModel(
 	val uiState = mUiState.asStateFlow()
 
 	init {
+		if (editMode) {
+			if (tagId != null) {
+				getTagForEdit(tagId)
+			} else {
+				//TODO Show Error for edit mode without ID
+			}
+		}
+	}
+
+	private fun getTagForEdit(tagId: Int) {
 		screenModelScope.launch(Dispatchers.IO) {
 			val tagResult = ghRepository.getTagById(tagId)
 			if (tagResult.isSuccess()) {
 				mUiState.update {
 					val tag = tagResult.get()
 					it.copy(
-						title = tag.name.run {
+						name = tag.name.run {
 							TextFieldValue(text = this, selection = TextRange(length))
 						},
 						description = tag.description.orEmpty().run {
+							TextFieldValue(text = this, selection = TextRange(length))
+						},
+						color = tag.color.orEmpty().run {
 							TextFieldValue(text = this, selection = TextRange(length))
 						}
 					)
@@ -51,7 +67,7 @@ class TagEditViewModel(
 
 	fun onTitleChange(value: TextFieldValue) {
 		mUiState.update {
-			it.copy(title = value)
+			it.copy(name = value)
 		}
 	}
 
@@ -61,18 +77,39 @@ class TagEditViewModel(
 		}
 	}
 
+	fun onColorChange(value: TextFieldValue) {
+		mUiState.update {
+			it.copy(color = value)
+		}
+	}
+
 	fun saveTag() {
 		screenModelScope.launch {
-			val tagSaveResult = ghRepository.addTag(
-				with(uiState.value) {
-					TagNewDao(
-						name = title.text,
-						description = description.text
-					)
-				}
-			)
+			val tagSaveResult = if (editMode) {
+				ghRepository.updateTag(
+					with(uiState.value) {
+						TagDao(
+							id = tagId!!,
+							name = name.text,
+							description = description.text,
+							color = color.text
+						)
+					}
+				).isSuccess()
+			} else {
+				ghRepository.addTag(
+					with(uiState.value) {
+						TagNewDao(
+							name = name.text,
+							description = description.text,
+							color = color.text
+						)
+					}
+				).isSuccess()
 
-			if (tagSaveResult.isSuccess()) {
+			}
+
+			if (tagSaveResult) {
 				mExitChannel.send(Unit)
 			} else {
 				//TODO Manage Failure
@@ -82,6 +119,7 @@ class TagEditViewModel(
 }
 
 data class TagEditUiState(
-	val title: TextFieldValue = TextFieldValue(),
-	val description: TextFieldValue = TextFieldValue()
+	val name: TextFieldValue = TextFieldValue(),
+	val description: TextFieldValue = TextFieldValue(),
+	val color: TextFieldValue = TextFieldValue(),
 )

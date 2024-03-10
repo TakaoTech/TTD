@@ -11,13 +11,15 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import org.koin.core.parameter.parametersOf
 
 
-data class TagEditScreen(val tagId: String) : Screen {
+data class TagEditScreen(
+	private val tagId: Int? = null,
+	private val editMode: Boolean
+) : Screen {
 	@Composable
-
 	override fun Content() {
 		val navigator = LocalNavigator.currentOrThrow
 		val viewModel = getScreenModel<TagEditViewModel>(
-			parameters = { parametersOf(tagId) }
+			parameters = { parametersOf(tagId, editMode) }
 		)
 
 		LaunchedEffect(Unit) {
@@ -29,10 +31,12 @@ data class TagEditScreen(val tagId: String) : Screen {
 		val uiState by viewModel.uiState.collectAsState()
 
 		TagEdit(
-			titleTag = uiState.title,
+			titleTag = uiState.name,
 			descriptionTag = uiState.description,
+			colorTag = uiState.color,
 			onTitleTagChanged = viewModel::onTitleChange,
-			onDescriptionTagChanged = viewModel::onDescriptionChange
+			onDescriptionTagChanged = viewModel::onDescriptionChange,
+			onColorTagChanged = viewModel::onColorChange
 		) {
 			viewModel.saveTag()
 		}

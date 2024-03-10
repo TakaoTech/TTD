@@ -5,6 +5,7 @@ import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.model.TagDao
 import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
+import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.utils.HikariDatabase
 import org.kohsuke.github.GHRepository as GHRepositoryExternal
 
@@ -70,3 +71,9 @@ internal suspend fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): G
 	)
 }
 
+internal fun TagsEntity.convertToTagDao(): TagDao = TagDao(
+	id = id.value,
+	name = name,
+	description = description,
+	color = color
+)

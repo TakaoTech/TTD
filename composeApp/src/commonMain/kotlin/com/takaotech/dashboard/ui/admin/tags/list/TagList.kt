@@ -1,18 +1,20 @@
 package com.takaotech.dashboard.ui.admin.tags.list
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.takaotech.dashboard.ui.utils.toColor
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TagList(
 	tagListUi: TagListUiState.TagListUi,
-	onTagClicked: (tagId: String) -> Unit
+	onTagClicked: (tagId: Int) -> Unit
 ) {
 	when (tagListUi) {
 		TagListUiState.TagListUi.Error -> {
@@ -24,14 +26,26 @@ fun TagList(
 		}
 
 		is TagListUiState.TagListUi.Success -> {
-			LazyColumn {
+			LazyColumn(
+				contentPadding = PaddingValues(16.dp)
+			) {
 				items(tagListUi.tagList) {
-					Text(
-						modifier = Modifier.clickable {
-							onTagClicked(it.name)
+					val chipBackgroundColor =
+						it.color?.let { color -> ChipDefaults.chipColors(backgroundColor = color.toColor()) }
+							?: ChipDefaults.chipColors()
+					Chip(
+						onClick = {
+							onTagClicked(it.id)
 						},
-						text = it.name
-					)
+						colors = chipBackgroundColor,
+					) {
+						//TODO Adapt text color from Chip Background color
+						Text(
+							text = it.name
+						)
+					}
+
+
 				}
 			}
 		}

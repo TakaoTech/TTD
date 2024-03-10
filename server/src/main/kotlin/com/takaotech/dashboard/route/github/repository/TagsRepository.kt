@@ -3,6 +3,7 @@ package com.takaotech.dashboard.route.github.repository
 import com.takaotech.dashboard.model.TagDao
 import com.takaotech.dashboard.model.TagNewDao
 import com.takaotech.dashboard.route.github.data.TagsEntity
+import com.takaotech.dashboard.route.github.repository.utils.convertToTagDao
 import com.takaotech.dashboard.utils.HikariDatabase
 import org.koin.core.annotation.Factory
 
@@ -14,6 +15,7 @@ class TagsRepository(private val database: HikariDatabase) {
 			TagsEntity.new {
 				name = tag.name
 				description = tag.description
+				color = tag.color
 			}
 		}
 	}
@@ -23,9 +25,7 @@ class TagsRepository(private val database: HikariDatabase) {
 			TagsEntity.findById(tag.id)?.let {
 				it.name = tag.name
 				it.description = tag.description
-			} ?: TagsEntity.new {
-				name = tag.name
-				description = tag.description
+				it.color = tag.color
 			}
 		}
 	}
@@ -34,11 +34,7 @@ class TagsRepository(private val database: HikariDatabase) {
 		return database.dbExec {
 			TagsEntity.all()
 				.toList().map {
-					TagDao(
-						id = it.id.value,
-						name = it.name,
-						description = it.description
-					)
+					it.convertToTagDao()
 				}
 		}
 	}
@@ -51,13 +47,7 @@ class TagsRepository(private val database: HikariDatabase) {
 
 	suspend fun getTagById(id: Int): TagDao? {
 		return database.dbExec {
-			TagsEntity.findById(id)?.let {
-				TagDao(
-					id = it.id.value,
-					name = it.name,
-					description = it.description
-				)
-			}
+			TagsEntity.findById(id)?.convertToTagDao()
 		}
 	}
 }

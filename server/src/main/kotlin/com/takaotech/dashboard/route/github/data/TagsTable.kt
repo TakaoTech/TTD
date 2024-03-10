@@ -13,6 +13,8 @@ object TagsTable : IntIdTable() {
 	 * The description of tag
 	 */
 	val description = text("description").nullable()
+
+	val color = varchar("color", 10).nullable()
 }
 
 class TagsEntity(id: EntityID<Int>) : IntEntity(id) {
@@ -20,4 +22,5 @@ class TagsEntity(id: EntityID<Int>) : IntEntity(id) {
 
 	var name by TagsTable.name
 	var description by TagsTable.description
+	var color by TagsTable.color
 }

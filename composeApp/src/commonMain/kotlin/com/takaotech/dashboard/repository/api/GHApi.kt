@@ -24,7 +24,7 @@ interface GHApi {
 	suspend fun getTags(): List<TagDao>
 
 	@GET("github/tags/{id}")
-	suspend fun getTagById(@Path("id") tagId: String): TagDao
+	suspend fun getTagById(@Path("id") tagId: Int): TagDao
 
 	@PUT("github/tags")
 	suspend fun addTag(@Body tag: TagNewDao)
