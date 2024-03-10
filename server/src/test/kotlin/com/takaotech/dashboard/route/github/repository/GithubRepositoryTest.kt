@@ -96,7 +96,7 @@ class GithubRepositoryTest : FunSpec({
 		every { ghExternalMockk.name } returns "Kotlin"
 		every { ghExternalMockk.fullName } returns "Jetbrains/Kotlin"
 		every { ghExternalMockk.description } returns "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur kasd"
-		every { ghExternalMockk.url } returns URL("https://duckduckgo.com/?q=takaotech")
+		every { ghExternalMockk.htmlUrl } returns URL("https://duckduckgo.com/?q=takaotech")
 		every { ghExternalMockk.license.name } returns "Apache 2.0"
 		every { ghExternalMockk.license.htmlUrl } returns URL("https://duckduckgo.com/?q=apache2License")
 		every { ghExternalMockk.listLanguages() } returns mapOf("Kotlin" to 100L)
@@ -139,7 +139,7 @@ class GithubRepositoryTest : FunSpec({
 		every { ghExternalMockk.name } returns "Kotlin"
 		every { ghExternalMockk.fullName } returns "Jetbrains/Kotlin"
 		every { ghExternalMockk.description } returns "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur kasd"
-		every { ghExternalMockk.url } returns URL("https://duckduckgo.com/?q=takaotech")
+		every { ghExternalMockk.htmlUrl } returns URL("https://duckduckgo.com/?q=takaotech")
 		every { ghExternalMockk.license } returns null
 		every { ghExternalMockk.listLanguages() } returns mapOf("Kotlin" to 100L)
 
