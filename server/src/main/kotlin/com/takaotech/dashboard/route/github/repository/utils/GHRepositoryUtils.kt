@@ -59,7 +59,7 @@ internal suspend fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): G
 		name = name,
 		fullName = fullName,
 		description = description,
-		url = url.toString(),
+		url = htmlUrl.toString(),
 		license = license?.name,
 		licenseUrl = license?.htmlUrl?.toString(),
 		user = repoOwner,
