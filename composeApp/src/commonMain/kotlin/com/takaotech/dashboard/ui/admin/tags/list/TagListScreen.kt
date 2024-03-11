@@ -13,7 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.getNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.takaotech.dashboard.ui.admin.tags.edit.TagEditScreen
@@ -28,7 +28,7 @@ class TagListScreen : Screen {
 	@Composable
 	override fun Content() {
 		val navigator = LocalNavigator.currentOrThrow
-		val viewModel = getScreenModel<TagListViewModel>()
+		val viewModel = navigator.getNavigatorScreenModel<TagListViewModel>()
 		val uiState by viewModel.uiState.collectAsState()
 
 		Scaffold(

@@ -21,6 +21,10 @@ class TagListViewModel(
 	val uiState = mUiState.asStateFlow()
 
 	init {
+		refreshTagList()
+	}
+
+	fun refreshTagList() {
 		screenModelScope.launch(Dispatchers.IO) {
 			val tagListResult = ghRepository.getTags()
 

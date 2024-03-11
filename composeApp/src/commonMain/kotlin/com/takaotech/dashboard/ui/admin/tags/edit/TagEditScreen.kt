@@ -5,9 +5,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.koin.getNavigatorScreenModel
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.takaotech.dashboard.ui.admin.tags.list.TagListViewModel
 import org.koin.core.parameter.parametersOf
 
 
@@ -18,12 +20,15 @@ data class TagEditScreen(
 	@Composable
 	override fun Content() {
 		val navigator = LocalNavigator.currentOrThrow
+		val tagListViewModel = navigator.getNavigatorScreenModel<TagListViewModel>()
+
 		val viewModel = getScreenModel<TagEditViewModel>(
 			parameters = { parametersOf(tagId, editMode) }
 		)
 
 		LaunchedEffect(Unit) {
 			viewModel.exitChannel.collect {
+				tagListViewModel.refreshTagList()
 				navigator.pop()
 			}
 		}

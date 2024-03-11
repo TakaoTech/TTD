@@ -91,8 +91,8 @@ class TagEditViewModel(
 						TagDao(
 							id = tagId!!,
 							name = name.text,
-							description = description.text,
-							color = color.text
+							description = description.text.ifBlank { null },
+							color = color.text.ifBlank { null }
 						)
 					}
 				).isSuccess()
@@ -101,8 +101,8 @@ class TagEditViewModel(
 					with(uiState.value) {
 						TagNewDao(
 							name = name.text,
-							description = description.text,
-							color = color.text
+							description = description.text.ifBlank { null },
+							color = color.text.ifBlank { null }
 						)
 					}
 				).isSuccess()

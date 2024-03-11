@@ -14,7 +14,7 @@ import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.ui.admin.tags.list.TagListScreen
+import com.takaotech.dashboard.ui.admin.tags.AdminTagsScreen
 import com.takaotech.dashboard.ui.platform.LocalTTDUriHandler
 import org.koin.core.component.KoinComponent
 
@@ -73,7 +73,7 @@ internal fun GHRepositoryScreen(
 
 		Button(
 			onClick = {
-				navigator.push(TagListScreen())
+				navigator.push(AdminTagsScreen())
 			}
 		) {
 			Text("ListTag")
