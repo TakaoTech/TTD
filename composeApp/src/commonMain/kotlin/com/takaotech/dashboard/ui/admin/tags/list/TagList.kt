@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
 import com.takaotech.dashboard.ui.utils.toColor
 
@@ -39,8 +41,18 @@ fun TagList(
 						},
 						colors = chipBackgroundColor,
 					) {
+
 						//TODO Adapt text color from Chip Background color
+						val isDark = it.color?.toColor()?.luminance()?.let { luminance ->
+							luminance < 0.5
+						} ?: false
+
 						Text(
+							color = if (isDark) {
+								Color.White
+							} else {
+								Color.Black
+							},
 							text = it.name
 						)
 					}
