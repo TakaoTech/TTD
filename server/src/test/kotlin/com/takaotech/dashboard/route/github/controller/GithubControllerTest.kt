@@ -11,6 +11,7 @@ import io.mockk.coEvery
 import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.datetime.Clock
 import kotlin.test.assertEquals
 
 
@@ -44,7 +45,8 @@ class GithubControllerTest : FunSpec({
 					"Kotlin" to 100
 				),
 				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN
+				mainCategory = MainCategory.KOTLIN,
+				updatedAt = Clock.System.now()
 			),
 			GHRepositoryDao(
 				id = 2,
@@ -61,7 +63,8 @@ class GithubControllerTest : FunSpec({
 					"Kotlin" to 100
 				),
 				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN
+				mainCategory = MainCategory.KOTLIN,
+				updatedAt = Clock.System.now()
 			)
 		)
 
@@ -97,7 +100,8 @@ class GithubControllerTest : FunSpec({
 					"Kotlin" to 100
 				),
 				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN
+				mainCategory = MainCategory.KOTLIN,
+				updatedAt = Clock.System.now()
 			),
 			GHRepositoryDao(
 				id = 2,
@@ -114,7 +118,8 @@ class GithubControllerTest : FunSpec({
 					"Kotlin" to 100
 				),
 				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN
+				mainCategory = MainCategory.KOTLIN,
+				updatedAt = Clock.System.now()
 			)
 		)
 
@@ -149,7 +154,8 @@ class GithubControllerTest : FunSpec({
 				"Kotlin" to 100
 			),
 			tags = listOf(),
-			mainCategory = MainCategory.KOTLIN
+			mainCategory = MainCategory.KOTLIN,
+			updatedAt = Clock.System.now()
 		)
 		val testList = listOf(
 			GHRepositoryDao(
@@ -167,7 +173,8 @@ class GithubControllerTest : FunSpec({
 					"Kotlin" to 100
 				),
 				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN
+				mainCategory = MainCategory.KOTLIN,
+				updatedAt = Clock.System.now()
 			),
 			newObj
 		)
@@ -208,7 +215,8 @@ class GithubControllerTest : FunSpec({
 					"Kotlin" to 100
 				),
 				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN
+				mainCategory = MainCategory.KOTLIN,
+				updatedAt = Clock.System.now()
 			),
 			GHRepositoryDao(
 				id = 2,
@@ -225,7 +233,8 @@ class GithubControllerTest : FunSpec({
 					"Kotlin" to 100
 				),
 				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN
+				mainCategory = MainCategory.KOTLIN,
+				updatedAt = Clock.System.now()
 			)
 		)
 

@@ -10,6 +10,7 @@ import com.takaotech.dashboard.utils.dbTables
 import com.takaotech.dashboard.utils.getBaseTestKoin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
+import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
@@ -56,7 +57,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 						"Kotlin" to 100
 					),
 					tags = listOf(),
-					mainCategory = MainCategory.NONE
+					mainCategory = MainCategory.NONE,
+					updatedAt = Clock.System.now()
 				),
 				GHRepositoryDao(
 					id = 2,
@@ -73,7 +75,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 						"Bash" to 100
 					),
 					tags = listOf(),
-					mainCategory = MainCategory.NONE
+					mainCategory = MainCategory.NONE,
+					updatedAt = Clock.System.now()
 				)
 			)
 
@@ -93,7 +96,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 						"Kotlin" to 100
 					),
 					tags = listOf(),
-					mainCategory = MainCategory.KOTLIN
+					mainCategory = MainCategory.KOTLIN,
+					updatedAt = Clock.System.now()
 				),
 				GHRepositoryDao(
 					id = 2,
@@ -110,7 +114,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 						"Bash" to 100
 					),
 					tags = listOf(),
-					mainCategory = MainCategory.NONE
+					mainCategory = MainCategory.NONE,
+					updatedAt = Clock.System.now()
 				)
 			)
 
@@ -141,7 +146,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 						"Kotlin" to 20
 					),
 					tags = listOf(),
-					mainCategory = MainCategory.NONE
+					mainCategory = MainCategory.NONE,
+					updatedAt = Clock.System.now()
 				)
 			)
 
@@ -171,7 +177,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 						"Kotlin" to 20
 					),
 					tags = listOf(),
-					mainCategory = MainCategory.NONE
+					mainCategory = MainCategory.NONE,
+					updatedAt = Clock.System.now()
 				),
 				GHRepositoryDao(
 					id = 2,
@@ -188,7 +195,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 						"Kotlin" to 20
 					),
 					tags = listOf(),
-					mainCategory = MainCategory.NONE
+					mainCategory = MainCategory.NONE,
+					updatedAt = Clock.System.now()
 				)
 			)
 

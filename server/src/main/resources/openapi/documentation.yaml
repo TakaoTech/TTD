@@ -217,6 +217,10 @@ components:
         description:
           type: string
           description: A description of the repository (optional)
+        updatedAt:
+          type: string
+          format: date-time
+          description: The date and time when the repository was last updated
     GHUser:
       type: object
       properties:

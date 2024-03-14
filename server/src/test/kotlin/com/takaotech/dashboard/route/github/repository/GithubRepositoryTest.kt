@@ -9,8 +9,11 @@ import io.kotest.core.spec.style.FunSpec
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import org.koin.test.KoinTest
 import java.net.URL
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.kohsuke.github.GHRepository as GHRepositoryExternal
@@ -51,7 +54,8 @@ class GithubRepositoryTest : FunSpec({
 				),
 				languages = mapOf(),
 				tags = listOf(),
-				mainCategory = MainCategory.OTHER
+				mainCategory = MainCategory.OTHER,
+				updatedAt = Clock.System.now()
 			)
 		)
 
@@ -99,6 +103,7 @@ class GithubRepositoryTest : FunSpec({
 		every { ghExternalMockk.htmlUrl } returns URL("https://duckduckgo.com/?q=takaotech")
 		every { ghExternalMockk.license.name } returns "Apache 2.0"
 		every { ghExternalMockk.license.htmlUrl } returns URL("https://duckduckgo.com/?q=apache2License")
+		every { ghExternalMockk.updatedAt } returns Date.from(java.time.Instant.parse("2011-01-26T19:14:43Z"))
 		every { ghExternalMockk.listLanguages() } returns mapOf("Kotlin" to 100L)
 
 		val convertedMockk = ghExternalMockk.convertToGHRepositoryWithDefaults()!!
@@ -121,6 +126,7 @@ class GithubRepositoryTest : FunSpec({
 		assertEquals("https://duckduckgo.com/?q=apache2License", convertedMockk.licenseUrl)
 		assertEquals(mapOf("Kotlin" to 100L), convertedMockk.languages)
 		assertEquals(MainCategory.NONE, convertedMockk.mainCategory)
+		assertEquals(Instant.parse("2011-01-26T19:14:43Z"), convertedMockk.updatedAt)
 		assertTrue { convertedMockk.tags.isEmpty() }
 	}
 
@@ -141,6 +147,7 @@ class GithubRepositoryTest : FunSpec({
 		every { ghExternalMockk.description } returns "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur kasd"
 		every { ghExternalMockk.htmlUrl } returns URL("https://duckduckgo.com/?q=takaotech")
 		every { ghExternalMockk.license } returns null
+		every { ghExternalMockk.updatedAt } returns Date.from(java.time.Instant.parse("2011-01-26T19:14:43Z"))
 		every { ghExternalMockk.listLanguages() } returns mapOf("Kotlin" to 100L)
 
 		val convertedMockk = ghExternalMockk.convertToGHRepositoryWithDefaults()!!
@@ -164,6 +171,7 @@ class GithubRepositoryTest : FunSpec({
 		assertEquals(mapOf("Kotlin" to 100L), convertedMockk.languages)
 		assertEquals(MainCategory.NONE, convertedMockk.mainCategory)
 		assertTrue { convertedMockk.tags.isEmpty() }
+		assertEquals(Instant.parse("2011-01-26T19:14:43Z"), convertedMockk.updatedAt)
 	}
 
 	test("Test convertToGHRepositoryWithDefaults user null return GHRepository null") {

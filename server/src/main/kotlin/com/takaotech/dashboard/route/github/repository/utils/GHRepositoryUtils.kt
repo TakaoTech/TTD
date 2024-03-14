@@ -7,6 +7,7 @@ import com.takaotech.dashboard.model.TagDao
 import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.utils.HikariDatabase
+import kotlinx.datetime.toKotlinInstant
 import org.kohsuke.github.GHRepository as GHRepositoryExternal
 
 internal suspend fun GithubDepositoryEntity.convertToGHRepository(database: HikariDatabase): GHRepositoryDao {
@@ -37,7 +38,8 @@ internal suspend fun GithubDepositoryEntity.convertToGHRepository(database: Hika
 				)
 			}
 		},
-		mainCategory = category
+		mainCategory = category,
+		updatedAt = updatedAt
 	)
 }
 
@@ -54,6 +56,8 @@ internal suspend fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): G
 		null
 	} ?: return null
 
+
+
 	return GHRepositoryDao(
 		id = id,
 		name = name,
@@ -67,7 +71,8 @@ internal suspend fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): G
 		//Use default on data recovery
 		mainCategory = MainCategory.NONE,
 		//Use default on data recovery
-		tags = listOf()
+		tags = listOf(),
+		updatedAt = updatedAt.toInstant().toKotlinInstant()
 	)
 }
 

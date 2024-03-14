@@ -70,6 +70,7 @@ class DepositoryRepository(
 
 					license = repo.license
 					licenseUrl = repo.licenseUrl
+					updatedAt = repo.updatedAt
 
 				}
 			}

@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.model
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -24,6 +25,8 @@ data class GHRepositoryDao(
 	val user: GHUser,
 	@SerialName("languages")
 	val languages: Map<String, Long>,
+	@SerialName("updatedAt")
+	val updatedAt: Instant,
 	@SerialName("tags")
 	val tags: List<TagDao>,
 	@SerialName("mainCategory")

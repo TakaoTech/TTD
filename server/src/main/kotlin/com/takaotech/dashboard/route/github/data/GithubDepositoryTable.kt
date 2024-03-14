@@ -9,6 +9,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.json.json
+import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
 
 object GithubDepositoryTable : IdTable<Long>() {
 	/**
@@ -63,6 +64,8 @@ object GithubDepositoryTable : IdTable<Long>() {
 
 	val category: Column<MainCategory> = enumerationByName("category", 20)
 
+	val updatedAt = timestamp("updatedAt")
+
 	override val primaryKey = PrimaryKey(id)
 }
 
@@ -85,5 +88,7 @@ class GithubDepositoryEntity(id: EntityID<Long>) : LongEntity(id) {
 
 	var license by GithubDepositoryTable.license
 	var licenseUrl by GithubDepositoryTable.licenseUrl
+
+	var updatedAt by GithubDepositoryTable.updatedAt
 
 }
