@@ -25,6 +25,7 @@ kotlin {
 	sourceSets {
 		commonMain.dependencies {
 			// put your Multiplatform dependencies here
+			implementation(libs.kotlin.datetime)
 			implementation(libs.ktorfit.lib)
 			implementation(libs.koin.core)
 			implementation(libs.serialization)
