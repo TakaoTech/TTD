@@ -83,11 +83,9 @@ dependencies {
 	ksp(libs.koin.compilerksp)
 
 	implementation(libs.github.api)
-	implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
-
-	// define any required OkHttp artifacts without version
-	implementation("com.squareup.okhttp3:okhttp")
-	implementation("com.squareup.okhttp3:logging-interceptor")
+	implementation(platform(libs.okhttp.bom))
+	implementation(libs.okhttp.logging)
+	implementation(libs.okhttp.client)
 
 	testImplementation(libs.ktor.server.tests)
 	testImplementation(libs.kotlin.test.junit)

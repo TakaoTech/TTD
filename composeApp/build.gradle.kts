@@ -10,6 +10,7 @@ plugins {
 	alias(libs.plugins.ktorfit)
 	alias(libs.plugins.buildkonfig)
 	alias(libs.plugins.serialization)
+	alias(libs.plugins.depscredit)
 }
 
 kotlin {
@@ -88,9 +89,8 @@ kotlin {
 				implementation(libs.voyager.transitions)
 				implementation(libs.voyager.koin)
 
-//				implementation(libs.i18n4k.core)
-
-				//https://github.com/mikepenz/AboutLibraries
+				implementation(libs.depscredit.core)
+				implementation(libs.depscredit.uim3)
 			}
 
 		}
