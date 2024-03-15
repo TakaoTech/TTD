@@ -8,9 +8,17 @@ import io.ktor.server.resources.post
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.logging.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.koin.ktor.ext.inject
+import kotlin.time.Duration.Companion.seconds
 
+@OptIn(InternalCoroutinesApi::class)
 fun Application.githubRoute() {
+	val jobGithubRefreshMutex = Mutex()
+	var jobGithubRefresh: Job? = null
+
 	val controller by inject<GithubController>()
 	val logger by inject<Logger>()
 
@@ -25,13 +33,56 @@ fun Application.githubRoute() {
 
 		get<GithubRoute.Refresh> {
 			//TODO Catch exception for correct error body
-			try {
-				controller.getStarsFromZeroAndStore()
 
-				call.respond(HttpStatusCode.OK)
-			} catch (ex: Exception) {
-				logger.error(ex)
-				call.respond(HttpStatusCode.BadRequest)
+			jobGithubRefreshMutex.withLock {
+				if (it.mock) {
+					jobGithubRefresh = launch(Dispatchers.Default + SupervisorJob()) {
+						delay(20.seconds)
+					}
+					call.respond(HttpStatusCode.OK)
+				} else {
+					if (jobGithubRefresh != null && jobGithubRefresh?.isActive == true) {
+						call.respond(HttpStatusCode.Conflict)
+					} else {
+						jobGithubRefresh = launch(Dispatchers.Default + SupervisorJob()) {
+							try {
+								controller.getStarsFromZeroAndStore()
+							} catch (ex: Throwable) {
+								logger.error(ex)
+								jobGithubRefresh = null
+							}
+						}
+						call.respond(HttpStatusCode.OK)
+					}
+				}
+			}
+		}
+
+		get<GithubRoute.Refresh.Cancel> {
+			jobGithubRefreshMutex.withLock {
+				val mJobGithubRefresh = jobGithubRefresh
+				if (mJobGithubRefresh != null) {
+					if (mJobGithubRefresh.isActive) {
+						logger.info("Cancelling ")
+						mJobGithubRefresh.cancel()
+						jobGithubRefresh = null
+						call.respond(HttpStatusCode.OK)
+					}
+				} else {
+					call.respond(HttpStatusCode.NotModified)
+				}
+			}
+		}
+
+		get<GithubRoute.Refresh.Status> {
+			//TODO Catch exception for correct error body
+			jobGithubRefreshMutex.withLock {
+				val mJobGithubRefresh = jobGithubRefresh
+				if (mJobGithubRefresh != null) {
+					call.respond(mapOf("active" to mJobGithubRefresh.isActive))
+				} else {
+					call.respond(mapOf("active" to null))
+				}
 			}
 		}
 

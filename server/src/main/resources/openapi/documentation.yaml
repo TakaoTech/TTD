@@ -34,6 +34,34 @@ paths:
         - Github Repository
       summary: Refresh GitHub Repositories
       description: Refresh the list of GitHub repositories
+      parameters:
+        - name: mock
+          in: query
+          description: Launch call as mock
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Refresh successful
+        '401':
+          description: Unauthorized request
+  /github/refresh/cancel:
+    get:
+      tags:
+        - Github Repository
+      summary: Refresh GitHub Repositories
+      description: Refresh the list of GitHub repositories
+      responses:
+        '200':
+          description: Refresh successful
+        '401':
+          description: Unauthorized request
+  /github/refresh/status:
+    get:
+      tags:
+        - Github Repository
+      summary: Refresh GitHub Repositories
+      description: Refresh the list of GitHub repositories
       responses:
         '200':
           description: Refresh successful

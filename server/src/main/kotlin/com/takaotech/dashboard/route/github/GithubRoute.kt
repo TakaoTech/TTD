@@ -14,10 +14,16 @@ class GithubRoute(
 		class UpdateCategory(val parent: Id = Id(), val newCategory: MainCategory)
 	}
 
-	@Resource("/refresh")
-	class Refresh(val parent: GithubRoute = GithubRoute())
+	@Resource("refresh")
+	class Refresh(val parent: GithubRoute = GithubRoute(), val mock: Boolean = false) {
+		@Resource("cancel")
+		class Cancel(val parent: Refresh = Refresh())
 
-	@Resource("/tags")
+		@Resource("status")
+		class Status(val parent: Refresh = Refresh())
+	}
+
+	@Resource("tags")
 	class Tags(val parent: GithubRoute = GithubRoute()) {
 		@Resource("{id}")
 		class Id(val parent: Tags = Tags(), val id: Int)

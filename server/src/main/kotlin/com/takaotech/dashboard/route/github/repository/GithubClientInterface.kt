@@ -122,13 +122,21 @@ class GithubClientImpl(
 		mapJobs.awaitAll().flatten()
 	}
 
-	private suspend fun getAllStarsRemoteInternal(): List<GHRepositoryExternal> = suspendCoroutine {
+	private suspend fun getAllStarsRemoteInternal(): List<GHRepositoryExternal> = suspendCancellableCoroutine {
 		try {
-			val stars = githubClient
+			val repoList = mutableListOf<GHRepositoryExternal>()
+
+			githubClient
 				.myself
 				.listStarredRepositories()
-				.toList()
-			it.resume(stars)
+				.forEach { repository ->
+					if (it.isActive) {
+						repoList.add(repository)
+					} else {
+						throw Exception("getAllStarsRemoteInternal cancel requested")
+					}
+				}
+			it.resume(repoList)
 		} catch (ex: Throwable) {
 			/* TODO Manage exception
 			 * org.kohsuke.github.HttpException: {"message":"Bad credentials","documentation_url":"https://docs.github.com/rest"}
