@@ -12,6 +12,7 @@ private fun LoginScreenUiPreview() {
 		password = TextFieldValue(),
 		onUsernameChanged = {},
 		onPasswordChanged = {},
+		onCreditClicked = {},
 		loginClicked = {}
 	)
 }

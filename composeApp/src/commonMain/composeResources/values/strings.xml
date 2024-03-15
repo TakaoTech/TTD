@@ -2,6 +2,8 @@
     <string name="app_name">My awesome app</string>
     <string name="title">Some title</string>
 
+    <string name="credit_opensource_licence_label">Show Library Licenses</string>
+
     <string name="ghrepository_no_tags">No Tags</string>
     <string name="ghrepository_tags_label">Tags</string>
     <string name="ghrepository_add_new_tag">Add new Tag</string>

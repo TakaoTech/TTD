@@ -9,42 +9,21 @@ import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
-import com.takaotech.dashboard.ui.LoginScreen
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun App() {
 	MaterialTheme {
-		Navigator(LoginScreen) {
+		Navigator(MainNavigator) {
 			CurrentScreen()
-//			Scaffold(
-//				topBar = { /* ... */ },
-//				content = { },
-//				bottomBar = { /* ... */ }
-//			)
 		}
-
-//		TabNavigator(LoginScreen) {
-//			Scaffold(
-//				content = {
-//					Box(modifier = Modifier.padding(it)) {
-//						CurrentTab()
-//					}
-//				},
-//				bottomBar = {
-//					BottomNavigation {
-//						TabNavigationItem(LoginScreen)
-//					}
-//				}
-//			)
-//		}
 	}
 }
 
 
 @Composable
-private fun RowScope.TabNavigationItem(tab: Tab) {
+fun RowScope.TabNavigationItem(tab: Tab) {
 	val tabNavigator = LocalTabNavigator.current
 
 	BottomNavigationItem(
