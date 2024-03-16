@@ -6,7 +6,7 @@ info:
 servers:
   - url: "http://127.0.0.1:8080"
 paths:
-  /github:
+  /admin/github:
     get:
       tags:
         - Github Repository
@@ -28,7 +28,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/GHRepositoryDao'
-  /github/refresh:
+  /admin/github/refresh:
     get:
       tags:
         - Github Repository
@@ -45,7 +45,7 @@ paths:
           description: Refresh successful
         '401':
           description: Unauthorized request
-  /github/refresh/cancel:
+  /admin/github/refresh/cancel:
     get:
       tags:
         - Github Repository
@@ -56,7 +56,7 @@ paths:
           description: Refresh successful
         '401':
           description: Unauthorized request
-  /github/refresh/status:
+  /admin/github/refresh/status:
     get:
       tags:
         - Github Repository
@@ -67,7 +67,7 @@ paths:
           description: Refresh successful
         '401':
           description: Unauthorized request
-  /github/{id}:
+  /admin/github/{id}:
     get:
       tags:
         - Github Repository
@@ -90,7 +90,7 @@ paths:
                 $ref: '#/components/schemas/GHRepositoryDao'
         '404':
           description: Repository not found
-  /github/{id}/updateCategory:
+  /admin/github/{id}/updateCategory:
     post:
       tags:
         - Github Repository
@@ -117,7 +117,7 @@ paths:
           description: Repository not found
         '400':
           description: Invalid category provided
-  /github/tags:
+  /admin/github/tags:
     get:
       tags:
         - Tags
@@ -164,7 +164,7 @@ paths:
           description: Tag added successfully
         '400':
           description: Bad request
-  /github/tags/{id}:
+  /admin/github/tags/{id}:
     get:
       tags:
         - Tags

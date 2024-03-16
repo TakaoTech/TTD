@@ -7,7 +7,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.github.kittinunf.result.isSuccess
 import com.takaotech.dashboard.model.TagDao
 import com.takaotech.dashboard.model.TagNewDao
-import com.takaotech.dashboard.repository.GHRepository
+import com.takaotech.dashboard.repository.AdminGHRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
@@ -24,7 +24,7 @@ import org.koin.core.annotation.InjectedParam
 class TagEditViewModel(
 	@InjectedParam private val tagId: Int?,
 	@InjectedParam private val editMode: Boolean,
-	private val ghRepository: GHRepository
+	private val adminGhRepository: AdminGHRepository
 ) : ScreenModel {
 
 	private val mExitChannel = Channel<Unit>()
@@ -45,7 +45,7 @@ class TagEditViewModel(
 
 	private fun getTagForEdit(tagId: Int) {
 		screenModelScope.launch(Dispatchers.IO) {
-			val tagResult = ghRepository.getTagById(tagId)
+			val tagResult = adminGhRepository.getTagById(tagId)
 			if (tagResult.isSuccess()) {
 				mUiState.update {
 					val tag = tagResult.get()
@@ -86,7 +86,7 @@ class TagEditViewModel(
 	fun saveTag() {
 		screenModelScope.launch {
 			val tagSaveResult = if (editMode) {
-				ghRepository.updateTag(
+				adminGhRepository.updateTag(
 					with(uiState.value) {
 						TagDao(
 							id = tagId!!,
@@ -97,7 +97,7 @@ class TagEditViewModel(
 					}
 				).isSuccess()
 			} else {
-				ghRepository.addTag(
+				adminGhRepository.addTag(
 					with(uiState.value) {
 						TagNewDao(
 							name = name.text,

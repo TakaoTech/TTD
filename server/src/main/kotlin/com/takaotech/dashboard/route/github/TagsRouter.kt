@@ -13,52 +13,50 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
-fun Application.tagsRoute() {
+inline fun Route.adminTagsRoute() {
 	val controller by inject<GithubController>()
 
-	routing {
-		get<GithubRoute.Tags> {
-			call.respond(controller.getTags())
-		}
-		get<GithubRoute.Tags.Id> {
-			val tag = controller.getTagById(it.id)
-			if (tag != null) {
-				call.respond(tag)
-			} else {
-				call.respond(HttpStatusCode.NotFound)
-			}
-
+	get<GithubRoute.Tags> {
+		call.respond(controller.getTags())
+	}
+	get<GithubRoute.Tags.Id> {
+		val tag = controller.getTagById(it.id)
+		if (tag != null) {
+			call.respond(tag)
+		} else {
+			call.respond(HttpStatusCode.NotFound)
 		}
 
-		put<GithubRoute.Tags> {
-			val newTag = call.receive<TagNewDao>()
+	}
 
-			try {
-				controller.addTag(newTag)
-				call.respond(HttpStatusCode.Created)
-			} catch (ex: Exception) {
-				call.respond(HttpStatusCode.InternalServerError)
-			}
+	put<GithubRoute.Tags> {
+		val newTag = call.receive<TagNewDao>()
+
+		try {
+			controller.addTag(newTag)
+			call.respond(HttpStatusCode.Created)
+		} catch (ex: Exception) {
+			call.respond(HttpStatusCode.InternalServerError)
 		}
+	}
 
-		post<GithubRoute.Tags> {
-			val tag = call.receive<TagDao>()
+	post<GithubRoute.Tags> {
+		val tag = call.receive<TagDao>()
 
-			try {
-				controller.updateTag(tag)
-				call.respond(HttpStatusCode.OK)
-			} catch (ex: Exception) {
-				call.respond(HttpStatusCode.InternalServerError)
-			}
+		try {
+			controller.updateTag(tag)
+			call.respond(HttpStatusCode.OK)
+		} catch (ex: Exception) {
+			call.respond(HttpStatusCode.InternalServerError)
 		}
+	}
 
-		delete<GithubRoute.Tags.Id> {
-			try {
-				controller.removeTagById(it.id)
-				call.respond(HttpStatusCode.OK)
-			} catch (ex: Exception) {
-				call.respond(HttpStatusCode.BadRequest)
-			}
+	delete<GithubRoute.Tags.Id> {
+		try {
+			controller.removeTagById(it.id)
+			call.respond(HttpStatusCode.OK)
+		} catch (ex: Exception) {
+			call.respond(HttpStatusCode.BadRequest)
 		}
 	}
 }

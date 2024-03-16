@@ -5,7 +5,7 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.github.kittinunf.result.isSuccess
 import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.repository.GHRepository
+import com.takaotech.dashboard.repository.AdminGHRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,7 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class GHRepositoryListViewModel(
-	private val ghRepository: GHRepository
+	private val adminGhRepository: AdminGHRepository
 ) : ScreenModel {
 	private val mUiState = MutableStateFlow(GHRepositoryListUiState())
 	val uiState = mUiState.asStateFlow()
@@ -48,7 +48,7 @@ class GHRepositoryListViewModel(
 			}
 
 			val mainCategory = uiState.value.mainCategoryUi.selectedCategory
-			val listResult = ghRepository.getRepositories(mainCategory = mainCategory)
+			val listResult = adminGhRepository.getRepositories(mainCategory = mainCategory)
 
 			mUiState.update {
 				if (listResult.isSuccess()) {
@@ -63,7 +63,7 @@ class GHRepositoryListViewModel(
 
 	fun updateGHRepositoryCategory(id: Long, newCategory: MainCategory) {
 		screenModelScope.launch {
-			ghRepository.updateCategoryRepository(id, newCategory)
+			adminGhRepository.updateCategoryRepository(id, newCategory)
 		}
 	}
 }

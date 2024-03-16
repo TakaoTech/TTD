@@ -4,7 +4,7 @@ import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.github.kittinunf.result.isSuccess
 import com.takaotech.dashboard.model.TagDao
-import com.takaotech.dashboard.repository.GHRepository
+import com.takaotech.dashboard.repository.AdminGHRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class TagListViewModel(
-	private val ghRepository: GHRepository
+	private val adminGhRepository: AdminGHRepository
 ) : ScreenModel {
 	private val mUiState = MutableStateFlow(TagListUiState())
 	val uiState = mUiState.asStateFlow()
@@ -26,7 +26,7 @@ class TagListViewModel(
 
 	fun refreshTagList() {
 		screenModelScope.launch(Dispatchers.IO) {
-			val tagListResult = ghRepository.getTags()
+			val tagListResult = adminGhRepository.getTags()
 
 			mUiState.update {
 				if (tagListResult.isSuccess()) {

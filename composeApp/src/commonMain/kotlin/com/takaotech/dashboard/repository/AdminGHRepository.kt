@@ -7,12 +7,12 @@ import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.MainCategory
 import com.takaotech.dashboard.model.TagDao
 import com.takaotech.dashboard.model.TagNewDao
-import com.takaotech.dashboard.repository.api.GHApi
+import com.takaotech.dashboard.repository.api.AdminGHApi
 import org.koin.core.annotation.Single
 
 @Single
-class GHRepository(
-	private val githubApi: GHApi,
+class AdminGHRepository(
+	private val githubApi: AdminGHApi,
 	private val logger: Logger
 ) {
 

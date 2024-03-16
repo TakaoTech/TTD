@@ -4,7 +4,7 @@ import co.touchlab.kermit.loggerConfigInit
 import co.touchlab.kermit.platformLogWriter
 import com.takaotech.dashboard.AppBuildKonfig
 import com.takaotech.dashboard.repository.AuthApi
-import com.takaotech.dashboard.repository.api.GHApi
+import com.takaotech.dashboard.repository.api.AdminGHApi
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.*
 import io.ktor.client.plugins.*
@@ -54,7 +54,7 @@ fun getApiModule(baseUrl: String) = module {
 	}
 
 	single {
-		get<Ktorfit>().create<GHApi>()
+		get<Ktorfit>().create<AdminGHApi>()
 	}
 }
 
