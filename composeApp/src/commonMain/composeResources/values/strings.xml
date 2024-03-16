@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">My awesome app</string>
-    <string name="title">Some title</string>
+    <string name="homepage_title_label">Kotlin/Italia</string>
+    <string name="homepage_ghrepository_tags_label">Tags</string>
+    <string name="homepage_ghrepository_more_tags_label">More Tags</string>
 
     <string name="credit_opensource_licence_label">Show Library Licenses</string>
 
