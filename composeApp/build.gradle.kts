@@ -72,6 +72,7 @@ kotlin {
 				implementation(projects.shared)
 
 				implementation(libs.kotlin.result)
+				implementation(libs.kotlin.datetime)
 				implementation(libs.kermit)
 
 				implementation(libs.ktorfit.lib)
@@ -91,6 +92,10 @@ kotlin {
 
 				implementation(libs.depscredit.core)
 				implementation(libs.depscredit.uim3)
+
+				implementation(libs.haze)
+				implementation(libs.haze.materials)
+
 			}
 
 		}
