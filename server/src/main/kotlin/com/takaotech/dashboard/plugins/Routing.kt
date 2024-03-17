@@ -1,7 +1,8 @@
 package com.takaotech.dashboard.plugins
 
-import com.takaotech.dashboard.route.github.adminGithubRoute
+import com.takaotech.dashboard.route.github.adminGithubRouter
 import com.takaotech.dashboard.route.github.adminTagsRoute
+import com.takaotech.dashboard.route.github.githubRouter
 import com.takaotech.dashboard.route.loginRoute
 import io.ktor.resources.*
 import io.ktor.server.application.*
@@ -13,9 +14,10 @@ fun Application.configureRouting() {
 	install(Resources)
 	routing {
 		route("/admin") {
-			adminGithubRoute()
+			adminGithubRouter()
 			adminTagsRoute()
 		}
+		githubRouter()
 	}
 	loginRoute()
 

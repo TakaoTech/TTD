@@ -1,12 +1,11 @@
 package com.takaotech.dashboard.route.github.repository
 
 import com.takaotech.dashboard.model.GHRepositoryDao
+import com.takaotech.dashboard.model.GHRepositoryMiniDao
 import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
-import com.takaotech.dashboard.route.github.data.GithubDepositoryTable
-import com.takaotech.dashboard.route.github.data.GithubUserEntity
-import com.takaotech.dashboard.route.github.data.TagsEntity
+import com.takaotech.dashboard.route.github.data.*
 import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepository
+import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryMini
 import com.takaotech.dashboard.utils.HikariDatabase
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.selectAll
@@ -124,6 +123,26 @@ class DepositoryRepository(
 		}
 	}
 
+	suspend fun getGHRepositoryMini(
+		mainCategory: MainCategory,
+		page: Int,
+		size: Int
+	): List<GHRepositoryMiniDao> {
+		//https://proandroiddev.com/pagination-sorting-and-custom-plugins-in-ktor-a2575e2da83a
+		val limit: Int = size
+		val pageSize: Int = size
+		val skip: Int = (page - 1) * pageSize
+
+		return database.dbExec {
+			GithubDepositoryMiniEntity.find {
+				GithubDepositoryTable.category eq mainCategory
+			}.run {
+				limit(offset = skip.toLong(), n = limit)
+			}.run {
+				map { it.convertToGHRepositoryMini(database) }
+			}
+		}
+	}
 
 
 }

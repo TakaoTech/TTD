@@ -59,7 +59,7 @@ class TagsRepositoryTest : FunSpec(), KoinTest {
 			tagsRepository.addTag(testList[0])
 			tagsRepository.addTag(testList[1])
 
-			val tags = tagsRepository.getTags()
+			val tags = tagsRepository.getTags(null, null)
 
 			assertEquals(testList.map { it.name }, tags.map { it.name })
 
@@ -74,13 +74,13 @@ class TagsRepositoryTest : FunSpec(), KoinTest {
 			tagsRepository.addTag(testList[0])
 			tagsRepository.addTag(testList[1])
 
-			val tags = tagsRepository.getTags()
+			val tags = tagsRepository.getTags(null, null)
 
 			assertEquals(testList.map { it.name }, tags.map { it.name })
 
 			tagsRepository.removeTag(tags.find { it.name == testList[0].name }!!.id)
 
-			val tags2 = tagsRepository.getTags()
+			val tags2 = tagsRepository.getTags(null, null)
 
 			assertEquals(listOf(lastTag.name), tags2.map { it.name })
 

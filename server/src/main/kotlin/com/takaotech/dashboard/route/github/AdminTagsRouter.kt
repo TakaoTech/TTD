@@ -16,10 +16,10 @@ import org.koin.ktor.ext.inject
 inline fun Route.adminTagsRoute() {
 	val controller by inject<GithubController>()
 
-	get<GithubRoute.Tags> {
-		call.respond(controller.getTags())
+	get<AdminGithubRoute.Tags> {
+		call.respond(controller.getTags(null, null))
 	}
-	get<GithubRoute.Tags.Id> {
+	get<AdminGithubRoute.Tags.Id> {
 		val tag = controller.getTagById(it.id)
 		if (tag != null) {
 			call.respond(tag)
@@ -29,7 +29,7 @@ inline fun Route.adminTagsRoute() {
 
 	}
 
-	put<GithubRoute.Tags> {
+	put<AdminGithubRoute.Tags> {
 		val newTag = call.receive<TagNewDao>()
 
 		try {
@@ -40,7 +40,7 @@ inline fun Route.adminTagsRoute() {
 		}
 	}
 
-	post<GithubRoute.Tags> {
+	post<AdminGithubRoute.Tags> {
 		val tag = call.receive<TagDao>()
 
 		try {
@@ -51,7 +51,7 @@ inline fun Route.adminTagsRoute() {
 		}
 	}
 
-	delete<GithubRoute.Tags.Id> {
+	delete<AdminGithubRoute.Tags.Id> {
 		try {
 			controller.removeTagById(it.id)
 			call.respond(HttpStatusCode.OK)

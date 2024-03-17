@@ -1,10 +1,8 @@
 package com.takaotech.dashboard.route.github.repository.utils
 
-import com.takaotech.dashboard.model.GHRepositoryDao
-import com.takaotech.dashboard.model.GHUser
-import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.model.TagDao
+import com.takaotech.dashboard.model.*
 import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
+import com.takaotech.dashboard.route.github.data.GithubDepositoryMiniEntity
 import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.utils.HikariDatabase
 import kotlinx.datetime.toKotlinInstant
@@ -39,6 +37,34 @@ internal suspend fun GithubDepositoryEntity.convertToGHRepository(database: Hika
 			}
 		},
 		mainCategory = category,
+		updatedAt = updatedAt
+	)
+}
+
+internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(database: HikariDatabase): GHRepositoryMiniDao {
+	return GHRepositoryMiniDao(
+		id = id.value,
+		fullName = fullName,
+		license = license,
+//		user = database.dbExec {
+//			with(user) {
+//				GHUser(
+//					id = id.value,
+//					name = name,
+//					url = url
+//				)
+//			}
+//		},
+		languages = languages,
+		tags = database.dbExec {
+			tags.map { entity ->
+				TagDao(
+					id = entity.id.value,
+					name = entity.name,
+					description = entity.description
+				)
+			}
+		},
 		updatedAt = updatedAt
 	)
 }

@@ -9,7 +9,7 @@ paths:
   /admin/github:
     get:
       tags:
-        - Github Repository
+        - GitHub Repository Admin
       summary: Get GitHub Repositories
       description: Retrieve a list of GitHub repositories
       parameters:
@@ -31,7 +31,7 @@ paths:
   /admin/github/refresh:
     get:
       tags:
-        - Github Repository
+        - GitHub Repository Admin
       summary: Refresh GitHub Repositories
       description: Refresh the list of GitHub repositories
       parameters:
@@ -48,7 +48,7 @@ paths:
   /admin/github/refresh/cancel:
     get:
       tags:
-        - Github Repository
+        - GitHub Repository Admin
       summary: Refresh GitHub Repositories
       description: Refresh the list of GitHub repositories
       responses:
@@ -59,7 +59,7 @@ paths:
   /admin/github/refresh/status:
     get:
       tags:
-        - Github Repository
+        - GitHub Repository Admin
       summary: Refresh GitHub Repositories
       description: Refresh the list of GitHub repositories
       responses:
@@ -70,7 +70,7 @@ paths:
   /admin/github/{id}:
     get:
       tags:
-        - Github Repository
+        - GitHub Repository Admin
       summary: Get GitHub Repository by ID
       description: Retrieve a GitHub repository by its ID
       parameters:
@@ -93,7 +93,7 @@ paths:
   /admin/github/{id}/updateCategory:
     post:
       tags:
-        - Github Repository
+        - GitHub Repository Admin
       summary: Update GitHub Repository Category
       description: Update the category of a GitHub repository
       parameters:
@@ -202,6 +202,62 @@ paths:
           description: Tag deleted successfully
         '404':
           description: Tag not found
+  /github:
+    get:
+      tags:
+        - GitHub Repository
+      summary: Get GitHub Repositories with Pagination
+      description: Retrieve a paginated list of GitHub repositories
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            default: 1
+        - name: size
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GHRepositoryMiniDao'
+  /github/tags:
+    get:
+      tags:
+        - GitHub Repository
+      summary: Get Tags with Pagination
+      description: Retrieve a paginated list of tags associated with GitHub repositories
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          schema:
+            type: integer
+            default: 1
+        - name: size
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TagDao'
 components:
   schemas:
     GHRepositoryDao:
@@ -296,3 +352,30 @@ components:
         - KOTLIN
         - SELF_HOSTED
         - OTHER
+    GHRepositoryMiniDao:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique identifier of the repository
+        fullName:
+          type: string
+          description: The full name of the repository
+        license:
+          type: string
+          nullable: true
+          description: The license of the repository (optional)
+        languages:
+          type: object
+          additionalProperties:
+            type: integer
+          description: A map of languages used in the repository and their line counts
+        updatedAt:
+          type: string
+          format: date-time
+          description: The date and time when the repository was last updated
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagDao'
+          description: A list of tags associated with the repository

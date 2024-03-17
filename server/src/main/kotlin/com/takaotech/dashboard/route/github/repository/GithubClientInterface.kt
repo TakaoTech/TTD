@@ -161,9 +161,9 @@ class GithubClientImpl(
 			 * 	at kotlinx.coroutines.intrinsics.UndispatchedKt.startUndispatchedOrReturn(Undispatched.kt:78)
 			 * 	at kotlinx.coroutines.CoroutineScopeKt.coroutineScope(CoroutineScope.kt:264)
 			 * 	at com.takaotech.dashboard.route.github.controller.GithubController.getStarsFromZeroAndStore(GithubController.kt:18)
-			 * 	at com.takaotech.dashboard.route.github.GithubRouteKt$githubRoute$1$2.invokeSuspend(GithubRouter.kt:28)
-			 * 	at com.takaotech.dashboard.route.github.GithubRouteKt$githubRoute$1$2.invoke(GithubRouter.kt)
-			 * 	at com.takaotech.dashboard.route.github.GithubRouteKt$githubRoute$1$2.invoke(GithubRouter.kt
+			 * 	at com.takaotech.dashboard.route.github.GithubRouteKt$githubRoute$1$2.invokeSuspend(AdminGithubRouter.kt:28)
+			 * 	at com.takaotech.dashboard.route.github.GithubRouteKt$githubRoute$1$2.invoke(AdminGithubRouter.kt)
+			 * 	at com.takaotech.dashboard.route.github.GithubRouteKt$githubRoute$1$2.invoke(AdminGithubRouter.kt
 			 */
 
 			logger.error("Error getAllStartsRemote", ex)

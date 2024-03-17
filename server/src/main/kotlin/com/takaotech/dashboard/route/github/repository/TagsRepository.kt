@@ -30,12 +30,20 @@ class TagsRepository(private val database: HikariDatabase) {
 		}
 	}
 
-	suspend fun getTags(): List<TagDao> {
+	suspend fun getTags(page: Int?, size: Int?): List<TagDao> {
 		return database.dbExec {
-			TagsEntity.all()
-				.toList().map {
-					it.convertToTagDao()
+			TagsEntity.all().let {
+				if (page != null && size != null) {
+					val limit: Int = size
+					val pageSize: Int = size
+					val skip: Int = (page - 1) * pageSize
+					it.limit(offset = skip.toLong(), n = limit)
+				} else {
+					it
 				}
+			}.map {
+				it.convertToTagDao()
+			}
 		}
 	}
 
