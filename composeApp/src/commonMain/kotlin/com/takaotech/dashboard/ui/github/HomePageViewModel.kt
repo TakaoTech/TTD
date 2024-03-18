@@ -31,20 +31,7 @@ class HomePageViewModel(
 			val repositoryResult = ghRepository.getRepositories(1, 10)
 			mUiState.update {
 				if (repositoryResult.isSuccess()) {
-					val repositories = repositoryResult.get()
-					val languageWeightMap = mutableMapOf<Long, List<Triple<String, Long, Float>>>()
-					repositories.forEach {
-						val totalLines = it.languages.values.sumOf { it }.toFloat()
-
-						val languageWeight = it.languages.map {
-							val weight = (it.value * 100) / totalLines
-
-							Triple(it.key, it.value, weight)
-						}
-						languageWeightMap.put(it.id, languageWeight)
-					}
-
-					it.copy(repositoryList = repositoryResult.get(), languangeMappingPer = languageWeightMap)
+					it.copy(repositoryList = repositoryResult.get())
 				} else {
 					it
 				}
@@ -72,5 +59,4 @@ class HomePageViewModel(
 data class HomePageUi(
 	val tags: List<TagDao> = listOf(),
 	val repositoryList: List<GHRepositoryMiniDao> = listOf(),
-	val languangeMappingPer: Map<Long, List<Triple<String, Long, Float>>> = mapOf()
 )

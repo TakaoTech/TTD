@@ -22,7 +22,6 @@ object HomePageTab : Tab {
 		HomePageScreen(
 			tags = uiState.tags,
 			repositories = uiState.repositoryList,
-			languageMapping = uiState.languangeMappingPer,
 			onTagClicked = {
 
 			},

@@ -24,7 +24,7 @@ data class GHRepositoryDao(
 	@SerialName("user")
 	val user: GHUser,
 	@SerialName("languages")
-	override val languages: Map<String, Long>,
+	override val languages: List<GHLanguageDao>,
 	@SerialName("updatedAt")
 	override val updatedAt: Instant,
 	@SerialName("tags")
@@ -42,7 +42,7 @@ open class GHRepositoryMiniDao(
 	@SerialName("license")
 	override val license: String?,
 	@SerialName("languages")
-	override val languages: Map<String, Long>,
+	override val languages: List<GHLanguageDao>,
 	@SerialName("updatedAt")
 	override val updatedAt: Instant,
 	@SerialName("tags")
@@ -62,7 +62,7 @@ sealed class GHRepositoryBaseDao {
 	abstract val license: String?
 
 	@SerialName("languages")
-	abstract val languages: Map<String, Long>
+	abstract val languages: List<GHLanguageDao>
 
 	@SerialName("updatedAt")
 	abstract val updatedAt: Instant

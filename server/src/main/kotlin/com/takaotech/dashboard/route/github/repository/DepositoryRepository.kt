@@ -61,7 +61,7 @@ class DepositoryRepository(
 					user = searchedUser
 					languages = repo.languages
 					//TODO Make "Kotlin" costant
-					category = if (repo.languages.containsKey("Kotlin")) {
+					category = if (repo.languages.find { it.name == "Kotlin" } != null) {
 						MainCategory.KOTLIN
 					} else {
 						MainCategory.NONE

@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.route.github.repository
 
+import com.takaotech.dashboard.model.GHLanguageDao
 import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
@@ -52,7 +53,7 @@ class GithubRepositoryTest : FunSpec({
 					name = "Delmar Bowers",
 					url = "https://duckduckgo.com/?q=pellentesque"
 				),
-				languages = mapOf(),
+				languages = listOf(),
 				tags = listOf(),
 				mainCategory = MainCategory.OTHER,
 				updatedAt = Clock.System.now()
@@ -124,7 +125,7 @@ class GithubRepositoryTest : FunSpec({
 		assertEquals("https://duckduckgo.com/?q=takaotech", convertedMockk.url)
 		assertEquals("Apache 2.0", convertedMockk.license)
 		assertEquals("https://duckduckgo.com/?q=apache2License", convertedMockk.licenseUrl)
-		assertEquals(mapOf("Kotlin" to 100L), convertedMockk.languages)
+		assertEquals(listOf(GHLanguageDao("Kotlin", 100, 100f)), convertedMockk.languages)
 		assertEquals(MainCategory.NONE, convertedMockk.mainCategory)
 		assertEquals(Instant.parse("2011-01-26T19:14:43Z"), convertedMockk.updatedAt)
 		assertTrue { convertedMockk.tags.isEmpty() }
@@ -168,7 +169,7 @@ class GithubRepositoryTest : FunSpec({
 		assertEquals("https://duckduckgo.com/?q=takaotech", convertedMockk.url)
 		assertEquals(null, convertedMockk.license)
 		assertEquals(null, convertedMockk.licenseUrl)
-		assertEquals(mapOf("Kotlin" to 100L), convertedMockk.languages)
+		assertEquals(listOf(GHLanguageDao("Kotlin", 100, 100f)), convertedMockk.languages)
 		assertEquals(MainCategory.NONE, convertedMockk.mainCategory)
 		assertTrue { convertedMockk.tags.isEmpty() }
 		assertEquals(Instant.parse("2011-01-26T19:14:43Z"), convertedMockk.updatedAt)

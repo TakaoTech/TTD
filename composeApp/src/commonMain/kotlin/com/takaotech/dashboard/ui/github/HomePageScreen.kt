@@ -43,7 +43,6 @@ import ttd.composeapp.generated.resources.homepage_title_label
 fun HomePageScreen(
 	tags: List<TagDao>,
 	repositories: List<GHRepositoryMiniDao>,
-	languageMapping: Map<Long, List<Triple<String, Long, Float>>>,
 	onTagClicked: (tagId: Int) -> Unit,
 	onMoreTagClicked: () -> Unit,
 	onMoreRepositoriesClicked: () -> Unit

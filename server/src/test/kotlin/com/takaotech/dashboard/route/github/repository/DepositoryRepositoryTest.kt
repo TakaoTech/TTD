@@ -2,6 +2,7 @@ package com.takaotech.dashboard.route.github.repository
 
 import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.di.connectToDatabase
+import com.takaotech.dashboard.model.GHLanguageDao
 import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
@@ -53,8 +54,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					user = GHUser(
 						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
-					languages = mapOf(
-						"Kotlin" to 100
+					languages = listOf(
+						GHLanguageDao("Kotlin", 100)
 					),
 					tags = listOf(),
 					mainCategory = MainCategory.NONE,
@@ -71,8 +72,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					user = GHUser(
 						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
-					languages = mapOf(
-						"Bash" to 100
+					languages = listOf(
+						GHLanguageDao("Bash", 100)
 					),
 					tags = listOf(),
 					mainCategory = MainCategory.NONE,
@@ -92,8 +93,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					user = GHUser(
 						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
-					languages = mapOf(
-						"Kotlin" to 100
+					languages = listOf(
+						GHLanguageDao("Kotlin", 100)
 					),
 					tags = listOf(),
 					mainCategory = MainCategory.KOTLIN,
@@ -110,8 +111,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					user = GHUser(
 						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
-					languages = mapOf(
-						"Bash" to 100
+					languages = listOf(
+						GHLanguageDao("Bash", 100)
 					),
 					tags = listOf(),
 					mainCategory = MainCategory.NONE,
@@ -142,8 +143,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					user = GHUser(
 						id = 1, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
-					languages = mapOf(
-						"Kotlin" to 20
+					languages = listOf(
+						GHLanguageDao("Kotlin", 100)
 					),
 					tags = listOf(),
 					mainCategory = MainCategory.NONE,
@@ -173,8 +174,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					user = GHUser(
 						id = 1, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
-					languages = mapOf(
-						"Kotlin" to 20
+					languages = listOf(
+						GHLanguageDao("Kotlin", 100)
 					),
 					tags = listOf(),
 					mainCategory = MainCategory.NONE,
@@ -191,8 +192,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					user = GHUser(
 						id = 2, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
 					),
-					languages = mapOf(
-						"Kotlin" to 20
+					languages = listOf(
+						GHLanguageDao("Kotlin", 100)
 					),
 					tags = listOf(),
 					mainCategory = MainCategory.NONE,

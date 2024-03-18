@@ -93,13 +93,22 @@ internal suspend fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): G
 		license = license?.name,
 		licenseUrl = license?.htmlUrl?.toString(),
 		user = repoOwner,
-		languages = listLanguages(),
+		languages = listLanguages().mapToLanguageDao(),
 		//Use default on data recovery
 		mainCategory = MainCategory.NONE,
 		//Use default on data recovery
 		tags = listOf(),
 		updatedAt = updatedAt.toInstant().toKotlinInstant()
 	)
+}
+
+internal fun Map<String, Long>.mapToLanguageDao(): List<GHLanguageDao> {
+	val totalLines = values.sumOf { it }.toFloat()
+
+	return map {
+		val weight = (it.value * 100) / totalLines
+		GHLanguageDao(name = it.key, lines = it.value, weight = weight)
+	}
 }
 
 internal fun TagsEntity.convertToTagDao(): TagDao = TagDao(

@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.route.github.controller
 
+import com.takaotech.dashboard.model.GHLanguageDao
 import com.takaotech.dashboard.model.GHRepositoryDao
 import com.takaotech.dashboard.model.GHUser
 import com.takaotech.dashboard.model.MainCategory
@@ -41,8 +42,8 @@ class GithubControllerTest : FunSpec({
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),
-				languages = mapOf(
-					"Kotlin" to 100
+				languages = listOf(
+					GHLanguageDao("Kotlin", 100)
 				),
 				tags = listOf(),
 				mainCategory = MainCategory.KOTLIN,
@@ -59,8 +60,8 @@ class GithubControllerTest : FunSpec({
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),
-				languages = mapOf(
-					"Kotlin" to 100
+				languages = listOf(
+					GHLanguageDao("Kotlin", 100)
 				),
 				tags = listOf(),
 				mainCategory = MainCategory.KOTLIN,
@@ -96,8 +97,8 @@ class GithubControllerTest : FunSpec({
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),
-				languages = mapOf(
-					"Kotlin" to 100
+				languages = listOf(
+					GHLanguageDao("Kotlin", 100)
 				),
 				tags = listOf(),
 				mainCategory = MainCategory.KOTLIN,
@@ -114,8 +115,8 @@ class GithubControllerTest : FunSpec({
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),
-				languages = mapOf(
-					"Kotlin" to 100
+				languages = listOf(
+					GHLanguageDao("Kotlin", 100)
 				),
 				tags = listOf(),
 				mainCategory = MainCategory.KOTLIN,
@@ -150,8 +151,8 @@ class GithubControllerTest : FunSpec({
 			user = GHUser(
 				id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 			),
-			languages = mapOf(
-				"Kotlin" to 100
+			languages = listOf(
+				GHLanguageDao("Kotlin", 100)
 			),
 			tags = listOf(),
 			mainCategory = MainCategory.KOTLIN,
@@ -169,8 +170,8 @@ class GithubControllerTest : FunSpec({
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),
-				languages = mapOf(
-					"Kotlin" to 100
+				languages = listOf(
+					GHLanguageDao("Kotlin", 100)
 				),
 				tags = listOf(),
 				mainCategory = MainCategory.KOTLIN,
@@ -211,8 +212,8 @@ class GithubControllerTest : FunSpec({
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),
-				languages = mapOf(
-					"Kotlin" to 100
+				languages = listOf(
+					GHLanguageDao("Kotlin", 100)
 				),
 				tags = listOf(),
 				mainCategory = MainCategory.KOTLIN,
@@ -229,8 +230,8 @@ class GithubControllerTest : FunSpec({
 				user = GHUser(
 					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
 				),
-				languages = mapOf(
-					"Kotlin" to 100
+				languages = listOf(
+					GHLanguageDao("Kotlin", 100)
 				),
 				tags = listOf(),
 				mainCategory = MainCategory.KOTLIN,

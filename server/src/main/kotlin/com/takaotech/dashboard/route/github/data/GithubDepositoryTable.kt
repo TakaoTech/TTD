@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.route.github.data
 
+import com.takaotech.dashboard.model.GHLanguageDao
 import com.takaotech.dashboard.model.MainCategory
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.dao.id.EntityID
@@ -57,7 +58,7 @@ object GithubDepositoryTable : IdTable<Long>() {
 	 * Map of repository programming languages
 	 */
 	//TODO Use Ktor JSON
-	val languages: Column<Map<String, Long>> = json("languages", Json.Default)
+	val languages: Column<List<GHLanguageDao>> = json("languages", Json.Default)
 
 	val category: Column<MainCategory> = enumerationByName("category", 20)
 
