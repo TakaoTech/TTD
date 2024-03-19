@@ -15,6 +15,7 @@ fun GHRepositoryCardPreview() {
 			fullName = "Malcolm Nelson",
 			tags = listOf(),
 			modifier = Modifier.fillMaxWidth(),
+			languages = listOf(),
 			onCardClicked = {}
 		)
 	}

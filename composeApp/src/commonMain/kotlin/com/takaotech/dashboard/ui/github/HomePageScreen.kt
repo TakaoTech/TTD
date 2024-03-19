@@ -112,6 +112,7 @@ fun HomePageScreen(
 						.padding(horizontal = 16.dp, vertical = 8.dp),
 					fullName = it.fullName,
 					tags = it.tags,
+					languages = it.languages,
 					onCardClicked = {}
 				)
 			}

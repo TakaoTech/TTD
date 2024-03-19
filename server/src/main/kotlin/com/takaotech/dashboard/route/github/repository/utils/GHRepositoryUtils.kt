@@ -108,7 +108,7 @@ internal fun Map<String, Long>.mapToLanguageDao(): List<GHLanguageDao> {
 	return map {
 		val weight = (it.value * 100) / totalLines
 		GHLanguageDao(name = it.key, lines = it.value, weight = weight)
-	}
+	}.sortedByDescending { it.weight }
 }
 
 internal fun TagsEntity.convertToTagDao(): TagDao = TagDao(

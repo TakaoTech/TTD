@@ -3,6 +3,7 @@ package com.takaotech.dashboard.ui.github
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.github.kittinunf.result.isSuccess
+import com.takaotech.dashboard.model.GHLanguageDao
 import com.takaotech.dashboard.model.GHRepositoryMiniDao
 import com.takaotech.dashboard.model.TagDao
 import com.takaotech.dashboard.repository.GHRepository
@@ -31,7 +32,29 @@ class HomePageViewModel(
 			val repositoryResult = ghRepository.getRepositories(1, 10)
 			mUiState.update {
 				if (repositoryResult.isSuccess()) {
-					it.copy(repositoryList = repositoryResult.get())
+					val repository = repositoryResult.get().map {
+						val languagesGrouped = mutableListOf<GHLanguageDao>()
+						var languageGrouped = GHLanguageDao("Other", 0)
+
+						it.languages.forEach {
+							if (it.weight > 1) {
+								languagesGrouped.add(it)
+							} else {
+								languageGrouped.copy(
+									weight = languageGrouped.weight + it.weight,
+									lines = languageGrouped.lines + it.lines
+								)
+							}
+						}
+
+						if (languageGrouped.lines > 0) {
+							languagesGrouped.add(languageGrouped)
+						}
+
+						it.copy(languages = languagesGrouped.sortedByDescending { it.weight })
+					}
+
+					it.copy(repositoryList = repository)
 				} else {
 					it
 				}

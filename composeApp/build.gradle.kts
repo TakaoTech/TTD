@@ -96,6 +96,8 @@ kotlin {
 				implementation(libs.haze)
 				implementation(libs.haze.materials)
 
+				implementation("net.sergeych:mp_stools:1.4.7")
+
 			}
 
 		}

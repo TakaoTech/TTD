@@ -34,7 +34,7 @@ data class GHRepositoryDao(
 ) : GHRepositoryBaseDao()
 
 @Serializable
-open class GHRepositoryMiniDao(
+data class GHRepositoryMiniDao(
 	@SerialName("id")
 	override val id: Long,
 	@SerialName("fullName")

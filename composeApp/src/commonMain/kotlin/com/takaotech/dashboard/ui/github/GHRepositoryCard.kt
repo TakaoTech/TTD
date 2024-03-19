@@ -16,14 +16,17 @@ import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
+import com.takaotech.dashboard.model.GHLanguageDao
 import com.takaotech.dashboard.model.TagDao
+import net.sergeych.sprintf.sprintf
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalResourceApi::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun GHRepositoryCard(
 	fullName: String,
 	tags: List<TagDao>,
+	languages: List<GHLanguageDao>,
 	modifier: Modifier = Modifier,
 	onCardClicked: () -> Unit
 ) {
@@ -52,6 +55,8 @@ internal fun GHRepositoryCard(
 				}
 			}
 
+			Spacer(Modifier.height(16.dp))
+
 			BoxWithConstraints(
 				modifier = Modifier
 					.fillMaxWidth()
@@ -60,66 +65,105 @@ internal fun GHRepositoryCard(
 					modifier = Modifier.fillMaxSize()
 						.height(8.dp)
 				) {
-					val k = ((maxWidth.toPx()) * (87.toFloat())) / 100
-//					val k = (maxWidth.toPx()) * (87.toFloat()  / 100)
-
-//					drawLine(
-//						color = Color.Red,
-//						start = Offset(0f, 0f),
-//						end = Offset(k, 0f),
-//						strokeWidth = 25f,
-//						cap = StrokeCap.Round
-//					)
-//					drawLine(
-//						color = Color.Black,
-//						start = Offset(k, 0f),
-//						end = Offset(maxWidth.toPx(), 0f),
-//						strokeWidth = 25f,
-//						cap = StrokeCap.Round
-//					)
-
-					//TODO Prototype Languages Line Charts
-
+					var start = 0f
 					//https://github.com/ozh/github-colors/blob/master/colors.json
 
-					drawPath(
-						color = Color.Red,
-						path = Path().apply {
-							addRoundRect(
-								RoundRect(
-									left = 0F,
-									top = 0F,
-									right = k,
-									bottom = 8.dp.toPx(),
-									topLeftCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-									bottomLeftCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-									topRightCornerRadius = CornerRadius.Zero,
-									bottomRightCornerRadius = CornerRadius.Zero,
-								)
-							)
-						}
-					)
+					languages.forEachIndexed { index, ghLanguageDao ->
+						val k = start + (((maxWidth.toPx()) * (ghLanguageDao.weight)) / 100)
 
-					drawPath(
-						color = Color.Blue,
-						path = Path().apply {
-							addRoundRect(
-								RoundRect(
-									left = k,
-									top = 0F,
-									right = maxWidth.toPx(),
-									bottom = 8.dp.toPx(),
-									topLeftCornerRadius = CornerRadius.Zero,
-									bottomLeftCornerRadius = CornerRadius.Zero,
-									topRightCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-									bottomRightCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-								)
-							)
+						//TODO WIP but need base on GH Colors for interpretation
+						val color = when (index) {
+							1 -> Color.Red
+							2 -> Color.Blue
+							3 -> Color.Green
+							4 -> Color.Cyan
+							5 -> Color.LightGray
+							else -> Color.Magenta
 						}
-					)
+
+						when {
+							index == 0 -> {
+								drawPath(
+									color = color,
+									path = Path().apply {
+										addRoundRect(
+											RoundRect(
+												left = 0F,
+												top = 0F,
+												right = k,
+												bottom = 8.dp.toPx(),
+												topLeftCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+												bottomLeftCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+												topRightCornerRadius = if (languages.size == 1) {
+													CornerRadius(4.dp.toPx(), 4.dp.toPx())
+												} else {
+													CornerRadius.Zero
+												},
+												bottomRightCornerRadius = if (languages.size == 1) {
+													CornerRadius(4.dp.toPx(), 4.dp.toPx())
+												} else {
+													CornerRadius.Zero
+												}
+											)
+										)
+									}
+								)
+							}
+
+							languages.lastIndex == index -> {
+								drawPath(
+									color = color,
+									path = Path().apply {
+										addRoundRect(
+											RoundRect(
+												left = start,
+												top = 0F,
+												right = k,
+												bottom = 8.dp.toPx(),
+												topLeftCornerRadius = CornerRadius.Zero,
+												bottomLeftCornerRadius = CornerRadius.Zero,
+												topRightCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+												bottomRightCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+											)
+										)
+									}
+								)
+							}
+
+							else -> {
+								drawPath(
+									color = color,
+									path = Path().apply {
+										addRoundRect(
+											RoundRect(
+												left = start,
+												top = 0F,
+												right = k,
+												bottom = 8.dp.toPx(),
+												topLeftCornerRadius = CornerRadius.Zero,
+												bottomLeftCornerRadius = CornerRadius.Zero,
+												topRightCornerRadius = CornerRadius.Zero,
+												bottomRightCornerRadius = CornerRadius.Zero,
+											)
+										)
+									}
+								)
+							}
+						}
+
+						start = k
+					}
 				}
 			}
-			//TODO Chart as Github
+
+			FlowRow(
+				modifier = Modifier.fillMaxWidth(),
+				horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
+			) {
+				languages.forEach {
+					Text("${it.name} ${"%.1f".sprintf(it.weight)}%")
+				}
+			}
 		}
 	}
 }
