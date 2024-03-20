@@ -4,11 +4,15 @@ import com.takaotech.dashboard.model.*
 import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.route.github.data.GithubDepositoryMiniEntity
 import com.takaotech.dashboard.route.github.data.TagsEntity
+import com.takaotech.dashboard.route.github.repository.GithubColorController
 import com.takaotech.dashboard.utils.HikariDatabase
 import kotlinx.datetime.toKotlinInstant
 import org.kohsuke.github.GHRepository as GHRepositoryExternal
 
-internal suspend fun GithubDepositoryEntity.convertToGHRepository(database: HikariDatabase): GHRepositoryDao {
+internal suspend fun GithubDepositoryEntity.convertToGHRepository(
+	database: HikariDatabase,
+	colorController: GithubColorController
+): GHRepositoryDao {
 	return GHRepositoryDao(
 		id = id.value,
 		name = name,
@@ -26,7 +30,11 @@ internal suspend fun GithubDepositoryEntity.convertToGHRepository(database: Hika
 				)
 			}
 		},
-		languages = languages,
+		languages = languages.map {
+			it.copy(
+				colorCode = colorController.getColorLanguageByName(it.name)
+			)
+		},
 		tags = database.dbExec {
 			tags.map { entity ->
 				TagDao(
@@ -41,7 +49,10 @@ internal suspend fun GithubDepositoryEntity.convertToGHRepository(database: Hika
 	)
 }
 
-internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(database: HikariDatabase): GHRepositoryMiniDao {
+internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(
+	database: HikariDatabase,
+	colorController: GithubColorController
+): GHRepositoryMiniDao {
 	return GHRepositoryMiniDao(
 		id = id.value,
 		fullName = fullName,
@@ -55,7 +66,11 @@ internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(databa
 //				)
 //			}
 //		},
-		languages = languages,
+		languages = languages.map {
+			it.copy(
+				colorCode = colorController.getColorLanguageByName(it.name)
+			)
+		},
 		tags = database.dbExec {
 			tags.map { entity ->
 				TagDao(

@@ -18,10 +18,10 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
 import com.takaotech.dashboard.model.GHLanguageDao
 import com.takaotech.dashboard.model.TagDao
+import com.takaotech.dashboard.ui.utils.toColor
 import net.sergeych.sprintf.sprintf
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalResourceApi::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun GHRepositoryCard(
 	fullName: String,
@@ -70,16 +70,7 @@ internal fun GHRepositoryCard(
 
 					languages.forEachIndexed { index, ghLanguageDao ->
 						val k = start + (((maxWidth.toPx()) * (ghLanguageDao.weight)) / 100)
-
-						//TODO WIP but need base on GH Colors for interpretation
-						val color = when (index) {
-							1 -> Color.Red
-							2 -> Color.Blue
-							3 -> Color.Green
-							4 -> Color.Cyan
-							5 -> Color.LightGray
-							else -> Color.Magenta
-						}
+						val color = ghLanguageDao.colorCode?.replace("#", "")?.toColor() ?: Color.Gray
 
 						when {
 							index == 0 -> {
@@ -155,6 +146,8 @@ internal fun GHRepositoryCard(
 					}
 				}
 			}
+
+			Spacer(Modifier.height(8.dp))
 
 			FlowRow(
 				modifier = Modifier.fillMaxWidth(),

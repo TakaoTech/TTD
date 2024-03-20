@@ -106,7 +106,6 @@ fun HomePageScreen(
 			}
 
 			items(repositories) {
-				//TODO Change this, use shrinked card
 				GHRepositoryCard(
 					modifier = Modifier.fillMaxWidth()
 						.padding(horizontal = 16.dp, vertical = 8.dp),

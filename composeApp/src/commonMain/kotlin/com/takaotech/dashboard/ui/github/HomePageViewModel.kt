@@ -46,6 +46,21 @@ class HomePageViewModel(
 								)
 							}
 						}
+//						Alternative grouping
+//						if (it.languages.size > 5) {
+//							it.languages.forEach {
+//								if (it.weight > 1) {
+//									languagesGrouped.add(it)
+//								} else {
+//									languageGrouped.copy(
+//										weight = languageGrouped.weight + it.weight,
+//										lines = languageGrouped.lines + it.lines
+//									)
+//								}
+//							}
+//						} else {
+//							languagesGrouped.addAll(it.languages)
+//						}
 
 						if (languageGrouped.lines > 0) {
 							languagesGrouped.add(languageGrouped)

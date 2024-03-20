@@ -13,7 +13,8 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class DepositoryRepository(
-	private val database: HikariDatabase
+	private val database: HikariDatabase,
+	private val colorController: GithubColorController
 ) {
 
 	suspend fun saveRepositoriesToDB(repositoryList: List<GHRepositoryDao>) {
@@ -96,14 +97,14 @@ class DepositoryRepository(
 				}
 			}.toList()
 		}.map {
-			it.convertToGHRepository(database)
+			it.convertToGHRepository(database, colorController)
 		}
 	}
 
 	suspend fun getGHRepositoryById(id: Long): GHRepositoryDao? {
 		return database.dbExec {
 			GithubDepositoryEntity.findById(id)
-				?.convertToGHRepository(database)
+				?.convertToGHRepository(database, colorController)
 		}
 	}
 
@@ -139,7 +140,7 @@ class DepositoryRepository(
 			}.run {
 				limit(offset = skip.toLong(), n = limit)
 			}.run {
-				map { it.convertToGHRepositoryMini(database) }
+				map { it.convertToGHRepositoryMini(database, colorController) }
 			}
 		}
 	}
