@@ -69,6 +69,9 @@ dependencies {
 	implementation(libs.ktor.server.sessions)
 	implementation(libs.ktor.server.cors)
 
+	implementation(libs.ktor.client)
+	testImplementation(libs.ktor.client.test)
+
 	implementation(libs.exposed.core)
 	implementation(libs.exposed.dao)
 	implementation(libs.exposed.jdbc)
