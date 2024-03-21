@@ -1,7 +1,7 @@
 package com.takaotech.dashboard.route.github.repository
 
-import com.takaotech.dashboard.model.TagDao
-import com.takaotech.dashboard.model.TagNewDao
+import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.model.github.TagNewDao
 import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.route.github.repository.utils.convertToTagDao
 import com.takaotech.dashboard.utils.HikariDatabase

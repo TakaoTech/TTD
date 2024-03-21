@@ -25,8 +25,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.takaotech.dashboard.model.GHRepositoryMiniDao
-import com.takaotech.dashboard.model.TagDao
+import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
+import com.takaotech.dashboard.model.github.TagDao
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild

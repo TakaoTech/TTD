@@ -3,8 +3,8 @@ package com.takaotech.dashboard.ui.admin.github
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.github.kittinunf.result.isSuccess
-import com.takaotech.dashboard.model.GHRepositoryDao
-import com.takaotech.dashboard.model.MainCategory
+import com.takaotech.dashboard.model.github.GHRepositoryDao
+import com.takaotech.dashboard.model.github.MainCategory
 import com.takaotech.dashboard.repository.AdminGHRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

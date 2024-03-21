@@ -1,6 +1,6 @@
 package com.takaotech.dashboard.route.github
 
-import com.takaotech.dashboard.model.MainCategory
+import com.takaotech.dashboard.model.github.MainCategory
 import io.ktor.resources.*
 
 @Resource("/github")

@@ -1,6 +1,6 @@
 package com.takaotech.dashboard.route.github.controller
 
-import com.takaotech.dashboard.model.*
+import com.takaotech.dashboard.model.github.*
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
 import com.takaotech.dashboard.route.github.repository.TagsRepository

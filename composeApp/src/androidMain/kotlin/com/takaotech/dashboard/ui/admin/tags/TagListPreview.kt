@@ -3,7 +3,7 @@ package com.takaotech.dashboard.ui.admin.tags
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.takaotech.dashboard.model.TagDao
+import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.ui.admin.tags.list.TagList
 import com.takaotech.dashboard.ui.admin.tags.list.TagListUiState
 

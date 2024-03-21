@@ -15,8 +15,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.model.TagDao
+import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.model.github.TagDao
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import ttd.composeapp.generated.resources.Res

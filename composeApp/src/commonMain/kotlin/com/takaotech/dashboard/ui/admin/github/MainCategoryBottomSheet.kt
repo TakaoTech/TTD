@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import com.takaotech.dashboard.model.MainCategory
+import com.takaotech.dashboard.model.github.MainCategory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

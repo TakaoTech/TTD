@@ -1,6 +1,6 @@
 package com.takaotech.dashboard.route.github.data
 
-import com.takaotech.dashboard.model.MainCategory
+import com.takaotech.dashboard.model.github.MainCategory
 import com.takaotech.dashboard.route.github.data.TagsTable.clientDefault
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass

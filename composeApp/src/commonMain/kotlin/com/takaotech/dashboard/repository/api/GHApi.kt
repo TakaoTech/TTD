@@ -1,7 +1,7 @@
 package com.takaotech.dashboard.repository.api
 
-import com.takaotech.dashboard.model.GHRepositoryMiniDao
-import com.takaotech.dashboard.model.TagDao
+import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
+import com.takaotech.dashboard.model.github.TagDao
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
 

@@ -1,9 +1,9 @@
 package com.takaotech.dashboard.repository.api
 
-import com.takaotech.dashboard.model.GHRepositoryDao
-import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.model.TagDao
-import com.takaotech.dashboard.model.TagNewDao
+import com.takaotech.dashboard.model.github.GHRepositoryDao
+import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.model.github.TagNewDao
 import com.takaotech.dashboard.repository.api.ApiConstant.ADMIN_URL_PREFIX
 import de.jensklingenberg.ktorfit.http.*
 

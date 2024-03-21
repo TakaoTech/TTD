@@ -5,8 +5,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.github.kittinunf.result.isSuccess
-import com.takaotech.dashboard.model.TagDao
-import com.takaotech.dashboard.model.TagNewDao
+import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.model.github.TagNewDao
 import com.takaotech.dashboard.repository.AdminGHRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

@@ -1,7 +1,7 @@
 package com.takaotech.dashboard.route.github
 
-import com.takaotech.dashboard.model.TagDao
-import com.takaotech.dashboard.model.TagNewDao
+import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.model.github.TagNewDao
 import com.takaotech.dashboard.route.github.controller.GithubController
 import io.ktor.http.*
 import io.ktor.server.application.*

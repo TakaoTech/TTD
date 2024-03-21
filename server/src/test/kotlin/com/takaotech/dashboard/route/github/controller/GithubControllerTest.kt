@@ -1,9 +1,9 @@
 package com.takaotech.dashboard.route.github.controller
 
-import com.takaotech.dashboard.model.GHLanguageDao
-import com.takaotech.dashboard.model.GHRepositoryDao
-import com.takaotech.dashboard.model.GHUser
-import com.takaotech.dashboard.model.MainCategory
+import com.takaotech.dashboard.model.github.GHLanguageDao
+import com.takaotech.dashboard.model.github.GHRepositoryDao
+import com.takaotech.dashboard.model.github.GHUser
+import com.takaotech.dashboard.model.github.MainCategory
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
 import com.takaotech.dashboard.route.github.repository.TagsRepository

@@ -1,6 +1,6 @@
 package com.takaotech.dashboard.route.github.repository
 
-import com.takaotech.dashboard.model.GHRepositoryDao
+import com.takaotech.dashboard.model.github.GHRepositoryDao
 import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryWithDefaults
 import io.ktor.util.logging.*
 import kotlinx.coroutines.*

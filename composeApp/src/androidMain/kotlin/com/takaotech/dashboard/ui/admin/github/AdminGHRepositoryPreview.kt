@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.takaotech.dashboard.model.MainCategory
-import com.takaotech.dashboard.model.TagDao
+import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.model.github.TagDao
 
 @Preview
 @Composable

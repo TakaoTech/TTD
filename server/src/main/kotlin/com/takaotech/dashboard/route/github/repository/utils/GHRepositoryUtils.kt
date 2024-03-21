@@ -1,6 +1,6 @@
 package com.takaotech.dashboard.route.github.repository.utils
 
-import com.takaotech.dashboard.model.*
+import com.takaotech.dashboard.model.github.*
 import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.route.github.data.GithubDepositoryMiniEntity
 import com.takaotech.dashboard.route.github.data.TagsEntity

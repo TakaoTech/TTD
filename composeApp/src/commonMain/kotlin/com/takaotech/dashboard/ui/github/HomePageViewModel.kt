@@ -3,9 +3,9 @@ package com.takaotech.dashboard.ui.github
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.github.kittinunf.result.isSuccess
-import com.takaotech.dashboard.model.GHLanguageDao
-import com.takaotech.dashboard.model.GHRepositoryMiniDao
-import com.takaotech.dashboard.model.TagDao
+import com.takaotech.dashboard.model.github.GHLanguageDao
+import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
+import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.repository.GHRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

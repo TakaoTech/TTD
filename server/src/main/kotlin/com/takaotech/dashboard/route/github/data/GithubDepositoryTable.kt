@@ -1,7 +1,7 @@
 package com.takaotech.dashboard.route.github.data
 
-import com.takaotech.dashboard.model.GHLanguageDao
-import com.takaotech.dashboard.model.MainCategory
+import com.takaotech.dashboard.model.github.GHLanguageDao
+import com.takaotech.dashboard.model.github.MainCategory
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable

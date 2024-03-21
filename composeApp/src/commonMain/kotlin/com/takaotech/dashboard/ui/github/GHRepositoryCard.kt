@@ -16,8 +16,8 @@ import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
-import com.takaotech.dashboard.model.GHLanguageDao
-import com.takaotech.dashboard.model.TagDao
+import com.takaotech.dashboard.model.github.GHLanguageDao
+import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.ui.utils.toColor
 import net.sergeych.sprintf.sprintf
 

@@ -2,7 +2,7 @@ package com.takaotech.dashboard.route.github.repository
 
 import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.di.connectToDatabase
-import com.takaotech.dashboard.model.TagNewDao
+import com.takaotech.dashboard.model.github.TagNewDao
 import com.takaotech.dashboard.route.github.data.TagsTable
 import com.takaotech.dashboard.utils.HikariDatabase
 import com.takaotech.dashboard.utils.dbTables

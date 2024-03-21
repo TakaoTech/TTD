@@ -1,9 +1,9 @@
 package com.takaotech.dashboard.route.github.repository
 
-import com.takaotech.dashboard.model.GHLanguageDao
-import com.takaotech.dashboard.model.GHRepositoryDao
-import com.takaotech.dashboard.model.GHUser
-import com.takaotech.dashboard.model.MainCategory
+import com.takaotech.dashboard.model.github.GHLanguageDao
+import com.takaotech.dashboard.model.github.GHRepositoryDao
+import com.takaotech.dashboard.model.github.GHUser
+import com.takaotech.dashboard.model.github.MainCategory
 import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryWithDefaults
 import com.takaotech.dashboard.utils.LOGGER
 import io.kotest.core.spec.style.FunSpec
