@@ -70,6 +70,13 @@ internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(
 			it.copy(
 				colorCode = colorController.getColorLanguageByName(it.name)
 			)
+		}.sortedByDescending {
+			//Kotlin First
+			if (it.name == "Kotlin") {
+				Float.MAX_VALUE
+			} else {
+				it.weight
+			}
 		},
 		tags = database.dbExec {
 			tags.map { entity ->
