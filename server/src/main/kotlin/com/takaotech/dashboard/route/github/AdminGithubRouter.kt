@@ -37,6 +37,7 @@ inline fun Route.adminGithubRouter() {
 			if (it.mock) {
 				jobGithubRefresh = launch(Dispatchers.Default + SupervisorJob()) {
 					delay(20.seconds)
+					jobGithubRefresh = null
 				}
 				call.respond(HttpStatusCode.OK)
 			} else {
@@ -46,6 +47,7 @@ inline fun Route.adminGithubRouter() {
 					jobGithubRefresh = launch(Dispatchers.Default + SupervisorJob()) {
 						try {
 							controller.getStarsFromZeroAndStore()
+							jobGithubRefresh = null
 						} catch (ex: Throwable) {
 							logger.error(ex)
 							jobGithubRefresh = null
