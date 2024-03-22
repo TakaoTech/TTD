@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.route.github.repository
 
+import com.takaotech.dashboard.model.TakaoPaging
 import com.takaotech.dashboard.model.github.GHRepositoryDao
 import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
 import com.takaotech.dashboard.model.github.MainCategory
@@ -128,7 +129,7 @@ class DepositoryRepository(
 		mainCategory: MainCategory,
 		page: Int,
 		size: Int
-	): List<GHRepositoryMiniDao> {
+	): TakaoPaging<GHRepositoryMiniDao> {
 		//https://proandroiddev.com/pagination-sorting-and-custom-plugins-in-ktor-a2575e2da83a
 		val limit: Int = size
 		val pageSize: Int = size
@@ -138,11 +139,14 @@ class DepositoryRepository(
 			GithubDepositoryMiniEntity.find {
 				GithubDepositoryTable.category eq mainCategory
 			}.run {
-				limit(offset = skip.toLong(), n = limit)
+				val totalPages = (count() / pageSize)
+				totalPages to limit(offset = skip.toLong(), n = limit)
 			}.run {
-				map { it.convertToGHRepositoryMini(database, colorController) }
-
-
+				TakaoPaging(
+					data = second.map { it.convertToGHRepositoryMini(database, colorController) },
+					page = page,
+					totalPage = first
+				)
 			}
 		}
 	}

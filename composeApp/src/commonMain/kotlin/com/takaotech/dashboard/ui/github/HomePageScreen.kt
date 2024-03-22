@@ -45,6 +45,7 @@ fun HomePageScreen(
 	repositories: List<GHRepositoryMiniDao>,
 	onTagClicked: (tagId: Int) -> Unit,
 	onMoreTagClicked: () -> Unit,
+	onCardClicked: (repoId: Long) -> Unit,
 	onMoreRepositoriesClicked: () -> Unit
 ) {
 	val hazeState = remember { HazeState() }
@@ -112,7 +113,12 @@ fun HomePageScreen(
 					fullName = it.fullName,
 					tags = it.tags,
 					languages = it.languages,
-					onCardClicked = {}
+					onTagClicked = {
+						onTagClicked(it)
+					},
+					onCardClicked = {
+						onCardClicked(it.id)
+					}
 				)
 			}
 

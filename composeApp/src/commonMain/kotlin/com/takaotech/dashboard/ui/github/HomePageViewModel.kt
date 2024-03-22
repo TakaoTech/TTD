@@ -32,7 +32,7 @@ class HomePageViewModel(
 			val repositoryResult = ghRepository.getRepositories(1, 10)
 			mUiState.update {
 				if (repositoryResult.isSuccess()) {
-					val repository = repositoryResult.get().map {
+					val repository = repositoryResult.get().data.map {
 						val languagesGrouped = mutableListOf<GHLanguageDao>()
 						var languageGrouped = GHLanguageDao("Other", 0)
 

@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Chip
 import androidx.compose.material.ExperimentalMaterialApi
@@ -11,6 +12,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
@@ -28,6 +30,7 @@ internal fun GHRepositoryCard(
 	tags: List<TagDao>,
 	languages: List<GHLanguageDao>,
 	modifier: Modifier = Modifier,
+	onTagClicked: (tagId: Int) -> Unit,
 	onCardClicked: () -> Unit
 ) {
 	Card(modifier = modifier, onClick = onCardClicked) {
@@ -41,7 +44,6 @@ internal fun GHRepositoryCard(
 					modifier = Modifier.weight(1f),
 					text = fullName
 				)
-
 			}
 
 			LazyRow(
@@ -49,7 +51,11 @@ internal fun GHRepositoryCard(
 				horizontalArrangement = Arrangement.spacedBy(4.dp)
 			) {
 				items(tags) {
-					Chip(onClick = {}) {
+					Chip(
+						onClick = {
+							onTagClicked(it.id)
+						}
+					) {
 						Text(it.name)
 					}
 				}
@@ -64,6 +70,7 @@ internal fun GHRepositoryCard(
 				Canvas(
 					modifier = Modifier.fillMaxSize()
 						.height(8.dp)
+						.clip(RoundedCornerShape(16.dp))
 				) {
 					var start = 0f
 					//https://github.com/ozh/github-colors/blob/master/colors.json

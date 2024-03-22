@@ -33,6 +33,12 @@ kotlin {
 		}
 	}
 
+	compilerOptions {
+		if (extra["development"].toString().toBoolean()) {
+			freeCompilerArgs.add("-Xdebug")
+		}
+	}
+
 	listOf(
 		iosX64(),
 		iosArm64(),
@@ -97,6 +103,9 @@ kotlin {
 				implementation(libs.haze.materials)
 
 				implementation("net.sergeych:mp_stools:1.4.7")
+
+				implementation("app.cash.paging:paging-compose-common:3.3.0-alpha02-0.5.1")
+				//implementation("app.cash.paging:paging-testing:3.3.0-alpha02-0.5.1")
 
 			}
 

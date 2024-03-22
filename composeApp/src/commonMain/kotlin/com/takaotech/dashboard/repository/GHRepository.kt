@@ -2,6 +2,7 @@ package com.takaotech.dashboard.repository
 
 import co.touchlab.kermit.Logger
 import com.github.kittinunf.result.Result
+import com.takaotech.dashboard.model.TakaoPaging
 import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
 import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.repository.api.GHApi
@@ -16,8 +17,8 @@ class GHRepository(
 	suspend fun getRepositories(
 		page: Int,
 		size: Int
-	): Result<List<GHRepositoryMiniDao>, Throwable> {
-		return Result.of<List<GHRepositoryMiniDao>, Throwable> {
+	): Result<TakaoPaging<GHRepositoryMiniDao>, Throwable> {
+		return Result.of<TakaoPaging<GHRepositoryMiniDao>, Throwable> {
 			githubApi.getRepositories(
 				page = page,
 				size = size

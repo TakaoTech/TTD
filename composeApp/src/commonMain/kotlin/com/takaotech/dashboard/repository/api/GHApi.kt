@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.repository.api
 
+import com.takaotech.dashboard.model.TakaoPaging
 import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
 import com.takaotech.dashboard.model.github.TagDao
 import de.jensklingenberg.ktorfit.http.GET
@@ -10,7 +11,7 @@ interface GHApi {
 	suspend fun getRepositories(
 		@Query("page") page: Int,
 		@Query("size") size: Int
-	): List<GHRepositoryMiniDao>
+	): TakaoPaging<GHRepositoryMiniDao>
 
 	@GET("github/tags")
 	suspend fun getTags(

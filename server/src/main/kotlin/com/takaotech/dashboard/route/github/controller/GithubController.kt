@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.route.github.controller
 
+import com.takaotech.dashboard.model.TakaoPaging
 import com.takaotech.dashboard.model.github.*
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
@@ -50,7 +51,7 @@ class GithubController(
 		return githubDepositoryRepository.getGHRepository(category)
 	}
 
-	suspend fun getRepositoryMini(page: Int, size: Int): List<GHRepositoryMiniDao> {
+	suspend fun getRepositoryMini(page: Int, size: Int): TakaoPaging<GHRepositoryMiniDao> {
 		return githubDepositoryRepository.getGHRepositoryMini(
 			mainCategory = MainCategory.KOTLIN,
 			page = page,
