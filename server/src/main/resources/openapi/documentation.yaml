@@ -207,7 +207,7 @@ paths:
       tags:
         - GitHub Repository
       summary: Get GitHub Repositories with Pagination
-      description: Retrieve a paginated list of GitHub repositories
+      description: Retrieve a paginated list of GitHub repositories using TakaoPaging
       parameters:
         - name: page
           in: query
@@ -227,9 +227,30 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GHRepositoryMiniDao'
+                $ref: '#/components/schemas/GHRepositoryMiniDao'
+  /github/{id}:
+    get:
+      tags:
+        - GitHub Repository
+      summary: Get GitHub Repository by ID
+      description: Retrieve a GitHub repository by its ID
+      parameters:
+        - name: id
+          in: path
+          description: ID of the GitHub repository to retrieve
+          required: true
+          schema:
+            type: integer
+            default: 3432266
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GHRepositoryDao'
+        '404':
+          description: Repository not found
   /github/tags:
     get:
       tags:
@@ -379,3 +400,16 @@ components:
           items:
             $ref: '#/components/schemas/TagDao'
           description: A list of tags associated with the repository
+    TakaoPaging:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { }
+          description: The paginated data
+        page:
+          type: integer
+          description: The current page number
+        totalPage:
+          type: integer
+          description: The total number of pages
