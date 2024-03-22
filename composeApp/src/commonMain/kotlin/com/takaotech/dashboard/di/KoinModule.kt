@@ -28,7 +28,7 @@ fun getApiModule(baseUrl: String) = module {
 				val kermitLogger = get<KermitLogger>()
 				logger = object : Logger {
 					override fun log(message: String) {
-						kermitLogger.d { message }
+						kermitLogger.largeLog(message)
 					}
 				}
 
@@ -60,6 +60,23 @@ fun getApiModule(baseUrl: String) = module {
 
 	single {
 		get<Ktorfit>().create<GHApi>()
+	}
+}
+
+private const val _charLimit = 2000
+fun KermitLogger.largeLog(message: String) {
+
+	if (message.length < _charLimit) {
+		return d { message }
+	}
+	val sections = message.length / _charLimit
+	for (i in 0..sections) {
+		val max = _charLimit * (i + 1)
+		if (max >= message.length) {
+			d { message.substring(_charLimit * i) }
+		} else {
+			d { message.substring(_charLimit * i, max) }
+		}
 	}
 }
 
