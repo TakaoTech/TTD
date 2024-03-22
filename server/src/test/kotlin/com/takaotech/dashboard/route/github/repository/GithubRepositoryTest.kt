@@ -51,7 +51,8 @@ class GithubRepositoryTest : FunSpec({
 				user = GHUser(
 					id = 9763,
 					name = "Delmar Bowers",
-					url = "https://duckduckgo.com/?q=pellentesque"
+					url = "https://duckduckgo.com/?q=pellentesque",
+					avatarUrl = "https://duckduckgo.com/?q=avatar"
 				),
 				languages = listOf(),
 				tags = listOf(),

@@ -10,6 +10,7 @@ object GithubUserTable : IdTable<Long>() {
 	override val id: Column<EntityID<Long>> = long("id").entityId()
 	val name: Column<String> = text("name")
 	val url: Column<String> = text("url")
+	val avatarUrl: Column<String?> = text("avatarUrl").nullable()
 
 	override val primaryKey = PrimaryKey(id)
 }
@@ -19,4 +20,5 @@ class GithubUserEntity(id: EntityID<Long>) : LongEntity(id) {
 
 	var name by GithubUserTable.name
 	var url by GithubUserTable.url
+	var avatarUrl by GithubUserTable.avatarUrl
 }

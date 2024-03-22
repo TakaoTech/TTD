@@ -26,7 +26,8 @@ internal suspend fun GithubDepositoryEntity.convertToGHRepository(
 				GHUser(
 					id = id.value,
 					name = name,
-					url = url
+					url = url,
+					avatarUrl = user.avatarUrl
 				)
 			}
 		},
@@ -97,13 +98,13 @@ internal suspend fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): G
 			GHUser(
 				id = user.id,
 				name = user.login,
-				url = user.url.toString()
+				url = user.url.toString(),
+				avatarUrl = user.avatarUrl
 			)
 		}
 	} catch (ex: Exception) {
 		null
 	} ?: return null
-
 
 
 	return GHRepositoryDao(

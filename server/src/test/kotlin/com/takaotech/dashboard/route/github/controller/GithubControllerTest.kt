@@ -40,7 +40,10 @@ class GithubControllerTest : FunSpec({
 				license = "Apache 2",
 				licenseUrl = "https://test.com",
 				user = GHUser(
-					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
+					id = 1,
+					name = "Kotlin",
+					url = "https://duckduckgo.com/?q=kotlin",
+					avatarUrl = "https://duckduckgo.com/?q=avatar"
 				),
 				languages = listOf(
 					GHLanguageDao("Kotlin", 100)
@@ -58,7 +61,10 @@ class GithubControllerTest : FunSpec({
 				license = "Apache 2",
 				licenseUrl = "https://test.com",
 				user = GHUser(
-					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
+					id = 1,
+					name = "Kotlin",
+					url = "https://duckduckgo.com/?q=kotlin",
+					avatarUrl = "https://duckduckgo.com/?q=avatar"
 				),
 				languages = listOf(
 					GHLanguageDao("Kotlin", 100)
@@ -95,7 +101,10 @@ class GithubControllerTest : FunSpec({
 				license = "Apache 2",
 				licenseUrl = "https://test.com",
 				user = GHUser(
-					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
+					id = 1,
+					name = "Kotlin",
+					url = "https://duckduckgo.com/?q=kotlin",
+					avatarUrl = "https://duckduckgo.com/?q=avatar"
 				),
 				languages = listOf(
 					GHLanguageDao("Kotlin", 100)
@@ -113,7 +122,10 @@ class GithubControllerTest : FunSpec({
 				license = "Apache 2",
 				licenseUrl = "https://test.com",
 				user = GHUser(
-					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
+					id = 1,
+					name = "Kotlin",
+					url = "https://duckduckgo.com/?q=kotlin",
+					avatarUrl = "https://duckduckgo.com/?q=avatar"
 				),
 				languages = listOf(
 					GHLanguageDao("Kotlin", 100)
@@ -149,7 +161,9 @@ class GithubControllerTest : FunSpec({
 			license = "Apache 2",
 			licenseUrl = "https://test.com",
 			user = GHUser(
-				id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
+				id = 1, name = "Kotlin",
+				url = "https://duckduckgo.com/?q=kotlin",
+				avatarUrl = "https://duckduckgo.com/?q=avatar"
 			),
 			languages = listOf(
 				GHLanguageDao("Kotlin", 100)
@@ -168,7 +182,10 @@ class GithubControllerTest : FunSpec({
 				license = "Apache 2",
 				licenseUrl = "https://test.com",
 				user = GHUser(
-					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
+					id = 1,
+					name = "Kotlin",
+					url = "https://duckduckgo.com/?q=kotlin",
+					avatarUrl = "https://duckduckgo.com/?q=avatar"
 				),
 				languages = listOf(
 					GHLanguageDao("Kotlin", 100)
@@ -210,7 +227,10 @@ class GithubControllerTest : FunSpec({
 				license = "Apache 2",
 				licenseUrl = "https://test.com",
 				user = GHUser(
-					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
+					id = 1,
+					name = "Kotlin",
+					url = "https://duckduckgo.com/?q=kotlin",
+					avatarUrl = "https://duckduckgo.com/?q=avatar"
 				),
 				languages = listOf(
 					GHLanguageDao("Kotlin", 100)
@@ -228,7 +248,10 @@ class GithubControllerTest : FunSpec({
 				license = "Apache 2",
 				licenseUrl = "https://test.com",
 				user = GHUser(
-					id = 1, name = "Kotlin", url = "https://duckduckgo.com/?q=kotlin"
+					id = 1,
+					name = "Kotlin",
+					url = "https://duckduckgo.com/?q=kotlin",
+					avatarUrl = "https://duckduckgo.com/?q=avatar"
 				),
 				languages = listOf(
 					GHLanguageDao("Kotlin", 100)

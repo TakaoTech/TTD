@@ -10,5 +10,7 @@ data class GHUser(
 	@SerialName("name")
 	val name: String,
 	@SerialName("url")
-	val url: String
+	val url: String,
+	@SerialName("avatarUrl")
+	val avatarUrl: String?
 )

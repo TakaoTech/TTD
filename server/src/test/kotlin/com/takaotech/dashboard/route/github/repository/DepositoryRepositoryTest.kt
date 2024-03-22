@@ -52,7 +52,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					license = "Apache 2",
 					licenseUrl = "https://test.com",
 					user = GHUser(
-						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
+						id = 1744,
+						name = "Katharine Hampton",
+						url = "https://duckduckgo.com/?q=blandit",
+						avatarUrl = "https://duckduckgo.com/?q=avatar"
 					),
 					languages = listOf(
 						GHLanguageDao("Kotlin", 100)
@@ -70,7 +73,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					license = "Apache 2",
 					licenseUrl = "https://test.com",
 					user = GHUser(
-						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
+						id = 1744,
+						name = "Katharine Hampton",
+						url = "https://duckduckgo.com/?q=blandit",
+						avatarUrl = "https://duckduckgo.com/?q=avatar"
 					),
 					languages = listOf(
 						GHLanguageDao("Bash", 100)
@@ -91,7 +97,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					license = "Apache 2",
 					licenseUrl = "https://test.com",
 					user = GHUser(
-						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
+						id = 1744,
+						name = "Katharine Hampton",
+						url = "https://duckduckgo.com/?q=blandit",
+						avatarUrl = "https://duckduckgo.com/?q=avatar"
 					),
 					languages = listOf(
 						GHLanguageDao("Kotlin", 100)
@@ -109,7 +118,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					license = "Apache 2",
 					licenseUrl = "https://test.com",
 					user = GHUser(
-						id = 1744, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
+						id = 1744,
+						name = "Katharine Hampton",
+						url = "https://duckduckgo.com/?q=blandit",
+						avatarUrl = "https://duckduckgo.com/?q=avatar"
 					),
 					languages = listOf(
 						GHLanguageDao("Bash", 100)
@@ -141,7 +153,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					license = "Apache 2",
 					licenseUrl = "https://test.com",
 					user = GHUser(
-						id = 1, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
+						id = 1,
+						name = "Katharine Hampton",
+						url = "https://duckduckgo.com/?q=blandit",
+						avatarUrl = "https://duckduckgo.com/?q=avatar"
 					),
 					languages = listOf(
 						GHLanguageDao("Kotlin", 100)
@@ -172,7 +187,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					license = "Apache 2",
 					licenseUrl = "https://test.com",
 					user = GHUser(
-						id = 1, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
+						id = 1,
+						name = "Katharine Hampton",
+						url = "https://duckduckgo.com/?q=blandit",
+						avatarUrl = "https://duckduckgo.com/?q=avatar"
 					),
 					languages = listOf(
 						GHLanguageDao("Kotlin", 100)
@@ -190,7 +208,10 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					license = "Apache 2",
 					licenseUrl = "https://test.com",
 					user = GHUser(
-						id = 2, name = "Katharine Hampton", url = "https://duckduckgo.com/?q=blandit"
+						id = 2,
+						name = "Katharine Hampton",
+						url = "https://duckduckgo.com/?q=blandit",
+						avatarUrl = "https://duckduckgo.com/?q=avatar"
 					),
 					languages = listOf(
 						GHLanguageDao("Kotlin", 100)
