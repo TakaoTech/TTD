@@ -240,7 +240,8 @@ paths:
           description: ID of the GitHub repository to retrieve
           required: true
           schema:
-            type: integer
+            type: number
+            description: long
             default: 3432266
       responses:
         '200':

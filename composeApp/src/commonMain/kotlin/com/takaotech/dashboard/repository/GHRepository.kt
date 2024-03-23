@@ -3,6 +3,7 @@ package com.takaotech.dashboard.repository
 import co.touchlab.kermit.Logger
 import com.github.kittinunf.result.Result
 import com.takaotech.dashboard.model.TakaoPaging
+import com.takaotech.dashboard.model.github.GHRepositoryDao
 import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
 import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.repository.api.GHApi
@@ -23,6 +24,14 @@ class GHRepository(
 				page = page,
 				size = size
 			)
+		}
+	}
+
+	suspend fun getRepository(
+		id: Long
+	): Result<GHRepositoryDao, Throwable> {
+		return Result.of<GHRepositoryDao, Throwable> {
+			githubApi.getRepository(id)
 		}
 	}
 

@@ -155,12 +155,12 @@ internal fun GHRepositoryCard(
 			}
 
 			Spacer(Modifier.height(8.dp))
-
 			FlowRow(
 				modifier = Modifier.fillMaxWidth(),
 				horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
 			) {
 				languages.forEach {
+					//TODO Support RTL
 					Text("${it.name} ${"%.1f".sprintf(it.weight)}%")
 				}
 			}

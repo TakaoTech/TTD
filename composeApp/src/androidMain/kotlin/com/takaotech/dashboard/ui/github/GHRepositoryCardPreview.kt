@@ -16,7 +16,8 @@ fun GHRepositoryCardPreview() {
 			tags = listOf(),
 			modifier = Modifier.fillMaxWidth(),
 			languages = listOf(),
-			onCardClicked = {}
+			onCardClicked = {},
+			onTagClicked = {}
 		)
 	}
 }

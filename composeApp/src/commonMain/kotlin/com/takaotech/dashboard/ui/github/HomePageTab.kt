@@ -13,6 +13,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
+import com.takaotech.dashboard.ui.github.detail.GHRepositoryDetail
 import com.takaotech.dashboard.ui.github.list.GHHomepageListPage
 
 object HomePageTab : Tab {
@@ -36,8 +37,9 @@ object HomePageTab : Tab {
 			},
 			onMoreRepositoriesClicked = {
 				parent?.push(GHHomepageListPage())
-			}, onCardClicked = {
-
+			},
+			onCardClicked = {
+				parent?.push(GHRepositoryDetail(it))
 			}
 		)
 	}
