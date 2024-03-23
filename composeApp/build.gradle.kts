@@ -102,6 +102,10 @@ kotlin {
 				implementation(libs.haze)
 				implementation(libs.haze.materials)
 
+				implementation(libs.coil)
+				implementation(libs.coil.ktor)
+				implementation(libs.coil.compose)
+
 				implementation("net.sergeych:mp_stools:1.4.7")
 
 				implementation("app.cash.paging:paging-compose-common:3.3.0-alpha02-0.5.1")
