@@ -24,6 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
 import com.takaotech.dashboard.model.github.TagDao
@@ -169,6 +171,8 @@ private fun CollapsedTopBar(
 	modifier: Modifier = Modifier,
 	isCollapsed: Boolean
 ) {
+	val layoutDirection = LocalLayoutDirection.current
+
 	TopAppBar(
 		modifier = modifier,
 		colors = TopAppBarDefaults.largeTopAppBarColors(Color.Transparent),
@@ -176,10 +180,18 @@ private fun CollapsedTopBar(
 			AnimatedVisibility(
 				visible = isCollapsed,
 				enter = slideInHorizontally { fullWidth: Int ->
-					-fullWidth * 2
+					if (layoutDirection == LayoutDirection.Ltr) {
+						-fullWidth * 2
+					} else {
+						fullWidth * 2
+					}
 				},
 				exit = slideOutHorizontally { fullWidth: Int ->
-					-fullWidth * 2
+					if (layoutDirection == LayoutDirection.Ltr) {
+						-fullWidth * 2
+					} else {
+						fullWidth * 2
+					}
 				}
 			) {
 				Text(text = stringResource(Res.string.homepage_title_label), style = MaterialTheme.typography.h6)
