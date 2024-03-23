@@ -41,6 +41,8 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 
 		test("Save data in DB") {
 			val depositoryRepository by inject<DepositoryRepository>()
+			val updatedAtRepo1 = Clock.System.now()
+			val updatedAtRepo2 = Clock.System.now()
 
 			val inputRepository = listOf(
 				GHRepositoryDao(
@@ -62,7 +64,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					),
 					tags = listOf(),
 					mainCategory = MainCategory.NONE,
-					updatedAt = Clock.System.now()
+					updatedAt = updatedAtRepo1
 				),
 				GHRepositoryDao(
 					id = 2,
@@ -83,7 +85,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					),
 					tags = listOf(),
 					mainCategory = MainCategory.NONE,
-					updatedAt = Clock.System.now()
+					updatedAt = updatedAtRepo2
 				)
 			)
 
@@ -107,7 +109,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					),
 					tags = listOf(),
 					mainCategory = MainCategory.KOTLIN,
-					updatedAt = Clock.System.now()
+					updatedAt = updatedAtRepo1
 				),
 				GHRepositoryDao(
 					id = 2,
@@ -128,13 +130,14 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					),
 					tags = listOf(),
 					mainCategory = MainCategory.NONE,
-					updatedAt = Clock.System.now()
+					updatedAt = updatedAtRepo2
 				)
 			)
 
 			depositoryRepository.saveRepositoriesToDB(inputRepository)
 			val recoveredRepo = depositoryRepository.getGHRepository()
 			assertTrue { recoveredRepo.isNotEmpty() }
+			//TODO Fix test, recoveredRepo is populated with langauges colors
 			assertEquals(outputRepository, recoveredRepo)
 			assertTrue { recoveredRepo.find { it.id == 1L }!!.mainCategory == MainCategory.KOTLIN }
 			assertTrue { recoveredRepo.find { it.id == 2L }!!.mainCategory == MainCategory.NONE }

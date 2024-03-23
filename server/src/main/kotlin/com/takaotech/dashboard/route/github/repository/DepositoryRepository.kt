@@ -39,9 +39,11 @@ class DepositoryRepository(
 
 			for (repository in repositoryListFiltered) {
 				repository.user.let { user ->
+					//TODO Procedure buggata, non permette un allineamento dei dati tra GH e il mio depo
 					GithubUserEntity.findById(user.id) ?: GithubUserEntity.new(user.id) {
 						name = user.name
 						url = user.url
+						avatarUrl = user.avatarUrl
 					}
 				}
 			}
