@@ -9,9 +9,10 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class GHHomepageListPageViewModel(
-	private val ghRepositoryListUseCase: GHRepositoryListUseCase
+	ghRepositoryListUseCase: GHRepositoryListUseCase,
+	tagId: Int
 ) : ScreenModel {
 
-	val repositoryList = ghRepositoryListUseCase.getGhRepositoryList()
+	val repositoryList = ghRepositoryListUseCase.getGhRepositoryList(tagId = tagId)
 		.flowOn(Dispatchers.IO)
 }

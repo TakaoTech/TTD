@@ -11,7 +11,9 @@ class GHRepositorySource(
 	private val ghRepository: GHRepository
 ) : BasePagingSource<GHRepositoryMiniDao>() {
 
+	var tagId: Int? = null
+
 	override suspend fun fetchData(page: Int, limit: Int): TakaoPaging<GHRepositoryMiniDao> {
-		return ghRepository.getRepositories(page, limit).get()
+		return ghRepository.getRepositories(page, limit, tagId = tagId).get()
 	}
 }

@@ -17,12 +17,15 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import com.takaotech.dashboard.ui.github.GHRepositoryCard
+import org.koin.core.parameter.parametersOf
 
-class GHHomepageListPage : Screen {
+data class GHHomepageListPage(private val tagId: Int? = null) : Screen {
 
 	@Composable
 	override fun Content() {
-		val viewModel = getScreenModel<GHHomepageListPageViewModel>()
+		val viewModel = getScreenModel<GHHomepageListPageViewModel> {
+			parametersOf(tagId)
+		}
 
 		val repoList = viewModel.repositoryList.collectAsLazyPagingItems()
 		LazyColumn(modifier = Modifier.fillMaxSize()) {

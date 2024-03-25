@@ -12,7 +12,8 @@ interface GHApi {
 	@GET("github")
 	suspend fun getRepositories(
 		@Query("page") page: Int,
-		@Query("size") size: Int
+		@Query("size") size: Int,
+		@Query("tagId") tagId: Int?
 	): TakaoPaging<GHRepositoryMiniDao>
 
 	@GET("github/{id}")

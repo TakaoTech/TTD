@@ -17,12 +17,14 @@ class GHRepository(
 
 	suspend fun getRepositories(
 		page: Int,
-		size: Int
+		size: Int,
+		tagId: Int? = null
 	): Result<TakaoPaging<GHRepositoryMiniDao>, Throwable> {
 		return Result.of<TakaoPaging<GHRepositoryMiniDao>, Throwable> {
 			githubApi.getRepositories(
 				page = page,
-				size = size
+				size = size,
+				tagId = tagId
 			)
 		}
 	}

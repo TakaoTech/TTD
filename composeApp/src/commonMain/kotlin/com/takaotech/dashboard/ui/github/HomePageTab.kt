@@ -30,7 +30,7 @@ object HomePageTab : Tab {
 			tags = uiState.tags,
 			repositories = uiState.repositoryList,
 			onTagClicked = {
-
+				parent?.push(GHHomepageListPage(tagId = it))
 			},
 			onMoreTagClicked = {
 

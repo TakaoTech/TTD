@@ -248,6 +248,12 @@ paths:
           schema:
             type: integer
             default: 10
+        - name: tagId
+          in: query
+          description: Filter repositories by tag ID
+          schema:
+            type: integer
+          required: false
       responses:
         '200':
           description: Successful response
@@ -286,42 +292,6 @@ paths:
       summary: Get Tags with Pagination
       description: Retrieve a paginated list of tags associated with GitHub repositories
       parameters:
-        - name: page
-          in: query
-          description: Page number for pagination
-          schema:
-            type: integer
-            default: 1
-        - name: size
-          in: query
-          description: Number of items per page
-          schema:
-            type: integer
-            default: 10
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TagDao'
-  /github/tags/{id}:
-    get:
-      tags:
-        - GitHub Repository
-      summary: Get Tags with Pagination
-      description: Retrieve a paginated list of tags associated with GitHub repositories
-      parameters:
-        - name: id
-          in: path
-          description: ID of the GitHub repository to retrieve
-          required: true
-          schema:
-            type: number
-            description: long
-            default: 3432266
         - name: page
           in: query
           description: Page number for pagination

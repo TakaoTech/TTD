@@ -13,8 +13,11 @@ fun Route.githubRouter() {
 
 
 	get<GithubRoute> {
-		//TODO if page and size are null get all?
-		call.respond(controller.getRepositoryMini(it.page!!, it.size!!))
+		if (it.tagId != null) {
+			call.respond(controller.getRepositoryByTag(it.page ?: 1, it.size ?: 1, it.tagId))
+		} else {
+			call.respond(controller.getRepositoryMini(it.page!!, it.size!!))
+		}
 	}
 
 	get<GithubRoute.Id> {
@@ -28,9 +31,5 @@ fun Route.githubRouter() {
 
 	get<GithubRoute.Tags> {
 		call.respond(controller.getTags(it.parent.page, it.parent.size))
-	}
-
-	get<GithubRoute.Tags.Id> {
-		call.respond(controller.getRepositoryByTag(it.parent.parent.page ?: 1, it.parent.parent.size ?: 1, it.id))
 	}
 }
