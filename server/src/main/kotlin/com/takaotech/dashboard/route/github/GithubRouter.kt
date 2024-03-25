@@ -29,4 +29,8 @@ fun Route.githubRouter() {
 	get<GithubRoute.Tags> {
 		call.respond(controller.getTags(it.parent.page, it.parent.size))
 	}
+
+	get<GithubRoute.Tags.Id> {
+		call.respond(controller.getRepositoryByTag(it.parent.parent.page ?: 1, it.parent.parent.size ?: 1, it.id))
+	}
 }

@@ -8,6 +8,8 @@ import com.takaotech.dashboard.route.github.data.*
 import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepository
 import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryMini
 import com.takaotech.dashboard.utils.HikariDatabase
+import org.jetbrains.annotations.ApiStatus
+import org.jetbrains.exposed.sql.EmptySizedIterable
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.selectAll
 import org.koin.core.annotation.Factory
@@ -150,6 +152,33 @@ class DepositoryRepository(
 					totalPage = first
 				)
 			}
+		}
+	}
+
+	@ApiStatus.Experimental
+	internal suspend fun getGHRepositoryByTag(
+		tagId: Int,
+		page: Int,
+		size: Int
+	): TakaoPaging<GHRepositoryMiniDao> {
+		val limit: Int = size
+		val pageSize: Int = size
+		val skip: Int = (page - 1) * pageSize
+
+		return database.dbExec {
+			//Here we can skip filtering KOTLIN
+			(TagsEntityFollowRepo.findById(tagId)
+				?.repositories ?: EmptySizedIterable())
+				.run {
+					val totalPages = (count() / pageSize)
+					totalPages to limit(offset = skip.toLong(), n = limit)
+				}.run {
+					TakaoPaging(
+						data = second.map { it.convertToGHRepositoryMini(database, colorController) },
+						page = page,
+						totalPage = first
+					)
+				}
 		}
 	}
 

@@ -94,4 +94,8 @@ class GithubController(
 			githubDepositoryRepository.setTagsAtRepository(id, tags)
 		}
 	}
+
+	suspend fun getRepositoryByTag(page: Int, size: Int, tagId: Int): TakaoPaging<GHRepositoryMiniDao> {
+		return githubDepositoryRepository.getGHRepositoryByTag(page = page, size = size, tagId = tagId)
+	}
 }

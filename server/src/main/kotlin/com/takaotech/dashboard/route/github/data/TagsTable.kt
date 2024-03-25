@@ -24,3 +24,13 @@ class TagsEntity(id: EntityID<Int>) : IntEntity(id) {
 	var description by TagsTable.description
 	var color by TagsTable.color
 }
+
+class TagsEntityFollowRepo(id: EntityID<Int>) : IntEntity(id) {
+	companion object : IntEntityClass<TagsEntityFollowRepo>(TagsTable)
+
+	var name by TagsTable.name
+	var description by TagsTable.description
+	var color by TagsTable.color
+
+	val repositories by GithubDepositoryMiniEntity via GithubDepositoryTagsTable
+}
