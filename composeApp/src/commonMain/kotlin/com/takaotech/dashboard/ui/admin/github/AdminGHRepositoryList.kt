@@ -24,10 +24,11 @@ import ttd.composeapp.generated.resources.ghrepository_no_tags
 import ttd.composeapp.generated.resources.ghrepository_tags_label
 
 @Composable
-fun GHRepositoryList(
+fun AdminGHRepositoryList(
 	ghRepositoryState: GHRepositoryListUiState.GhRepositoryListState,
 	modifier: Modifier = Modifier,
 	onCardClicked: (url: String) -> Unit,
+	onTagEditClicked: (repoId: Long) -> Unit,
 	onCategoryChangeClicked: (repoId: Long, newCategory: MainCategory) -> Unit
 ) {
 	when (ghRepositoryState) {
@@ -62,13 +63,16 @@ fun GHRepositoryList(
 
 
 
-					GHRepositoryCard(
+					AdminGHRepositoryCard(
 						modifier = Modifier.padding(8.dp),
 						fullName = it.fullName,
 						tags = it.tags,
 						mainCategory = it.mainCategory,
-						onTagsEditClicked = {
+						onMainCategoryClicked = {
 							openBottomSheet = true
+						},
+						onTagEditClicked = {
+							onTagEditClicked(it.id)
 						},
 						onCardClicked = {
 							onCardClicked(it.url)
@@ -84,11 +88,12 @@ fun GHRepositoryList(
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalResourceApi::class)
 @Composable
-internal fun GHRepositoryCard(
+internal fun AdminGHRepositoryCard(
 	fullName: String,
 	mainCategory: MainCategory,
 	tags: List<TagDao>,
-	onTagsEditClicked: () -> Unit,
+	onMainCategoryClicked: () -> Unit,
+	onTagEditClicked: () -> Unit,
 	modifier: Modifier = Modifier,
 	onCardClicked: () -> Unit
 ) {
@@ -100,7 +105,7 @@ internal fun GHRepositoryCard(
 					text = fullName
 				)
 				Chip(onClick = {
-					onTagsEditClicked()
+					onMainCategoryClicked()
 				}) {
 					Text(mainCategory.name)
 				}
@@ -130,7 +135,7 @@ internal fun GHRepositoryCard(
 
 
 				IconButton(
-					onClick = onTagsEditClicked
+					onClick = onTagEditClicked
 				) {
 					//TODO contentDesc
 					Icon(Icons.Filled.Edit, "Edit tags")

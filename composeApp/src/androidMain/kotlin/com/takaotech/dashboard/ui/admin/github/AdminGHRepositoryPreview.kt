@@ -18,7 +18,7 @@ private fun GHRepositoryListPreview() {
 @Composable
 private fun GHRepositoryCardPreview() {
 	Column {
-		GHRepositoryCard(
+		AdminGHRepositoryCard(
 			modifier = Modifier.fillMaxWidth(),
 			fullName = "JetBrains/kotlin",
 			tags = buildList {
@@ -29,7 +29,8 @@ private fun GHRepositoryCardPreview() {
 				add(TagDao(id = 9137, name = "Kelly Barker", description = null))
 			},
 			mainCategory = MainCategory.KOTLIN,
-			onTagsEditClicked = {}
+			onMainCategoryClicked = {},
+			onTagEditClicked = {}
 		) {}
 	}
 }

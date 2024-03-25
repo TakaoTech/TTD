@@ -12,6 +12,10 @@ class AdminGithubRoute(
 		@Resource("updateCategory")
 		//TODO newCategory as query param?
 		class UpdateCategory(val parent: Id = Id(), val newCategory: MainCategory)
+
+		@Resource("updateTags")
+		//TODO newCategory as query param?
+		class UpdateTags(val parent: Id = Id())
 	}
 
 	@Resource("refresh")

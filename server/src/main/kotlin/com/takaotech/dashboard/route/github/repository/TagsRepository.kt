@@ -58,4 +58,10 @@ class TagsRepository(private val database: HikariDatabase) {
 			TagsEntity.findById(id)?.convertToTagDao()
 		}
 	}
+
+	internal suspend fun getTagByIdInternal(id: Int): TagsEntity? {
+		return database.dbExec {
+			TagsEntity.findById(id)
+		}
+	}
 }

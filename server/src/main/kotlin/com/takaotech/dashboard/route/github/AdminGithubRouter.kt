@@ -1,8 +1,10 @@
 package com.takaotech.dashboard.route.github
 
+import com.takaotech.dashboard.model.github.request.TagsUpdateRequest
 import com.takaotech.dashboard.route.github.controller.GithubController
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.resources.*
 import io.ktor.server.resources.post
 import io.ktor.server.response.*
@@ -115,6 +117,19 @@ inline fun Route.adminGithubRouter() {
 			controller.updateMainCategoryAtRepository(it.parent.id, it.newCategory)
 			call.respond(HttpStatusCode.OK)
 		}
+	}
+
+	post<AdminGithubRoute.Id.UpdateTags> {
+		val id = it.parent.id
+		val tagIds = call.receive<TagsUpdateRequest>().tagIds
+		if (id == null) {
+			call.respond(HttpStatusCode.BadRequest)
+			return@post
+		}
+
+		controller.updateRepositoryTags(id, tagIds)
+
+		call.respond(HttpStatusCode.OK)
 	}
 }
 

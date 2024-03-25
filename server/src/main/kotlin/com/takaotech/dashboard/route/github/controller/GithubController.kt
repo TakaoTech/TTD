@@ -86,4 +86,12 @@ class GithubController(
 	suspend fun getTagById(id: Int): TagDao? {
 		return tagsRepository.getTagById(id)
 	}
+
+	suspend fun updateRepositoryTags(id: Long, tagIds: List<Int>) {
+		tagIds.mapNotNull {
+			tagsRepository.getTagByIdInternal(it)
+		}.let { tags ->
+			githubDepositoryRepository.setTagsAtRepository(id, tags)
+		}
+	}
 }
