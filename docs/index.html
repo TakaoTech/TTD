@@ -10949,6 +10949,36 @@
             }
         }
     };
+    defs["TagsUpdateRequest"] = {
+        "type": "object",
+        "properties": {
+            "tagIds": {
+                "type": "array",
+                "description": "List of tag IDs to update the category",
+                "items": {
+                    "type": "integer"
+                }
+            }
+        }
+    };
+    defs["TakaoPaging"] = {
+        "type": "object",
+        "properties": {
+            "data": {
+                "type": "array",
+                "description": "The paginated data",
+                "items": {}
+            },
+            "page": {
+                "type": "integer",
+                "description": "The current page number"
+            },
+            "totalPage": {
+                "type": "integer",
+                "description": "The total number of pages"
+            }
+        }
+    };
 </script>
 
 <div class="container-fluid">
@@ -10970,6 +11000,9 @@
                     <li data-group="GitHubRepository" data-name="githubGet" class="">
                         <a href="#api-GitHubRepository-githubGet">githubGet</a>
                     </li>
+                    <li data-group="GitHubRepository" data-name="githubIdGet" class="">
+                        <a href="#api-GitHubRepository-githubIdGet">githubIdGet</a>
+                    </li>
                     <li data-group="GitHubRepository" data-name="githubTagsGet" class="">
                         <a href="#api-GitHubRepository-githubTagsGet">githubTagsGet</a>
                     </li>
@@ -10983,6 +11016,9 @@
                     </li>
                     <li data-group="GitHubRepositoryAdmin" data-name="adminGithubIdUpdateCategoryPost" class="">
                         <a href="#api-GitHubRepositoryAdmin-adminGithubIdUpdateCategoryPost">adminGithubIdUpdateCategoryPost</a>
+                    </li>
+                    <li data-group="GitHubRepositoryAdmin" data-name="adminGithubIdUpdateTagsPost" class="">
+                        <a href="#api-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost">adminGithubIdUpdateTagsPost</a>
                     </li>
                     <li data-group="GitHubRepositoryAdmin" data-name="adminGithubRefreshCancelGet" class="">
                         <a href="#api-GitHubRepositoryAdmin-adminGithubRefreshCancelGet">adminGithubRefreshCancelGet</a>
@@ -11040,7 +11076,7 @@
                             <div class="pull-right"></div>
                             <div class="clearfix"></div>
                             <p></p>
-                            <p class="marked">Retrieve a paginated list of GitHub repositories</p>
+                            <p class="marked">Retrieve a paginated list of GitHub repositories using TakaoPaging</p>
                             <p></p>
                             <br/>
                             <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span
@@ -11086,7 +11122,7 @@ public class GitHubRepositoryApiExample {
         Integer page = 56; // Integer | Page number for pagination
         Integer size = 56; // Integer | Number of items per page
         try {
-            array[GHRepositoryMiniDao] result = apiInstance.githubGet(page, size);
+            GHRepositoryMiniDao result = apiInstance.githubGet(page, size);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling GitHubRepositoryApi#githubGet");
@@ -11106,7 +11142,7 @@ public class GitHubRepositoryApiExample {
         Integer page = 56; // Integer | Page number for pagination
         Integer size = 56; // Integer | Number of items per page
         try {
-            array[GHRepositoryMiniDao] result = apiInstance.githubGet(page, size);
+            GHRepositoryMiniDao result = apiInstance.githubGet(page, size);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling GitHubRepositoryApi#githubGet");
@@ -11128,7 +11164,7 @@ GitHubRepositoryApi *apiInstance = [[GitHubRepositoryApi alloc] init];
 // Get GitHub Repositories with Pagination
 [apiInstance githubGetWith:page
     size:size
-              completionHandler: ^(array[GHRepositoryMiniDao] output, NSError* error) {
+              completionHandler: ^(GHRepositoryMiniDao output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
                             }
@@ -11182,7 +11218,7 @@ namespace Example
             try
             {
                 // Get GitHub Repositories with Pagination
-                array[GHRepositoryMiniDao] result = apiInstance.githubGet(page, size);
+                GHRepositoryMiniDao result = apiInstance.githubGet(page, size);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -11323,11 +11359,7 @@ except ApiException as e:
                                                     "content": {
                                                         "application/json": {
                                                             "schema": {
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "$ref": "#/components/schemas/GHRepositoryMiniDao"
-                                                                },
-                                                                "x-content-type": "application/json"
+                                                                "$ref": "#/components/schemas/GHRepositoryMiniDao"
                                                             }
                                                         }
                                                     }
@@ -11354,6 +11386,312 @@ except ApiException as e:
                                     </div>
                                     <input id='responses-githubGet-200-schema-data' type='hidden' value=''></input>
                                 </div>
+                            </div>
+
+                        </article>
+                    </div>
+                    <hr>
+                    <div id="api-GitHubRepository-githubIdGet">
+                        <article id="api-GitHubRepository-githubIdGet-0" data-group="User" data-name="githubIdGet"
+                                 data-version="0">
+                            <div class="pull-left">
+                                <h1>githubIdGet</h1>
+                                <p>Get GitHub Repository by ID</p>
+                            </div>
+                            <div class="pull-right"></div>
+                            <div class="clearfix"></div>
+                            <p></p>
+                            <p class="marked">Retrieve a GitHub repository by its ID</p>
+                            <p></p>
+                            <br/>
+                            <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span
+                                    class="pln">/github/{id}</span></code></pre>
+                            <p>
+                            <h3>Usage and SDK Samples</h3>
+                            </p>
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                                <li class="active"><a href="#examples-GitHubRepository-githubIdGet-0-curl">Curl</a></li>
+                                <li class=""><a href="#examples-GitHubRepository-githubIdGet-0-java">Java</a></li>
+                                <li class=""><a href="#examples-GitHubRepository-githubIdGet-0-android">Android</a></li>
+                                <!--<li class=""><a href="#examples-GitHubRepository-githubIdGet-0-groovy">Groovy</a></li>-->
+                                <li class=""><a href="#examples-GitHubRepository-githubIdGet-0-objc">Obj-C</a></li>
+                                <li class=""><a
+                                        href="#examples-GitHubRepository-githubIdGet-0-javascript">JavaScript</a></li>
+                                <!--<li class=""><a href="#examples-GitHubRepository-githubIdGet-0-angular">Angular</a></li>-->
+                                <li class=""><a href="#examples-GitHubRepository-githubIdGet-0-csharp">C#</a></li>
+                                <li class=""><a href="#examples-GitHubRepository-githubIdGet-0-php">PHP</a></li>
+                                <li class=""><a href="#examples-GitHubRepository-githubIdGet-0-perl">Perl</a></li>
+                                <li class=""><a href="#examples-GitHubRepository-githubIdGet-0-python">Python</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="examples-GitHubRepository-githubIdGet-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X GET\
+-H "Accept: application/json"\
+"http://127.0.0.1:8080/github/{id}"</code></pre>
+                                </div>
+                                <div class="tab-pane" id="examples-GitHubRepository-githubIdGet-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.GitHubRepositoryApi;
+
+import java.io.File;
+import java.util.*;
+
+public class GitHubRepositoryApiExample {
+
+    public static void main(String[] args) {
+
+        GitHubRepositoryApi apiInstance = new GitHubRepositoryApi();
+        BigDecimal id = 1.2; // BigDecimal | ID of the GitHub repository to retrieve
+        try {
+            GHRepositoryDao result = apiInstance.githubIdGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling GitHubRepositoryApi#githubIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-GitHubRepository-githubIdGet-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.GitHubRepositoryApi;
+
+public class GitHubRepositoryApiExample {
+
+    public static void main(String[] args) {
+        GitHubRepositoryApi apiInstance = new GitHubRepositoryApi();
+        BigDecimal id = 1.2; // BigDecimal | ID of the GitHub repository to retrieve
+        try {
+            GHRepositoryDao result = apiInstance.githubIdGet(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling GitHubRepositoryApi#githubIdGet");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                                </div>
+                                <!--
+  <div class="tab-pane" id="examples-GitHubRepository-githubIdGet-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                                <div class="tab-pane" id="examples-GitHubRepository-githubIdGet-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">BigDecimal *id = 1.2; // ID of the GitHub repository to retrieve
+
+GitHubRepositoryApi *apiInstance = [[GitHubRepositoryApi alloc] init];
+
+// Get GitHub Repository by ID
+[apiInstance githubIdGetWith:id
+              completionHandler: ^(GHRepositoryDao output, NSError* error) {
+                            if (output) {
+                                NSLog(@"%@", output);
+                            }
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-GitHubRepository-githubIdGet-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApplicationApi = require('application_api');
+
+var api = new ApplicationApi.GitHubRepositoryApi()
+var id = 1.2; // {{BigDecimal}} ID of the GitHub repository to retrieve
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.githubIdGet(id, callback);
+</code></pre>
+                                </div>
+
+                                <!--<div class="tab-pane" id="examples-GitHubRepository-githubIdGet-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                                <div class="tab-pane" id="examples-GitHubRepository-githubIdGet-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class githubIdGetExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new GitHubRepositoryApi();
+            var id = 1.2;  // BigDecimal | ID of the GitHub repository to retrieve
+
+            try
+            {
+                // Get GitHub Repository by ID
+                GHRepositoryDao result = apiInstance.githubIdGet(id);
+                Debug.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling GitHubRepositoryApi.githubIdGet: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-GitHubRepository-githubIdGet-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiGitHubRepositoryApi();
+$id = 1.2; // BigDecimal | ID of the GitHub repository to retrieve
+
+try {
+    $result = $api_instance->githubIdGet($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling GitHubRepositoryApi->githubIdGet: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-GitHubRepository-githubIdGet-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::GitHubRepositoryApi;
+
+my $api_instance = WWW::SwaggerClient::GitHubRepositoryApi->new();
+my $id = 1.2; # BigDecimal | ID of the GitHub repository to retrieve
+
+eval {
+    my $result = $api_instance->githubIdGet(id => $id);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling GitHubRepositoryApi->githubIdGet: $@\n";
+}</code></pre>
+                                </div>
+
+                                <div class="tab-pane" id="examples-GitHubRepository-githubIdGet-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.GitHubRepositoryApi()
+id = 1.2 # BigDecimal | ID of the GitHub repository to retrieve
+
+try:
+    # Get GitHub Repository by ID
+    api_response = api_instance.github_id_get(id)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling GitHubRepositoryApi->githubIdGet: %s\n" % e)</code></pre>
+                                </div>
+                            </div>
+
+                            <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                    <th width="150px">Name</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td style="width:150px;">id*</td>
+                                    <td>
+
+
+                                        <div id="d2e199_githubIdGet_id">
+                                            <div class="json-schema-view">
+                                                <div class="primitive">
+                                                  <span class="type">
+                                                      BigDecimal
+                                                  </span>
+
+                                                    <div class="inner description">
+                                                        ID of the GitHub repository to retrieve
+                                                    </div>
+                                                </div>
+                                                <div class="inner required">
+                                                    Required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+
+                            <h2>Responses</h2>
+                            <h3> Status: 200 - Successful response </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                                <li class="active">
+                                    <a data-toggle="tab" href="#responses-githubIdGet-200-schema">Schema</a>
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-githubIdGet-200-schema">
+                                    <div id='responses-githubIdGet-200-schema-200'
+                                         style="padding: 30px; border-left: 1px solid #eee; border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                        <script>
+                                            $(document).ready(function () {
+                                                var schemaWrapper = {
+                                                    "description": "Successful response",
+                                                    "content": {
+                                                        "application/json": {
+                                                            "schema": {
+                                                                "$ref": "#/components/schemas/GHRepositoryDao"
+                                                            }
+                                                        }
+                                                    }
+                                                };
+                                                var schema = schemaWrapper.content["application/json"].schema;
+                                                if (schema.$ref != null) {
+                                                    schema = defsParser.$refs.get(schema.$ref);
+                                                } else {
+                                                    schemaWrapper.components = {};
+                                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                                    $RefParser.dereference(schemaWrapper).catch(function (err) {
+                                                        console.log(err);
+                                                    });
+                                                }
+
+                                                //console.log(JSON.stringify(schema));
+                                                var view = new JSONSchemaView(schema, 3);
+                                                $('#responses-githubIdGet-200-schema-data').val(stringify(schema));
+                                                var result = $('#responses-githubIdGet-200-schema-200');
+                                                result.empty();
+                                                result.append(view.render());
+                                            });
+                                        </script>
+                                    </div>
+                                    <input id='responses-githubIdGet-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+
+                            <h3> Status: 404 - Repository not found </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
                             </div>
 
                         </article>
@@ -12614,6 +12952,351 @@ except ApiException as e:
                                     </td>
                                 </tr>
                             </table>
+
+                            <h2>Responses</h2>
+                            <h3> Status: 200 - Category updated successfully </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 404 - Repository not found </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                            <h3> Status: 400 - Invalid category provided </h3>
+
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                            </ul>
+
+                            <div class="tab-content" style='margin-bottom: 10px;'>
+                            </div>
+
+                        </article>
+                    </div>
+                    <hr>
+                    <div id="api-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost">
+                        <article id="api-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0" data-group="User"
+                                 data-name="adminGithubIdUpdateTagsPost" data-version="0">
+                            <div class="pull-left">
+                                <h1>adminGithubIdUpdateTagsPost</h1>
+                                <p>Update GitHub Repository Category</p>
+                            </div>
+                            <div class="pull-right"></div>
+                            <div class="clearfix"></div>
+                            <p></p>
+                            <p class="marked">Update the category of a GitHub repository</p>
+                            <p></p>
+                            <br/>
+                            <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span
+                                    class="pln">/admin/github/{id}/updateTags</span></code></pre>
+                            <p>
+                            <h3>Usage and SDK Samples</h3>
+                            </p>
+                            <ul class="nav nav-tabs nav-tabs-examples">
+                                <li class="active"><a
+                                        href="#examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-curl">Curl</a>
+                                </li>
+                                <li class=""><a
+                                        href="#examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-java">Java</a>
+                                </li>
+                                <li class=""><a
+                                        href="#examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-android">Android</a>
+                                </li>
+                                <!--<li class=""><a href="#examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-groovy">Groovy</a></li>-->
+                                <li class=""><a
+                                        href="#examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-objc">Obj-C</a>
+                                </li>
+                                <li class=""><a
+                                        href="#examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-javascript">JavaScript</a>
+                                </li>
+                                <!--<li class=""><a href="#examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-angular">Angular</a></li>-->
+                                <li class=""><a
+                                        href="#examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-csharp">C#</a>
+                                </li>
+                                <li class=""><a
+                                        href="#examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-php">PHP</a>
+                                </li>
+                                <li class=""><a
+                                        href="#examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-perl">Perl</a>
+                                </li>
+                                <li class=""><a
+                                        href="#examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-python">Python</a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane active"
+                                     id="examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-curl">
+                           <pre class="prettyprint"><code class="language-bsh">curl -X POST\
+-H "Content-Type: application/json"\
+"http://127.0.0.1:8080/admin/github/{id}/updateTags"</code></pre>
+                                </div>
+                                <div class="tab-pane"
+                                     id="examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-java">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
+import io.swagger.client.auth.*;
+import io.swagger.client.model.*;
+import io.swagger.client.api.GitHubRepositoryAdminApi;
+
+import java.io.File;
+import java.util.*;
+
+public class GitHubRepositoryAdminApiExample {
+
+    public static void main(String[] args) {
+
+        GitHubRepositoryAdminApi apiInstance = new GitHubRepositoryAdminApi();
+        TagsUpdateRequest body = ; // TagsUpdateRequest |
+        Integer id = 56; // Integer | ID of the GitHub repository to update
+        try {
+            apiInstance.adminGithubIdUpdateTagsPost(body, id);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling GitHubRepositoryAdminApi#adminGithubIdUpdateTagsPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                                </div>
+
+                                <div class="tab-pane"
+                                     id="examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-android">
+                            <pre class="prettyprint"><code class="language-java">import io.swagger.client.api.GitHubRepositoryAdminApi;
+
+public class GitHubRepositoryAdminApiExample {
+
+    public static void main(String[] args) {
+        GitHubRepositoryAdminApi apiInstance = new GitHubRepositoryAdminApi();
+        TagsUpdateRequest body = ; // TagsUpdateRequest |
+        Integer id = 56; // Integer | ID of the GitHub repository to update
+        try {
+            apiInstance.adminGithubIdUpdateTagsPost(body, id);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling GitHubRepositoryAdminApi#adminGithubIdUpdateTagsPost");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                                </div>
+                                <!--
+  <div class="tab-pane" id="examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                                <div class="tab-pane"
+                                     id="examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">TagsUpdateRequest *body = ; //
+Integer *id = 56; // ID of the GitHub repository to update
+
+GitHubRepositoryAdminApi *apiInstance = [[GitHubRepositoryAdminApi alloc] init];
+
+// Update GitHub Repository Category
+[apiInstance adminGithubIdUpdateTagsPostWith:body
+    id:id
+              completionHandler: ^(NSError* error) {
+                            if (error) {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
+</code></pre>
+                                </div>
+
+                                <div class="tab-pane"
+                                     id="examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApplicationApi = require('application_api');
+
+var api = new ApplicationApi.GitHubRepositoryAdminApi()
+var body = ; // {{TagsUpdateRequest}}
+var id = 56; // {{Integer}} ID of the GitHub repository to update
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.adminGithubIdUpdateTagsPost(bodyid, callback);
+</code></pre>
+                                </div>
+
+                                <!--<div class="tab-pane" id="examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                                <div class="tab-pane"
+                                     id="examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
+using IO.Swagger.Model;
+
+namespace Example
+{
+    public class adminGithubIdUpdateTagsPostExample
+    {
+        public void main()
+        {
+
+            var apiInstance = new GitHubRepositoryAdminApi();
+            var body = new TagsUpdateRequest(); // TagsUpdateRequest |
+            var id = 56;  // Integer | ID of the GitHub repository to update
+
+            try
+            {
+                // Update GitHub Repository Category
+                apiInstance.adminGithubIdUpdateTagsPost(body, id);
+            }
+            catch (Exception e)
+            {
+                Debug.Print("Exception when calling GitHubRepositoryAdminApi.adminGithubIdUpdateTagsPost: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                                </div>
+
+                                <div class="tab-pane"
+                                     id="examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$api_instance = new Swagger\Client\ApiGitHubRepositoryAdminApi();
+$body = ; // TagsUpdateRequest |
+$id = 56; // Integer | ID of the GitHub repository to update
+
+try {
+    $api_instance->adminGithubIdUpdateTagsPost($body, $id);
+} catch (Exception $e) {
+    echo 'Exception when calling GitHubRepositoryAdminApi->adminGithubIdUpdateTagsPost: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                                </div>
+
+                                <div class="tab-pane"
+                                     id="examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::SwaggerClient::Configuration;
+use WWW::SwaggerClient::GitHubRepositoryAdminApi;
+
+my $api_instance = WWW::SwaggerClient::GitHubRepositoryAdminApi->new();
+my $body = WWW::SwaggerClient::Object::TagsUpdateRequest->new(); # TagsUpdateRequest |
+my $id = 56; # Integer | ID of the GitHub repository to update
+
+eval {
+    $api_instance->adminGithubIdUpdateTagsPost(body => $body, id => $id);
+};
+if ($@) {
+    warn "Exception when calling GitHubRepositoryAdminApi->adminGithubIdUpdateTagsPost: $@\n";
+}</code></pre>
+                                </div>
+
+                                <div class="tab-pane"
+                                     id="examples-GitHubRepositoryAdmin-adminGithubIdUpdateTagsPost-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import swagger_client
+from swagger_client.rest import ApiException
+from pprint import pprint
+
+# create an instance of the API class
+api_instance = swagger_client.GitHubRepositoryAdminApi()
+body =  # TagsUpdateRequest |
+id = 56 # Integer | ID of the GitHub repository to update
+
+try:
+    # Update GitHub Repository Category
+    api_instance.admin_github_id_update_tags_post(body, id)
+except ApiException as e:
+    print("Exception when calling GitHubRepositoryAdminApi->adminGithubIdUpdateTagsPost: %s\n" % e)</code></pre>
+                                </div>
+                            </div>
+
+                            <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                    <th width="150px">Name</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td style="width:150px;">id*</td>
+                                    <td>
+
+
+                                        <div id="d2e199_adminGithubIdUpdateTagsPost_id">
+                                            <div class="json-schema-view">
+                                                <div class="primitive">
+                                                  <span class="type">
+                                                      Integer
+                                                  </span>
+
+                                                    <div class="inner description">
+                                                        ID of the GitHub repository to update
+                                                    </div>
+                                                </div>
+                                                <div class="inner required">
+                                                    Required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                    <th width="150px">Name</th>
+                                    <th>Description</th>
+                                </tr>
+                                <tr>
+                                    <td style="width:150px;">body <span style="color:red;">*</span></td>
+                                    <td>
+
+
+                                        <script>
+                                            $(document).ready(function () {
+                                                var schemaWrapper = {
+                                                    "content": {
+                                                        "application/json": {
+                                                            "schema": {
+                                                                "$ref": "#/components/schemas/TagsUpdateRequest"
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": true
+                                                };
+                                                var schema = schemaWrapper.content["application/json"].schema;
+                                                if (schema.$ref != null) {
+                                                    schema = defsParser.$refs.get(schema.$ref);
+                                                } else {
+                                                    schemaWrapper.components = {};
+                                                    schemaWrapper.components.schemas = Object.assign({}, defs);
+                                                    $RefParser.dereference(schemaWrapper).catch(function (err) {
+                                                        console.log(err);
+                                                    });
+                                                }
+
+                                                var view = new JSONSchemaView(schema, 2, {isBodyParam: true});
+                                                var result = $('#d2e199_adminGithubIdUpdateTagsPost_body');
+                                                result.empty();
+                                                result.append(view.render());
+                                            });
+                                        </script>
+                                        <div id="d2e199_adminGithubIdUpdateTagsPost_body"></div>
+                                    </td>
+                                </tr>
+                            </table>
+
 
                             <h2>Responses</h2>
                             <h3> Status: 200 - Category updated successfully </h3>
@@ -14565,7 +15248,7 @@ public class TagsApiExample {
 
     public static void main(String[] args) {
         TagsApi apiInstance = new TagsApi();
-        TagNewDao body = ; // TagNewDao | 
+        TagNewDao body = ; // TagNewDao |
         try {
             apiInstance.adminGithubTagsPut(body);
         } catch (ApiException e) {

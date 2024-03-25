@@ -90,6 +90,33 @@ paths:
                 $ref: '#/components/schemas/GHRepositoryDao'
         '404':
           description: Repository not found
+  /admin/github/{id}/updateTags:
+    post:
+      tags:
+        - GitHub Repository Admin
+      summary: Update GitHub Repository Category
+      description: Update the category of a GitHub repository
+      parameters:
+        - name: id
+          in: path
+          description: ID of the GitHub repository to update
+          required: true
+          schema:
+            type: integer
+            default: 3432266
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagsUpdateRequest'
+      responses:
+        '200':
+          description: Category updated successfully
+        '404':
+          description: Repository not found
+        '400':
+          description: Invalid category provided
   /admin/github/{id}/updateCategory:
     post:
       tags:
@@ -367,6 +394,14 @@ components:
         color:
           type: string
           description: The color of the tag
+    TagsUpdateRequest:
+      type: object
+      properties:
+        tagIds:
+          type: array
+          items:
+            type: integer
+          description: List of tag IDs to update the category
     MainCategory:
       type: string
       enum:
