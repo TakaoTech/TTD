@@ -15,4 +15,10 @@ plugins {
 
 }
 
+buildscript {
+	dependencies {
+		classpath("io.kotzilla:cloud-inject-gradle:0.9.4")
+	}
+}
+
 val projectPackage: String by rootProject.extra { "com.takaotech.dashboard" }
