@@ -11,6 +11,7 @@ plugins {
 	alias(libs.plugins.buildkonfig)
 	alias(libs.plugins.serialization)
 	alias(libs.plugins.depscredit)
+	id("io.kotzilla.cloud-inject")
 }
 
 kotlin {
@@ -61,6 +62,7 @@ kotlin {
 			implementation(libs.koin.android)
 
 			implementation(libs.androidx.browser)
+			implementation("io.kotzilla:cloud-inject:0.9.4")
 		}
 		val commonMain by getting {
 			kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")

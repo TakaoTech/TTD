@@ -39,6 +39,8 @@ depscredit = "11.1.0"
 haze = "0.6.2"
 coil = "3.0.0-alpha06"
 
+cloud-inject = "0.9.4"
+
 [libraries]
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
@@ -146,3 +148,4 @@ ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.7.6" }
 depscredit = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "depscredit" }
+cloud-inject = { id = "io.kotzilla.cloud-inject", version = "0.9.4" }
