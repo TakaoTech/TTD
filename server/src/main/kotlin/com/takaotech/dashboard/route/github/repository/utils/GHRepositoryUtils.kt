@@ -8,6 +8,7 @@ import com.takaotech.dashboard.route.github.repository.GithubColorController
 import com.takaotech.dashboard.utils.HikariDatabase
 import kotlinx.datetime.toKotlinInstant
 import org.kohsuke.github.GHRepository as GHRepositoryExternal
+import org.kohsuke.github.GHUser as GHUserExternal
 
 internal suspend fun GithubDepositoryEntity.convertToGHRepository(
 	database: HikariDatabase,
@@ -92,16 +93,9 @@ internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(
 	)
 }
 
-internal suspend fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): GHRepositoryDao? {
+internal fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): GHRepositoryDao? {
 	val repoOwner = try {
-		owner.let { user ->
-			GHUser(
-				id = user.id,
-				name = user.login,
-				url = user.url.toString(),
-				avatarUrl = user.avatarUrl
-			)
-		}
+		owner.convertToGHUser()
 	} catch (ex: Exception) {
 		null
 	} ?: return null
@@ -124,6 +118,13 @@ internal suspend fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): G
 		updatedAt = updatedAt.toInstant().toKotlinInstant()
 	)
 }
+
+private fun GHUserExternal.convertToGHUser() = GHUser(
+	id = id,
+	name = login,
+	url = url.toString(),
+	avatarUrl = avatarUrl
+)
 
 internal fun Map<String, Long>.mapToLanguageDao(): List<GHLanguageDao> {
 	val totalLines = values.sumOf { it }.toFloat()
