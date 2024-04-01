@@ -9,6 +9,8 @@ import org.jetbrains.exposed.dao.id.EntityID
 class GithubDepositoryEntity(id: EntityID<Long>) : LongEntity(id) {
 	companion object : LongEntityClass<GithubDepositoryEntity>(GithubDepositoryTable)
 
+	//TODO supporto ai campi virtuali per description, license/licenseUrl
+
 	var name by GithubDepositoryTable.name
 	var fullName by GithubDepositoryTable.fullName
 	var description by GithubDepositoryTable.description

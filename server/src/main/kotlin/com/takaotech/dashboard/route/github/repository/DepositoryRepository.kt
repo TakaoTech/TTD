@@ -20,6 +20,21 @@ class DepositoryRepository(
 	private val colorController: GithubColorController
 ) {
 
+	/**
+	 * Procedura di salvataggio repository GH in DB
+	 *
+	 * Questa procedura esegue:
+	 * - Verificare i repository già aggiunti da quelli nuovi
+	 * - Verifica gli utenti già aggiunti da quelli nuovi
+	 *
+	 * - Aggiornare i dati utente
+	 * - Aggiungere i nuovi utenti
+	 *
+	 * - Aggiornare i repository già aggiunti con dati nuovi
+	 * - Aggiungere i nuovi repository
+	 *
+	 * @param repositoryList
+	 */
 	suspend fun saveRepositoriesToDB(repositoryList: List<GHRepositoryDao>) {
 		database.dbExec {
 			var repositoryListFiltered = repositoryList
@@ -58,7 +73,7 @@ class DepositoryRepository(
 				val searchedUser = users.first { user ->
 					user.id.value == repo.user.id
 				}
-
+				//TODO In caso di aggiunta di nuova repo aggiungerlo alla lista di nuove repo
 				GithubDepositoryEntity.new(repo.id) {
 					name = repo.name
 					fullName = repo.fullName

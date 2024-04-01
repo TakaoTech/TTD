@@ -83,7 +83,7 @@ class GithubControllerTest : FunSpec({
 
 		coJustRun { depository.saveRepositoriesToDB(any()) }
 
-		controller.getStarsFromZeroAndStore()
+		controller.getStarsAndStore()
 
 		coVerify {
 			depository.saveRepositoriesToDB(testList)
@@ -144,7 +144,7 @@ class GithubControllerTest : FunSpec({
 
 		coJustRun { depository.saveRepositoriesToDB(any()) }
 
-		controller.getStarsFromZeroAndStore()
+		controller.getStarsAndStore()
 
 		coVerify {
 			depository.saveRepositoriesToDB(emptyList())
@@ -209,7 +209,7 @@ class GithubControllerTest : FunSpec({
 
 		coJustRun { depository.saveRepositoriesToDB(any()) }
 
-		controller.getStarsFromZeroAndStore()
+		controller.getStarsAndStore()
 
 		coEvery {
 			depository.saveRepositoriesToDB(listOf(newObj))

@@ -18,10 +18,9 @@ class GithubController(
 	/**
 	 * Download all starred repositories from GH Account and save it on db
 	 */
-	suspend fun getStarsFromZeroAndStore() = coroutineScope {
+	suspend fun getStarsAndStore() = coroutineScope {
 //		val mapJobs = mutableListOf<Deferred<List<GHRepository>>>()
 		val allStars = githubRepository.getAllStars()
-			.filter { !githubDepositoryRepository.ghRepositoryExist(it.id) }
 
 //			.let {
 //				if (it.size < 4) {

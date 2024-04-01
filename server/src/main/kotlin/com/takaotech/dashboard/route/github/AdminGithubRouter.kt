@@ -48,7 +48,7 @@ inline fun Route.adminGithubRouter() {
 				} else {
 					jobGithubRefresh = launch(Dispatchers.Default + SupervisorJob()) {
 						try {
-							controller.getStarsFromZeroAndStore()
+							controller.getStarsAndStore()
 							jobGithubRefresh = null
 						} catch (ex: Throwable) {
 							logger.error(ex)
