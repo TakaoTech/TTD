@@ -343,19 +343,34 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 			}
 		}
 
-		test("ghRepositoryExist Repository Not Exist") {
-			val depositoryRepository = get<DepositoryRepository>()
+		context("ghRepositoryExist") {
+			beforeTest {
+				val depositoryRepository = get<DepositoryRepository>()
+				depositoryRepository.saveRepositoriesToDB(inputRepositories)
+			}
 
-			depositoryRepository.saveRepositoriesToDB(inputRepositories)
-			assertFalse { depositoryRepository.ghRepositoryExist(5) }
-
+			test("ghRepositoryExist Repository Not Exist") {
+				val depositoryRepository = get<DepositoryRepository>()
+				assertFalse { depositoryRepository.ghRepositoryExist(5) }
+			}
+			test("ghRepositoryExist Repository Exist") {
+				val depositoryRepository = get<DepositoryRepository>()
+				assertTrue { depositoryRepository.ghRepositoryExist(inputRepository1.id) }
+			}
 		}
 
-		test("ghRepositoryExist Repository Exist") {
+		test("Set category at repository") {
 			val depositoryRepository = get<DepositoryRepository>()
+			val repositoryTest = inputRepository2
 
 			depositoryRepository.saveRepositoriesToDB(inputRepositories)
-			assertTrue { depositoryRepository.ghRepositoryExist(inputRepository1.id) }
+
+			MainCategory.entries.forEach {
+				depositoryRepository.updateGhRepositoryMainCategory(repositoryTest.id, it)
+				assertEquals(
+					it, depositoryRepository.getGHRepositoryById(repositoryTest.id)?.mainCategory
+				)
+			}
 		}
 	}
 
