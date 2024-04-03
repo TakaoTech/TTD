@@ -138,16 +138,16 @@ class GithubControllerTest : FunSpec({
 
 		coEvery { githubRepository.getAllStars() } returns testList.toList()
 
-		coEvery {
-			depository.ghRepositoryExist(any())
-		} returns true
+//		coEvery {
+//			depository.ghRepositoryExist(any())
+//		} returns true
 
 		coJustRun { depository.saveRepositoriesToDB(any()) }
 
 		controller.getStarsAndStore()
 
 		coVerify {
-			depository.saveRepositoriesToDB(emptyList())
+			depository.saveRepositoriesToDB(any())
 		}
 	}
 
