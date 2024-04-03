@@ -64,5 +64,16 @@ object GithubDepositoryTable : IdTable<Long>() {
 
 	val updatedAt = timestamp("updatedAt")
 
+	/**
+	 * The Repository is Deprecated because it has been overtaken by another library
+	 * or out of date
+	 */
+	val deprecated = bool("deprecated").default(false)
+
+	/**
+	 * Archived
+	 */
+	val archived = bool("archived").default(false)
+
 	override val primaryKey = PrimaryKey(id)
 }
