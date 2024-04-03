@@ -6,16 +6,20 @@ import com.takaotech.dashboard.model.github.GHLanguageDao
 import com.takaotech.dashboard.model.github.GHRepositoryDao
 import com.takaotech.dashboard.model.github.GHUser
 import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.route.github.data.GithubUserEntity
 import com.takaotech.dashboard.utils.HikariDatabase
 import com.takaotech.dashboard.utils.dbTables
 import com.takaotech.dashboard.utils.getBaseTestKoin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
+import io.mockk.coEvery
+import io.mockk.spyk
 import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.koin.test.KoinTest
+import org.koin.test.get
 import org.koin.test.inject
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -28,6 +32,91 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 	)
 
 	init {
+		//region Base Test Data
+
+		val updatedAtRepo1 = Clock.System.now()
+		val updatedAtRepo2 = Clock.System.now()
+
+		val user1 = GHUser(
+			id = 1744,
+			name = "Katharine Hampton",
+			url = "https://duckduckgo.com/?q=blandit1744",
+			avatarUrl = "https://duckduckgo.com/?q=avatar1744"
+		)
+
+		val user2 = GHUser(
+			id = 17455,
+			name = "Katharine Hampton",
+			url = "https://duckduckgo.com/?q=blandit17455",
+			avatarUrl = "https://duckduckgo.com/?q=avatar17455"
+		)
+
+		val user3 = GHUser(
+			id = 640,
+			name = "Gino Pilotino",
+			url = "https://duckduckgo.com/?q=R2lubyBQaWxvdGlubw==",
+			avatarUrl = "https://duckduckgo.com/?q=R2lubyBQaWxvdGlubyBhdmF0YXI="
+		)
+
+		val inputRepository1 = GHRepositoryDao(
+			id = 1,
+			name = "Tracy Henson",
+			fullName = "Clay Olsen",
+			description = "Test description",
+			url = "https://www.bing.com/search?q=splendide",
+			license = "Apache 2",
+			licenseUrl = "https://test.com",
+			user = user1,
+			languages = listOf(
+				GHLanguageDao("Kotlin", 100)
+			),
+			tags = listOf(),
+			mainCategory = MainCategory.NONE,
+			updatedAt = updatedAtRepo1
+		)
+
+		val inputRepository2 = GHRepositoryDao(
+			id = 2,
+			name = "Tracy Henson",
+			fullName = "Clay Olsen",
+			description = "Test description",
+			url = "https://www.bing.com/search?q=splendide",
+			license = "Apache 2",
+			licenseUrl = "https://test.com",
+			user = user2,
+			languages = listOf(
+				GHLanguageDao("Bash", 100)
+			),
+			tags = listOf(),
+			mainCategory = MainCategory.NONE,
+			updatedAt = updatedAtRepo2
+		)
+
+		val inputRepository3 = GHRepositoryDao(
+			id = 3,
+			name = "Erat aliqua",
+			fullName = "Erat aliqua ad iriure",
+			description = "Test description 3 ",
+			url = "https://www.bing.com/search?q=splendide3",
+			license = "Apache 2",
+			licenseUrl = "https://test3.com",
+			user = user1,
+			languages = listOf(
+				GHLanguageDao("Bash", 100)
+			),
+			tags = listOf(),
+			mainCategory = MainCategory.NONE,
+			updatedAt = updatedAtRepo2
+		)
+
+		val inputRepositories = listOf(
+			inputRepository1,
+			inputRepository2,
+			inputRepository3
+		)
+
+		//endregion Base Test Data
+
 		beforeEach {
 			val dbConfiguration by inject<DbConfiguration>()
 			val database by inject<HikariDatabase>()
@@ -42,210 +131,16 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 
 		context("Save Data in DB") {
 			test("Fresh Insert") {
-				val depositoryRepository by inject<DepositoryRepository>()
-				val updatedAtRepo1 = Clock.System.now()
-				val updatedAtRepo2 = Clock.System.now()
+				val depositoryRepository = spyk(get<DepositoryRepository>())
+				val userSlot = mutableListOf<GHUser>()
 
-				val inputRepository = listOf(
-					GHRepositoryDao(
-						id = 1,
-						name = "Tracy Henson",
-						fullName = "Clay Olsen",
-						description = "Test description",
-						url = "https://www.bing.com/search?q=splendide",
-						license = "Apache 2",
-						licenseUrl = "https://test.com",
-						user = GHUser(
-							id = 1744,
-							name = "Katharine Hampton",
-							url = "https://duckduckgo.com/?q=blandit",
-							avatarUrl = "https://duckduckgo.com/?q=avatar"
-						),
-						languages = listOf(
-							GHLanguageDao("Kotlin", 100)
-						),
-						tags = listOf(),
-						mainCategory = MainCategory.NONE,
-						updatedAt = updatedAtRepo1
-					),
-					GHRepositoryDao(
-						id = 2,
-						name = "Tracy Henson",
-						fullName = "Clay Olsen",
-						description = "Test description",
-						url = "https://www.bing.com/search?q=splendide",
-						license = "Apache 2",
-						licenseUrl = "https://test.com",
-						user = GHUser(
-							id = 1744,
-							name = "Katharine Hampton",
-							url = "https://duckduckgo.com/?q=blandit",
-							avatarUrl = "https://duckduckgo.com/?q=avatar"
-						),
-						languages = listOf(
-							GHLanguageDao("Bash", 100)
-						),
-						tags = listOf(),
-						mainCategory = MainCategory.NONE,
-						updatedAt = updatedAtRepo2
-					)
-				)
-
-				depositoryRepository.saveRepositoriesToDB(inputRepository)
-				val recoveredRepos = depositoryRepository.getGHRepository()
-				assertTrue { recoveredRepos.isNotEmpty() }
-				//TODO Fix test, recoveredRepo is populated with langauges colors
-				for (inputRepoIndexed in inputRepository.withIndex()) {
-					val inputRepo = recoveredRepos[inputRepoIndexed.index]
-					val outputRepo = inputRepoIndexed.value
-
-					assertEquals(inputRepo.id, outputRepo.id)
-					assertEquals(inputRepo.name, outputRepo.name)
-					assertEquals(inputRepo.fullName, outputRepo.fullName)
-					assertEquals(inputRepo.description, outputRepo.description)
-					assertEquals(inputRepo.url, outputRepo.url)
-					assertEquals(inputRepo.license, outputRepo.license)
-					assertEquals(inputRepo.user, outputRepo.user)
-					inputRepo.languages.forEachIndexed { index, languageInput ->
-						val languageOutput = outputRepo.languages[index]
-
-						assertEquals(languageInput.name, languageOutput.name)
-						assertEquals(languageInput.lines, languageOutput.lines)
-						//weight and color are skipped
-					}
-					assertEquals(inputRepo.tags, outputRepo.tags)
+				coEvery {
+					depositoryRepository.updateOrCreateGHUser(capture(userSlot))
+				} coAnswers {
+					callOriginal()
 				}
 
-				assertTrue { recoveredRepos.find { it.id == 1L }!!.mainCategory == MainCategory.KOTLIN }
-				assertTrue { recoveredRepos.find { it.id == 2L }!!.mainCategory == MainCategory.NONE }
-			}
-
-			test("Append Insert 1") {
-				val depositoryRepository by inject<DepositoryRepository>()
-
-				val updatedAtRepo1 = Clock.System.now()
-				val updatedAtRepo2 = Clock.System.now()
-
-				val inputRepository = listOf(
-					GHRepositoryDao(
-						id = 1,
-						name = "Tracy Henson",
-						fullName = "Clay Olsen",
-						description = "Test description",
-						url = "https://www.bing.com/search?q=splendide",
-						license = "Apache 2",
-						licenseUrl = "https://test.com",
-						user = GHUser(
-							id = 1744,
-							name = "Katharine Hampton",
-							url = "https://duckduckgo.com/?q=blandit",
-							avatarUrl = "https://duckduckgo.com/?q=avatar"
-						),
-						languages = listOf(
-							GHLanguageDao("Kotlin", 100)
-						),
-						tags = listOf(),
-						mainCategory = MainCategory.NONE,
-						updatedAt = updatedAtRepo1
-					),
-					GHRepositoryDao(
-						id = 2,
-						name = "Tracy Henson",
-						fullName = "Clay Olsen",
-						description = "Test description",
-						url = "https://www.bing.com/search?q=splendide",
-						license = "Apache 2",
-						licenseUrl = "https://test.com",
-						user = GHUser(
-							id = 1744,
-							name = "Katharine Hampton",
-							url = "https://duckduckgo.com/?q=blandit",
-							avatarUrl = "https://duckduckgo.com/?q=avatar"
-						),
-						languages = listOf(
-							GHLanguageDao("Bash", 100)
-						),
-						tags = listOf(),
-						mainCategory = MainCategory.NONE,
-						updatedAt = updatedAtRepo2
-					)
-				)
-
-				depositoryRepository.saveRepositoriesToDB(inputRepository)
-			}
-
-
-		}
-
-		context("Save Data in DB2") {
-			val updatedAtRepo1 = Clock.System.now()
-			val updatedAtRepo2 = Clock.System.now()
-
-			val user1 = GHUser(
-				id = 1744,
-				name = "Katharine Hampton",
-				url = "https://duckduckgo.com/?q=blandit",
-				avatarUrl = "https://duckduckgo.com/?q=avatar"
-			)
-
-			val user2 = GHUser(
-				id = 17455,
-				name = "Katharine Hampton",
-				url = "https://duckduckgo.com/?q=blandit",
-				avatarUrl = "https://duckduckgo.com/?q=avatar"
-			)
-
-			val user3 = GHUser(
-				id = 640,
-				name = "Gino Pilotino",
-				url = "https://duckduckgo.com/?q=R2lubyBQaWxvdGlubw==",
-				avatarUrl = "https://duckduckgo.com/?q=R2lubyBQaWxvdGlubyBhdmF0YXI="
-			)
-
-			val inputRepository1 = GHRepositoryDao(
-				id = 1,
-				name = "Tracy Henson",
-				fullName = "Clay Olsen",
-				description = "Test description",
-				url = "https://www.bing.com/search?q=splendide",
-				license = "Apache 2",
-				licenseUrl = "https://test.com",
-				user = user1,
-				languages = listOf(
-					GHLanguageDao("Kotlin", 100)
-				),
-				tags = listOf(),
-				mainCategory = MainCategory.NONE,
-				updatedAt = updatedAtRepo1
-			)
-
-			val inputRepository2 = GHRepositoryDao(
-				id = 2,
-				name = "Tracy Henson",
-				fullName = "Clay Olsen",
-				description = "Test description",
-				url = "https://www.bing.com/search?q=splendide",
-				license = "Apache 2",
-				licenseUrl = "https://test.com",
-				user = user2,
-				languages = listOf(
-					GHLanguageDao("Bash", 100)
-				),
-				tags = listOf(),
-				mainCategory = MainCategory.NONE,
-				updatedAt = updatedAtRepo2
-			)
-
-			val inputRepositories = listOf(
-				inputRepository1,
-				inputRepository2
-			)
-
-
-			test("Fresh Insert") {
-				val depositoryRepository by inject<DepositoryRepository>()
-
-				depositoryRepository.saveRepositoriesToDB2(inputRepositories)
+				depositoryRepository.saveRepositoriesToDB(inputRepositories)
 				val outputRepositories = depositoryRepository.getGHRepository()
 				assertTrue { outputRepositories.isNotEmpty() }
 				for (inputRepo in inputRepositories) {
@@ -270,10 +165,15 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 
 				assertTrue { outputRepositories.find { it.id == 1L }!!.mainCategory == MainCategory.KOTLIN }
 				assertTrue { outputRepositories.find { it.id == 2L }!!.mainCategory == MainCategory.NONE }
+
+				assertTrue {
+					userSlot.size == userSlot.distinctBy { it.id }.size
+				}
 			}
 
 			test("Insert same Repository, but updated description") {
-				val depositoryRepository by inject<DepositoryRepository>()
+				val depositoryRepository = spyk(get<DepositoryRepository>(), recordPrivateCalls = true)
+				val userSlot = mutableListOf<GHUser>()
 
 				val repo1DescriptionUpdated = inputRepository1.copy(
 					description = "Description updated"
@@ -284,24 +184,27 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					inputRepository2
 				)
 
-				depositoryRepository.saveRepositoriesToDB2(inputRepository)
-				//TODO aggiungere param collect su updateOrCreateGHUser, fare il check
-				// di cambiamento
+				coEvery {
+					depositoryRepository.updateOrCreateGHUser(capture(userSlot))
+				} coAnswers {
+					callOriginal()
+				}
+
+				depositoryRepository.saveRepositoriesToDB(inputRepository)
+
 
 				val recoveredRepos = depositoryRepository.getGHRepository()
 				assertTrue { recoveredRepos.isNotEmpty() }
 
-				for (inputRepoIndexed in inputRepositories.withIndex()) {
-					val inputRepo = recoveredRepos[inputRepoIndexed.index]
-					val outputRepo = inputRepoIndexed.value
+				for (inputRepo in inputRepository) {
+					val outputRepo = recoveredRepos.single { it.id == inputRepo.id }
 
 					assertEquals(inputRepo.id, outputRepo.id)
 					assertEquals(inputRepo.name, outputRepo.name)
 					assertEquals(inputRepo.fullName, outputRepo.fullName)
+					assertEquals(inputRepo.description, outputRepo.description)
 					if (outputRepo.id == 1L) {
-						assertNotEquals(inputRepo.description, outputRepo.description)
-					} else {
-						assertEquals(inputRepo.description, outputRepo.description)
+						assertNotEquals(inputRepository1.description, outputRepo.description)
 					}
 					assertEquals(inputRepo.url, outputRepo.url)
 					assertEquals(inputRepo.license, outputRepo.license)
@@ -315,10 +218,15 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					}
 					assertEquals(inputRepo.tags, outputRepo.tags)
 				}
+
+				assertTrue {
+					userSlot.size == userSlot.distinctBy { it.id }.size
+				}
 			}
 
 			test("Insert Same Repository 2, but change user") {
-				val depositoryRepository by inject<DepositoryRepository>()
+				val depositoryRepository = spyk(get<DepositoryRepository>())
+				val userSlot = mutableListOf<GHUser>()
 
 				val repo2DescriptionUpdated = inputRepository2.copy(
 					user = user3
@@ -328,16 +236,19 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					repo2DescriptionUpdated
 				)
 
-				depositoryRepository.saveRepositoriesToDB2(inputRepository)
-				//TODO aggiungere param collect su updateOrCreateGHUser, fare il check
-				// di cambiamento
+				coEvery {
+					depositoryRepository.updateOrCreateGHUser(capture(userSlot))
+				} coAnswers {
+					callOriginal()
+				}
+
+				depositoryRepository.saveRepositoriesToDB(inputRepository)
 
 				val recoveredRepos = depositoryRepository.getGHRepository()
 				assertTrue { recoveredRepos.isNotEmpty() }
 
-				for (inputRepoIndexed in inputRepositories.withIndex()) {
-					val inputRepo = recoveredRepos.single { it.id == inputRepoIndexed.value.id }
-					val outputRepo = inputRepoIndexed.value
+				for (inputRepo in inputRepository) {
+					val outputRepo = recoveredRepos.single { it.id == inputRepo.id }
 
 					assertEquals(inputRepo.id, outputRepo.id)
 					assertEquals(inputRepo.name, outputRepo.name)
@@ -348,7 +259,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					assertEquals(inputRepo.url, outputRepo.url)
 					assertEquals(inputRepo.license, outputRepo.license)
 					if (outputRepo.id == 2L) {
-
+						assertNotEquals(inputRepository2.user, outputRepo.user)
 					}
 					assertEquals(inputRepo.user, outputRepo.user)
 					inputRepo.languages.forEachIndexed { index, languageInput ->
@@ -360,95 +271,91 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 					}
 					assertEquals(inputRepo.tags, outputRepo.tags)
 				}
+
+				assertTrue {
+					userSlot.size == userSlot.distinctBy { it.id }.size
+				}
+			}
+		}
+
+		context("Save User") {
+			val inputUsers = listOf(
+				user1,
+				user2,
+				user3
+			)
+
+			test("Fresh Insert") {
+				val database = get<HikariDatabase>()
+				val depositoryRepository = get<DepositoryRepository>()
+				inputUsers.forEach {
+					depositoryRepository.updateOrCreateGHUser(it)
+				}
+
+				val outputUsers = database.dbExec {
+					GithubUserEntity.all().notForUpdate().toList()
+				}
+
+				outputUsers.forEach { outputUser ->
+					val inputUser = inputUsers.single { it.id == outputUser.id.value }
+					assertEquals(inputUser.id, outputUser.id.value)
+					assertEquals(inputUser.name, outputUser.name)
+					assertEquals(inputUser.url, outputUser.url)
+					assertEquals(inputUser.avatarUrl, outputUser.avatarUrl)
+				}
+			}
+
+			test("Insert same user, but change user 3") {
+				val database = get<HikariDatabase>()
+				val depositoryRepository = get<DepositoryRepository>()
+				val inputUsers = listOf(
+					user1,
+					user2,
+					user3.copy(
+						name = "User 3 Changed",
+						url = "https://www.example.com/random-path/abcdef12345",
+						avatarUrl = "https://www.example.com/random-path/abcdef12345.png"
+					)
+				)
+
+				inputUsers.forEach {
+					depositoryRepository.updateOrCreateGHUser(it)
+				}
+
+				val outputUsers = database.dbExec {
+					GithubUserEntity.all().notForUpdate().toList()
+				}
+
+				outputUsers.forEach { outputUser ->
+					val inputUser = inputUsers.single { it.id == outputUser.id.value }
+					assertEquals(inputUser.id, outputUser.id.value)
+					if (outputUser.id.value == user3.id) {
+						assertNotEquals(user3.name, outputUser.name)
+						assertNotEquals(user3.url, outputUser.url)
+						assertNotEquals(user3.avatarUrl, outputUser.avatarUrl)
+					}
+
+					assertEquals(inputUser.name, outputUser.name)
+					assertEquals(inputUser.url, outputUser.url)
+					assertEquals(inputUser.avatarUrl, outputUser.avatarUrl)
+
+				}
 			}
 		}
 
 		test("ghRepositoryExist Repository Not Exist") {
-			val depositoryRepository by inject<DepositoryRepository>()
+			val depositoryRepository = get<DepositoryRepository>()
 
-			val repository = listOf(
-				GHRepositoryDao(
-					id = 1,
-					name = "Tracy Henson",
-					fullName = "Clay Olsen",
-					description = "Test description",
-					url = "https://www.bing.com/search?q=splendide",
-					license = "Apache 2",
-					licenseUrl = "https://test.com",
-					user = GHUser(
-						id = 1,
-						name = "Katharine Hampton",
-						url = "https://duckduckgo.com/?q=blandit",
-						avatarUrl = "https://duckduckgo.com/?q=avatar"
-					),
-					languages = listOf(
-						GHLanguageDao("Kotlin", 100)
-					),
-					tags = listOf(),
-					mainCategory = MainCategory.NONE,
-					updatedAt = Clock.System.now()
-				)
-			)
-
-			depositoryRepository.saveRepositoriesToDB(repository)
-			val recoveredRepo = depositoryRepository.getGHRepository()
-			assertTrue { recoveredRepo.isNotEmpty() }
-			assertFalse { depositoryRepository.ghRepositoryExist(2) }
+			depositoryRepository.saveRepositoriesToDB(inputRepositories)
+			assertFalse { depositoryRepository.ghRepositoryExist(5) }
 
 		}
 
 		test("ghRepositoryExist Repository Exist") {
-			val depositoryRepository by inject<DepositoryRepository>()
+			val depositoryRepository = get<DepositoryRepository>()
 
-			val repository = listOf(
-				GHRepositoryDao(
-					id = 1,
-					name = "Tracy Henson",
-					fullName = "Clay Olsen",
-					description = "Test description",
-					url = "https://www.bing.com/search?q=splendide",
-					license = "Apache 2",
-					licenseUrl = "https://test.com",
-					user = GHUser(
-						id = 1,
-						name = "Katharine Hampton",
-						url = "https://duckduckgo.com/?q=blandit",
-						avatarUrl = "https://duckduckgo.com/?q=avatar"
-					),
-					languages = listOf(
-						GHLanguageDao("Kotlin", 100)
-					),
-					tags = listOf(),
-					mainCategory = MainCategory.NONE,
-					updatedAt = Clock.System.now()
-				),
-				GHRepositoryDao(
-					id = 2,
-					name = "Tracy Henson",
-					fullName = "Clay Olsen",
-					description = "Test description",
-					url = "https://www.bing.com/search?q=splendide",
-					license = "Apache 2",
-					licenseUrl = "https://test.com",
-					user = GHUser(
-						id = 2,
-						name = "Katharine Hampton",
-						url = "https://duckduckgo.com/?q=blandit",
-						avatarUrl = "https://duckduckgo.com/?q=avatar"
-					),
-					languages = listOf(
-						GHLanguageDao("Kotlin", 100)
-					),
-					tags = listOf(),
-					mainCategory = MainCategory.NONE,
-					updatedAt = Clock.System.now()
-				)
-			)
-
-			depositoryRepository.saveRepositoriesToDB(repository)
-			val recoveredRepo = depositoryRepository.getGHRepository()
-			assertTrue { recoveredRepo.isNotEmpty() }
-			assertTrue { depositoryRepository.ghRepositoryExist(2) }
+			depositoryRepository.saveRepositoriesToDB(inputRepositories)
+			assertTrue { depositoryRepository.ghRepositoryExist(inputRepository1.id) }
 		}
 	}
 
