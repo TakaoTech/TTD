@@ -1,5 +1,7 @@
 package com.takaotech.dashboard.route.github.repository
 
+import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.onFailure
 import com.takaotech.dashboard.model.TakaoPaging
 import com.takaotech.dashboard.model.github.GHRepositoryDao
 import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
@@ -9,7 +11,9 @@ import com.takaotech.dashboard.route.github.data.*
 import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepository
 import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryMini
 import com.takaotech.dashboard.utils.HikariDatabase
+import io.ktor.util.logging.*
 import org.jetbrains.annotations.ApiStatus
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.EmptySizedIterable
 import org.jetbrains.exposed.sql.SizedCollection
 import org.koin.core.annotation.Factory
@@ -17,6 +21,7 @@ import org.koin.core.annotation.Factory
 @Factory
 class DepositoryRepository(
 	private val database: HikariDatabase,
+	private val logger: Logger,
 	private val colorController: GithubColorController
 ) {
 
@@ -99,11 +104,16 @@ class DepositoryRepository(
 		}
 	}
 
-	suspend fun setTagsAtRepository(repositoryId: Long, tags: List<TagsEntity>) {
-		database.dbExec {
-			GithubDepositoryEntity.findById(repositoryId)?.let {
-				it.tags = SizedCollection(tags)
+	@Throws(ExposedSQLException::class)
+	suspend fun setTagsAtRepository(repositoryId: Long, tags: List<TagsEntity>): Result<Unit, Throwable> {
+		return Result.of<Unit, Throwable> {
+			database.dbExec {
+				GithubDepositoryEntity.findById(repositoryId)?.let {
+					it.tags = SizedCollection(tags)
+				}
 			}
+		}.onFailure {
+			logger.error("Failed to set tags at repository $repositoryId", it)
 		}
 	}
 

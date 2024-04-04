@@ -1,5 +1,7 @@
 package com.takaotech.dashboard.route.github
 
+import com.github.kittinunf.result.onFailure
+import com.github.kittinunf.result.onSuccess
 import com.takaotech.dashboard.model.github.request.TagsUpdateRequest
 import com.takaotech.dashboard.route.github.controller.GithubController
 import io.ktor.http.*
@@ -128,8 +130,11 @@ inline fun Route.adminGithubRouter() {
 		}
 
 		controller.updateRepositoryTags(id, tagIds)
-
-		call.respond(HttpStatusCode.OK)
+			.onSuccess {
+				call.respond(HttpStatusCode.OK)
+			}.onFailure {
+				call.respond(HttpStatusCode.InternalServerError)
+			}
 	}
 }
 

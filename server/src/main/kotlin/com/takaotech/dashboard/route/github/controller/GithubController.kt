@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.route.github.controller
 
+import com.github.kittinunf.result.Result
 import com.takaotech.dashboard.model.TakaoPaging
 import com.takaotech.dashboard.model.github.*
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
@@ -86,8 +87,8 @@ class GithubController(
 		return tagsRepository.getTagById(id)
 	}
 
-	suspend fun updateRepositoryTags(id: Long, tagIds: List<Int>) {
-		tagIds.mapNotNull {
+	suspend fun updateRepositoryTags(id: Long, tagIds: List<Int>): Result<Unit, Throwable> {
+		return tagIds.mapNotNull {
 			tagsRepository.getTagByIdInternal(it)
 		}.let { tags ->
 			githubDepositoryRepository.setTagsAtRepository(id, tags)

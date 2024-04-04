@@ -1,20 +1,24 @@
 package com.takaotech.dashboard.route.github.repository
 
+import com.github.kittinunf.result.isFailure
+import com.github.kittinunf.result.isSuccess
 import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.di.connectToDatabase
 import com.takaotech.dashboard.model.github.GHLanguageDao
 import com.takaotech.dashboard.model.github.GHRepositoryDao
 import com.takaotech.dashboard.model.github.GHUser
 import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.route.github.data.GithubUserEntity
+import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.utils.HikariDatabase
 import com.takaotech.dashboard.utils.dbTables
 import com.takaotech.dashboard.utils.getBaseTestKoin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
-import io.mockk.coEvery
-import io.mockk.spyk
+import io.mockk.*
 import kotlinx.datetime.Clock
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
@@ -359,19 +363,123 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 			}
 		}
 
-		test("Set category at repository") {
-			val depositoryRepository = get<DepositoryRepository>()
-			val repositoryTest = inputRepository2
+		context("Set category at repository") {
 
-			depositoryRepository.saveRepositoriesToDB(inputRepositories)
+			test("At existing repository") {
+				val depositoryRepository = get<DepositoryRepository>()
+				val repositoryTest = inputRepository2
 
-			MainCategory.entries.forEach {
-				depositoryRepository.updateGhRepositoryMainCategory(repositoryTest.id, it)
-				assertEquals(
-					it, depositoryRepository.getGHRepositoryById(repositoryTest.id)?.mainCategory
-				)
+				depositoryRepository.saveRepositoriesToDB(inputRepositories)
+
+				MainCategory.entries.forEach {
+					depositoryRepository.updateGhRepositoryMainCategory(repositoryTest.id, it)
+					assertEquals(
+						it, depositoryRepository.getGHRepositoryById(repositoryTest.id)?.mainCategory
+					)
+				}
+			}
+
+			//Test excluded because verify calculate input repository filling in call counter
+			xtest("At not exist") {
+				val depositoryRepository = get<DepositoryRepository>()
+
+				depositoryRepository.saveRepositoriesToDB(inputRepositories)
+				mockkObject(GithubDepositoryEntity)
+
+				every {
+					GithubDepositoryEntity.findById(any<Long>())
+				} returns null
+
+				MainCategory.entries.forEach {
+					depositoryRepository.updateGhRepositoryMainCategory(2, it)
+				}
+
+				verify(exactly = 0) {
+					GithubDepositoryEntity.findById(any<Long>())!!.category
+				}
+
+				unmockkObject(GithubDepositoryEntity)
 			}
 		}
+
+
+
+		context("Set tags at repository") {
+			val namesList = listOf("Tag1", "Tag2", "Tag3", "Tag4", "Tag5")
+
+			beforeTest {
+				val depositoryRepository = get<DepositoryRepository>()
+				depositoryRepository.saveRepositoriesToDB(inputRepositories)
+			}
+
+			test("Set Tag at Repository") {
+				val database by inject<HikariDatabase>()
+				val depositoryRepository = get<DepositoryRepository>()
+
+				val tagsIds = database.dbExec {
+					namesList.map {
+						TagsEntity.new {
+							name = it
+						}
+					}
+				}
+
+				val result = depositoryRepository.setTagsAtRepository(inputRepository1.id, tagsIds)
+
+				assertTrue { result.isSuccess() }
+
+				assertEquals(
+					tagsIds.map { it.id.value },
+					depositoryRepository.getGHRepositoryById(inputRepository1.id)!!.tags.map { it.id })
+			}
+
+			test("Set Duplicated Tag at Repository, throw exception") {
+				val database by inject<HikariDatabase>()
+				val depositoryRepository = get<DepositoryRepository>()
+
+				val tagsIds = database.dbExec {
+					namesList.map {
+						TagsEntity.new {
+							name = it
+						}
+					}
+				}.toMutableList()
+
+				tagsIds.add(tagsIds.first())
+
+				val result = depositoryRepository.setTagsAtRepository(inputRepository1.id, tagsIds)
+
+				assertTrue { result.isFailure() }
+				assertTrue { result.failure() is ExposedSQLException }
+			}
+
+			test("Set Empty Tag at Repository") {
+				val database by inject<HikariDatabase>()
+				val depositoryRepository = get<DepositoryRepository>()
+
+				val tagsIds = database.dbExec {
+					namesList.map {
+						TagsEntity.new {
+							name = it
+						}
+					}
+				}.toMutableList()
+
+				val resultSet = depositoryRepository.setTagsAtRepository(inputRepository1.id, tagsIds)
+
+				assertTrue { resultSet.isSuccess() }
+				assertTrue { depositoryRepository.getGHRepositoryById(inputRepository1.id)!!.tags.isNotEmpty() }
+
+				val result = depositoryRepository.setTagsAtRepository(inputRepository1.id, listOf())
+
+				assertTrue { result.isSuccess() }
+				assertTrue { depositoryRepository.getGHRepositoryById(inputRepository1.id)!!.tags.isEmpty() }
+			}
+
+
+		}
+
+		//TODO Missing test getGHRepository with different category
 	}
 
 }
