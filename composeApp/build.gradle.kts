@@ -77,7 +77,6 @@ kotlin {
 				//https://github.com/DevSrSouza/compose-icons
 				implementation(projects.shared)
 
-				implementation(libs.kotlin.result)
 				implementation(libs.kotlin.datetime)
 				implementation(libs.kermit)
 

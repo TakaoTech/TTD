@@ -29,6 +29,7 @@ kotlin {
 			implementation(libs.ktorfit.lib)
 			implementation(libs.koin.core)
 			implementation(libs.serialization)
+			api(libs.kotlin.result)
 		}
 	}
 }
