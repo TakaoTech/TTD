@@ -104,7 +104,9 @@ dependencies {
 koverReport {
 	filters {
 		excludes {
-			packages("org.koin.ksp.generated")
+			//TODO Not Work this exclusion
+			classes("com.takaotech.dashboard.route.github.repository.GithubClientImpl")
+			packages("org.koin.ksp.generated", "com.takaotech.dashboard.di")
 		}
 	}
 
