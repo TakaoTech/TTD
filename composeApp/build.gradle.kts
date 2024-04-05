@@ -1,4 +1,6 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
+import java.io.FileInputStream
+import java.util.*
 
 val projectPackage: String by project
 
@@ -11,6 +13,10 @@ plugins {
 	alias(libs.plugins.buildkonfig)
 	alias(libs.plugins.serialization)
 	alias(libs.plugins.depscredit)
+}
+
+val localProps = Properties().apply {
+	load(FileInputStream(File(rootProject.rootDir, "local.properties")))
 }
 
 kotlin {
@@ -195,9 +201,12 @@ buildkonfig {
 	packageName = projectPackage
 	objectName = "AppBuildKonfig"
 //    // exposeObjectWithName = 'YourAwesomePublicConfig'
-//
 	defaultConfigs {
-		buildConfigField(FieldSpec.Type.STRING, "baseUrl", "https://takaotech.com")
+		buildConfigField(
+			FieldSpec.Type.STRING,
+			"baseUrl",
+			System.getenv("ENDPOINT_URL") ?: localProps.getProperty("ENDPOINT_URL")
+		)
 	}
 }
 //i18n4k {
