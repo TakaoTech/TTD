@@ -22,9 +22,10 @@ interface GithubColorController {
 }
 
 @Single
-class GithubColorControllerImpl : GithubColorController {
-	private var mutex = Mutex()
+class GithubColorControllerImpl(
 	private var ghLanguagesColor: JsonObject? = null
+) : GithubColorController {
+	private var mutex = Mutex()
 
 	override suspend fun getColorLanguagesMapping(): JsonObject {
 		mutex.withLock {
@@ -79,6 +80,7 @@ class GithubColorControllerImpl : GithubColorController {
 	}
 
 	private fun checkNeedCreateFolder() {
+		//TODO Move to configuration
 		File("./ghAsset").let {
 			if (!it.exists()) {
 				it.mkdir()
@@ -88,6 +90,7 @@ class GithubColorControllerImpl : GithubColorController {
 
 	private fun getLocalColors(): JsonObject? {
 		checkNeedCreateFolder()
+		//TODO Move to configuration
 		val colorFile = File("./ghAsset/colors.json")
 		if (colorFile.exists()) {
 			return FileReader(colorFile).use {
@@ -102,6 +105,7 @@ class GithubColorControllerImpl : GithubColorController {
 
 	private fun saveColorsLocal(colorsObject: JsonObject) {
 		checkNeedCreateFolder()
+		//TODO Move to configuration
 		FileWriter(File("./ghAsset/colors.json")).use {
 			it.write(colorsObject.toString())
 		}

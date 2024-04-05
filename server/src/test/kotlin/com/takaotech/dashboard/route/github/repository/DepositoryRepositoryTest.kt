@@ -16,8 +16,11 @@ import com.takaotech.dashboard.utils.dbTables
 import com.takaotech.dashboard.utils.getBaseTestKoin
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.koin.KoinExtension
+import io.ktor.util.logging.*
 import io.mockk.*
 import kotlinx.datetime.Clock
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
@@ -25,6 +28,8 @@ import org.jetbrains.exposed.sql.addLogger
 import org.koin.test.KoinTest
 import org.koin.test.get
 import org.koin.test.inject
+import java.io.File
+import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
@@ -121,9 +126,18 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 
 		//endregion Base Test Data
 
+		val testResourcePath = Paths.get("").toAbsolutePath().toString() + "/src/test/resources/"
+		val colors = Json.parseToJsonElement(File(testResourcePath, "githubColors.json").readText()).jsonObject
+		var depositoryRepository = DepositoryRepository(
+			mockk<HikariDatabase>(),
+			mockk<Logger>(),
+			GithubColorControllerImpl(colors)
+		)
+
 		beforeEach {
 			val dbConfiguration by inject<DbConfiguration>()
 			val database by inject<HikariDatabase>()
+			val logger by inject<Logger>()
 			connectToDatabase(dbConfiguration)
 			database.dbExec {
 				addLogger(StdOutSqlLogger)
@@ -131,21 +145,27 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 				SchemaUtils.create(*dbTables)
 				commit()
 			}
+
+			depositoryRepository = DepositoryRepository(
+				database,
+				logger,
+				GithubColorControllerImpl(colors)
+			)
 		}
 
 		context("Save Data in DB") {
 			test("Fresh Insert") {
-				val depositoryRepository = spyk(get<DepositoryRepository>())
+				val spyDepositoryRepository = spyk(depositoryRepository, recordPrivateCalls = true)
 				val userSlot = mutableListOf<GHUser>()
 
 				coEvery {
-					depositoryRepository.updateOrCreateGHUser(capture(userSlot))
+					spyDepositoryRepository.updateOrCreateGHUser(capture(userSlot))
 				} coAnswers {
 					callOriginal()
 				}
 
-				depositoryRepository.saveRepositoriesToDB(inputRepositories)
-				val outputRepositories = depositoryRepository.getGHRepository()
+				spyDepositoryRepository.saveRepositoriesToDB(inputRepositories)
+				val outputRepositories = spyDepositoryRepository.getGHRepository()
 				assertTrue { outputRepositories.isNotEmpty() }
 				for (inputRepo in inputRepositories) {
 					val outputRepo = outputRepositories.single { it.id == inputRepo.id }
@@ -176,7 +196,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 			}
 
 			test("Insert same Repository, but updated description") {
-				val depositoryRepository = spyk(get<DepositoryRepository>(), recordPrivateCalls = true)
+				val spyDepositoryRepository = spyk(depositoryRepository, recordPrivateCalls = true)
 				val userSlot = mutableListOf<GHUser>()
 
 				val repo1DescriptionUpdated = inputRepository1.copy(
@@ -189,15 +209,15 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 				)
 
 				coEvery {
-					depositoryRepository.updateOrCreateGHUser(capture(userSlot))
+					spyDepositoryRepository.updateOrCreateGHUser(capture(userSlot))
 				} coAnswers {
 					callOriginal()
 				}
 
-				depositoryRepository.saveRepositoriesToDB(inputRepository)
+				spyDepositoryRepository.saveRepositoriesToDB(inputRepository)
 
 
-				val recoveredRepos = depositoryRepository.getGHRepository()
+				val recoveredRepos = spyDepositoryRepository.getGHRepository()
 				assertTrue { recoveredRepos.isNotEmpty() }
 
 				for (inputRepo in inputRepository) {
@@ -229,7 +249,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 			}
 
 			test("Insert Same Repository 2, but change user") {
-				val depositoryRepository = spyk(get<DepositoryRepository>())
+				val spyDepositoryRepository = spyk(depositoryRepository)
 				val userSlot = mutableListOf<GHUser>()
 
 				val repo2DescriptionUpdated = inputRepository2.copy(
@@ -241,14 +261,14 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 				)
 
 				coEvery {
-					depositoryRepository.updateOrCreateGHUser(capture(userSlot))
+					spyDepositoryRepository.updateOrCreateGHUser(capture(userSlot))
 				} coAnswers {
 					callOriginal()
 				}
 
-				depositoryRepository.saveRepositoriesToDB(inputRepository)
+				spyDepositoryRepository.saveRepositoriesToDB(inputRepository)
 
-				val recoveredRepos = depositoryRepository.getGHRepository()
+				val recoveredRepos = spyDepositoryRepository.getGHRepository()
 				assertTrue { recoveredRepos.isNotEmpty() }
 
 				for (inputRepo in inputRepository) {
@@ -291,7 +311,6 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 
 			test("Fresh Insert") {
 				val database = get<HikariDatabase>()
-				val depositoryRepository = get<DepositoryRepository>()
 				inputUsers.forEach {
 					depositoryRepository.updateOrCreateGHUser(it)
 				}
@@ -311,7 +330,6 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 
 			test("Insert same user, but change user 3") {
 				val database = get<HikariDatabase>()
-				val depositoryRepository = get<DepositoryRepository>()
 				val inputUsers = listOf(
 					user1,
 					user2,
@@ -349,16 +367,13 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 
 		context("ghRepositoryExist") {
 			beforeTest {
-				val depositoryRepository = get<DepositoryRepository>()
 				depositoryRepository.saveRepositoriesToDB(inputRepositories)
 			}
 
 			test("ghRepositoryExist Repository Not Exist") {
-				val depositoryRepository = get<DepositoryRepository>()
 				assertFalse { depositoryRepository.ghRepositoryExist(5) }
 			}
 			test("ghRepositoryExist Repository Exist") {
-				val depositoryRepository = get<DepositoryRepository>()
 				assertTrue { depositoryRepository.ghRepositoryExist(inputRepository1.id) }
 			}
 		}
@@ -366,7 +381,6 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 		context("Set category at repository") {
 
 			test("At existing repository") {
-				val depositoryRepository = get<DepositoryRepository>()
 				val repositoryTest = inputRepository2
 
 				depositoryRepository.saveRepositoriesToDB(inputRepositories)
@@ -381,7 +395,6 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 
 			//Test excluded because verify calculate input repository filling in call counter
 			xtest("At not exist") {
-				val depositoryRepository = get<DepositoryRepository>()
 
 				depositoryRepository.saveRepositoriesToDB(inputRepositories)
 				mockkObject(GithubDepositoryEntity)
@@ -408,13 +421,11 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 			val namesList = listOf("Tag1", "Tag2", "Tag3", "Tag4", "Tag5")
 
 			beforeTest {
-				val depositoryRepository = get<DepositoryRepository>()
 				depositoryRepository.saveRepositoriesToDB(inputRepositories)
 			}
 
 			test("Set Tag at Repository") {
 				val database by inject<HikariDatabase>()
-				val depositoryRepository = get<DepositoryRepository>()
 
 				val tagsIds = database.dbExec {
 					namesList.map {
@@ -435,7 +446,6 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 
 			test("Set Duplicated Tag at Repository, throw exception") {
 				val database by inject<HikariDatabase>()
-				val depositoryRepository = get<DepositoryRepository>()
 
 				val tagsIds = database.dbExec {
 					namesList.map {
@@ -455,7 +465,6 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 
 			test("Set Empty Tag at Repository") {
 				val database by inject<HikariDatabase>()
-				val depositoryRepository = get<DepositoryRepository>()
 
 				val tagsIds = database.dbExec {
 					namesList.map {
