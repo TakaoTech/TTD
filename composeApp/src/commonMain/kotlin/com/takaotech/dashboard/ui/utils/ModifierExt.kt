@@ -7,9 +7,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 
 fun String.toColor(): Color {
-	val red = substring(0, 2).toInt(16) / 255f
-	val green = substring(2, 4).toInt(16) / 255f
-	val blue = substring(4, 6).toInt(16) / 255f
+	val baseColor = replace("#", "")
+
+	val red = baseColor.substring(0, 2).toInt(16) / 255f
+	val green = baseColor.substring(2, 4).toInt(16) / 255f
+	val blue = baseColor.substring(4, 6).toInt(16) / 255f
 	return Color(red, green, blue, alpha = 1f)
 }
 
