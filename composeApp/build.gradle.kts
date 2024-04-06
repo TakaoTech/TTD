@@ -113,6 +113,7 @@ kotlin {
 				implementation("net.sergeych:mp_stools:1.4.7")
 
 				implementation("app.cash.paging:paging-compose-common:3.3.0-alpha02-0.5.1")
+				implementation("io.github.thechance101:chart:Beta-0.0.5")
 				//implementation("app.cash.paging:paging-testing:3.3.0-alpha02-0.5.1")
 
 			}

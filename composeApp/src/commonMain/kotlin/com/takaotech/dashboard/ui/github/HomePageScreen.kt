@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
@@ -73,9 +74,7 @@ fun HomePageScreen(
 			LazyColumn(
 				modifier = Modifier
 					.fillMaxSize()
-					.haze(
-						state = hazeState,
-					),
+					.haze(state = hazeState),
 				state = listState,
 			) {
 				item { ExpandedTopBar() }
@@ -197,7 +196,9 @@ private fun ExpandedTopBar() {
 			modifier = Modifier.padding(16.dp),
 			text = stringResource(Res.string.homepage_title_label),
 			color = MaterialTheme.colorScheme.onPrimary,
-			style = MaterialTheme.typography.headlineLarge,
+			style = MaterialTheme.typography.displayMedium.copy(
+				fontWeight = FontWeight.Bold
+			),
 		)
 	}
 }
@@ -233,7 +234,9 @@ private fun CollapsedTopBar(
 			) {
 				Text(
 					text = stringResource(Res.string.homepage_title_label),
-					style = MaterialTheme.typography.headlineSmall
+					style = MaterialTheme.typography.headlineSmall.copy(
+						fontWeight = FontWeight.ExtraBold
+					)
 				)
 			}
 		}
