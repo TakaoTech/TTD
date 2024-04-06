@@ -1,13 +1,7 @@
 package com.takaotech.dashboard.ui.admin.github
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Chip
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -66,7 +60,6 @@ class GHRepositoryScreen : Screen, KoinComponent {
 }
 
 @Composable
-@OptIn(ExperimentalMaterialApi::class)
 internal fun GHRepositoryScreen(
 	uiState: GHRepositoryListUiState,
 	viewModel: GHRepositoryListViewModel,
@@ -88,13 +81,14 @@ internal fun GHRepositoryScreen(
 	Column {
 		Row(modifier = Modifier.padding(4.dp)) {
 			Box {
-				Chip(
+				AssistChip(
 					onClick = {
 						openBottomSheet = true
+					},
+					label = {
+						Text(uiState.mainCategoryUi.selectedCategory?.name ?: "--")
 					}
-				) {
-					Text(uiState.mainCategoryUi.selectedCategory?.name ?: "--")
-				}
+				)
 			}
 		}
 

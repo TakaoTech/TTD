@@ -6,10 +6,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,6 +24,7 @@ data class GHRepositoryDetail(
 	private val repositoryId: Long
 ) : Screen {
 
+	@OptIn(ExperimentalMaterial3Api::class)
 	@Composable
 	override fun Content() {
 		val uriHandler = LocalTTDUriHandler.current
@@ -62,7 +62,8 @@ data class GHRepositoryDetail(
 								}
 							}
 						)
-					}) {
+					}
+				) {
 					Column(
 						modifier = Modifier.fillMaxSize()
 							.padding(it)

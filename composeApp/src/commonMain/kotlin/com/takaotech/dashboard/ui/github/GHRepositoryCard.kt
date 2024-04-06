@@ -5,10 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Chip
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,7 +22,7 @@ import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.ui.utils.toColor
 import net.sergeych.sprintf.sprintf
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun GHRepositoryCard(
 	fullName: String,
@@ -33,13 +32,16 @@ internal fun GHRepositoryCard(
 	onTagClicked: (tagId: Int) -> Unit,
 	onCardClicked: () -> Unit
 ) {
-	Card(modifier = modifier, onClick = onCardClicked) {
+	ElevatedCard(modifier = modifier, onClick = onCardClicked) {
 		Column(
 			modifier = Modifier
 				.fillMaxWidth()
-				.padding(16.dp)
+				.padding(vertical = 16.dp)
 		) {
-			Row(verticalAlignment = Alignment.CenterVertically) {
+			Row(
+				modifier = Modifier.padding(horizontal = 16.dp),
+				verticalAlignment = Alignment.CenterVertically
+			) {
 				Text(
 					modifier = Modifier.weight(1f),
 					text = fullName
@@ -47,17 +49,19 @@ internal fun GHRepositoryCard(
 			}
 
 			LazyRow(
-				modifier = Modifier.weight(1f),
-				horizontalArrangement = Arrangement.spacedBy(4.dp)
+				modifier = Modifier.fillMaxWidth(),
+				horizontalArrangement = Arrangement.spacedBy(4.dp),
+				contentPadding = PaddingValues(horizontal = 16.dp)
 			) {
 				items(tags) {
-					Chip(
+					AssistChip(
 						onClick = {
 							onTagClicked(it.id)
+						},
+						label = {
+							Text(it.name)
 						}
-					) {
-						Text(it.name)
-					}
+					)
 				}
 			}
 
@@ -66,9 +70,10 @@ internal fun GHRepositoryCard(
 			BoxWithConstraints(
 				modifier = Modifier
 					.fillMaxWidth()
+					.padding(horizontal = 16.dp)
 			) {
 				Canvas(
-					modifier = Modifier.fillMaxSize()
+					modifier = Modifier.fillMaxWidth()
 						.height(8.dp)
 						.clip(RoundedCornerShape(16.dp))
 				) {
@@ -156,7 +161,8 @@ internal fun GHRepositoryCard(
 
 			Spacer(Modifier.height(8.dp))
 			FlowRow(
-				modifier = Modifier.fillMaxWidth(),
+				modifier = Modifier.fillMaxWidth()
+					.padding(horizontal = 16.dp),
 				horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
 			) {
 				languages.forEach {

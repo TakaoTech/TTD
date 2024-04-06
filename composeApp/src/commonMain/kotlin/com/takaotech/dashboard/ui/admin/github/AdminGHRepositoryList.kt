@@ -4,9 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.takaotech.dashboard.model.github.MainCategory
 import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.ui.utils.assistChipColors
+import com.takaotech.dashboard.ui.utils.toColor
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import ttd.composeapp.generated.resources.Res
@@ -86,7 +88,7 @@ fun AdminGHRepositoryList(
 
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 internal fun AdminGHRepositoryCard(
 	fullName: String,
@@ -97,18 +99,21 @@ internal fun AdminGHRepositoryCard(
 	modifier: Modifier = Modifier,
 	onCardClicked: () -> Unit
 ) {
-	Card(modifier = modifier, onClick = onCardClicked) {
+	ElevatedCard(modifier = modifier, onClick = onCardClicked) {
 		Column(modifier = Modifier.padding(16.dp)) {
 			Row(verticalAlignment = Alignment.CenterVertically) {
 				Text(
 					modifier = Modifier.weight(1f),
 					text = fullName
 				)
-				Chip(onClick = {
-					onMainCategoryClicked()
-				}) {
-					Text(mainCategory.name)
-				}
+				AssistChip(
+					onClick = {
+						onMainCategoryClicked()
+					},
+					label = {
+						Text(mainCategory.name)
+					}
+				)
 
 			}
 
@@ -125,9 +130,13 @@ internal fun AdminGHRepositoryCard(
 						horizontalArrangement = Arrangement.spacedBy(4.dp)
 					) {
 						items(tags) {
-							Chip(onClick = {}) {
-								Text(it.name)
-							}
+							AssistChip(
+								colors = it.color?.toColor().assistChipColors(),
+								onClick = {},
+								label = {
+									Text(it.name)
+								}
+							)
 						}
 					}
 				}

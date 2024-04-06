@@ -4,19 +4,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -40,7 +35,7 @@ import ttd.composeapp.generated.resources.homepage_ghrepository_tags_label
 import ttd.composeapp.generated.resources.homepage_title_label
 
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun HomePageScreen(
 	tags: List<TagDao>,
@@ -87,13 +82,14 @@ fun HomePageScreen(
 						}
 
 						items(tags) {
-							Chip(
+							AssistChip(
 								onClick = {
 									onTagClicked(it.id)
+								},
+								label = {
+									Text(it.name)
 								}
-							) {
-								Text(it.name)
-							}
+							)
 						}
 
 						item {
@@ -126,13 +122,9 @@ fun HomePageScreen(
 
 			if (repositories.isNotEmpty()) {
 				item {
-					Row(
-						modifier = Modifier.fillMaxWidth()
-							.clickable(
-								onClick = onMoreRepositoriesClicked
-							).padding(horizontal = 8.dp, vertical = 16.dp),
-						horizontalArrangement = Arrangement.SpaceBetween,
-						verticalAlignment = Alignment.CenterVertically
+					TextButton(
+						modifier = Modifier.fillMaxWidth(),
+						onClick = onMoreRepositoriesClicked
 					) {
 						Text("Show More Repositories")
 
@@ -151,7 +143,7 @@ fun HomePageScreen(
 private fun ExpandedTopBar() {
 	Box(
 		modifier = Modifier
-			.background(MaterialTheme.colors.primaryVariant)
+			.background(MaterialTheme.colorScheme.primary)
 			.fillMaxWidth()
 			.height(EXPANDED_TOP_BAR_HEIGHT - COLLAPSED_TOP_BAR_HEIGHT),
 		contentAlignment = Alignment.BottomStart
@@ -159,8 +151,8 @@ private fun ExpandedTopBar() {
 		Text(
 			modifier = Modifier.padding(16.dp),
 			text = stringResource(Res.string.homepage_title_label),
-			color = MaterialTheme.colors.onPrimary,
-			style = MaterialTheme.typography.h3,
+			color = MaterialTheme.colorScheme.onPrimary,
+			style = MaterialTheme.typography.headlineLarge,
 		)
 	}
 }
@@ -194,7 +186,10 @@ private fun CollapsedTopBar(
 					}
 				}
 			) {
-				Text(text = stringResource(Res.string.homepage_title_label), style = MaterialTheme.typography.h6)
+				Text(
+					text = stringResource(Res.string.homepage_title_label),
+					style = MaterialTheme.typography.headlineSmall
+				)
 			}
 		}
 	)

@@ -39,11 +39,7 @@ internal suspend fun GithubDepositoryEntity.convertToGHRepository(
 		},
 		tags = database.dbExec {
 			tags.map { entity ->
-				TagDao(
-					id = entity.id.value,
-					name = entity.name,
-					description = entity.description
-				)
+				entity.convertToTagDao()
 			}
 		},
 		mainCategory = category,
@@ -82,11 +78,7 @@ internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(
 		},
 		tags = database.dbExec {
 			tags.map { entity ->
-				TagDao(
-					id = entity.id.value,
-					name = entity.name,
-					description = entity.description
-				)
+				entity.convertToTagDao()
 			}
 		},
 		updatedAt = updatedAt
