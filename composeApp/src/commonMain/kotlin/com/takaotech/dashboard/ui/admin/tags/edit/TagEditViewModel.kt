@@ -92,7 +92,9 @@ class TagEditViewModel(
 							id = tagId!!,
 							name = name.text,
 							description = description.text.ifBlank { null },
-							color = color.text.ifBlank { null }
+							color = color.text.ifBlank { null }?.let {
+								"#$it"
+							}
 						)
 					}
 				).isSuccess()
@@ -102,7 +104,9 @@ class TagEditViewModel(
 						TagNewDao(
 							name = name.text,
 							description = description.text.ifBlank { null },
-							color = color.text.ifBlank { null }
+							color = color.text.ifBlank { null }?.let {
+								"#$it"
+							}
 						)
 					}
 				).isSuccess()
