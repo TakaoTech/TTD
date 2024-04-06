@@ -12,18 +12,19 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
 import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.ui.utils.NetworkResult
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
@@ -35,16 +36,20 @@ import ttd.composeapp.generated.resources.homepage_ghrepository_tags_label
 import ttd.composeapp.generated.resources.homepage_title_label
 
 
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomePageScreen(
 	tags: List<TagDao>,
-	repositories: List<GHRepositoryMiniDao>,
+	repositories: NetworkResult<List<GHRepositoryMiniDao>>,
+	isRefreshing: Boolean,
 	onTagClicked: (tagId: Int) -> Unit,
 	onMoreTagClicked: () -> Unit,
 	onCardClicked: (repoId: Long) -> Unit,
-	onMoreRepositoriesClicked: () -> Unit
+	onMoreRepositoriesClicked: () -> Unit,
+	onRefresh: () -> Unit
 ) {
+	val pullToRefreshState = rememberPullToRefreshState()
+
 	val hazeState = remember { HazeState() }
 	val listState = rememberLazyListState()
 	val isCollapsed: Boolean by remember {
@@ -61,80 +66,120 @@ fun HomePageScreen(
 			)
 		}
 	) {
-		LazyColumn(
-			modifier = Modifier.padding(
-				bottom = it.calculateBottomPadding()
-			).haze(
-				state = hazeState,
-			),
-			state = listState,
+		Box(
+			modifier = Modifier
+				.nestedScroll(pullToRefreshState.nestedScrollConnection)
 		) {
-			item { ExpandedTopBar() }
-			if (tags.isNotEmpty()) {
-				item {
-					LazyRow(
-						verticalAlignment = Alignment.CenterVertically,
-						horizontalArrangement = Arrangement.spacedBy(8.dp),
-						contentPadding = PaddingValues(8.dp)
-					) {
-						item {
-							Text(stringResource(Res.string.homepage_ghrepository_tags_label))
-						}
+			LazyColumn(
+				modifier = Modifier
+					.fillMaxSize()
+					.haze(
+						state = hazeState,
+					),
+				state = listState,
+			) {
+				item { ExpandedTopBar() }
+				if (tags.isNotEmpty()) {
+					item {
+						LazyRow(
+							verticalAlignment = Alignment.CenterVertically,
+							horizontalArrangement = Arrangement.spacedBy(8.dp),
+							contentPadding = PaddingValues(8.dp)
+						) {
+							item {
+								Text(stringResource(Res.string.homepage_ghrepository_tags_label))
+							}
 
-						items(tags) {
-							AssistChip(
-								onClick = {
-									onTagClicked(it.id)
-								},
-								label = {
-									Text(it.name)
+							items(tags) {
+								AssistChip(
+									onClick = {
+										onTagClicked(it.id)
+									},
+									label = {
+										Text(it.name)
+									}
+								)
+							}
+
+							item {
+								TextButton(
+									onClick = onMoreTagClicked,
+								) {
+									Text(stringResource(Res.string.homepage_ghrepository_more_tags_label))
+									Icon(Icons.AutoMirrored.Filled.ArrowForward, "")
 								}
-							)
-						}
-
-						item {
-							TextButton(
-								onClick = onMoreTagClicked,
-							) {
-								Text(stringResource(Res.string.homepage_ghrepository_more_tags_label))
-								Icon(Icons.AutoMirrored.Filled.ArrowForward, "")
 							}
 						}
 					}
 				}
-			}
 
-			items(repositories) {
-				GHRepositoryCard(
-					modifier = Modifier.fillMaxWidth()
-						.padding(horizontal = 16.dp, vertical = 8.dp),
-					fullName = it.fullName,
-					tags = it.tags,
-					languages = it.languages,
-					onTagClicked = {
-						onTagClicked(it)
-					},
-					onCardClicked = {
-						onCardClicked(it.id)
+				when (repositories) {
+					is NetworkResult.Error -> {
+						//TODO Show error
 					}
-				)
-			}
 
-			if (repositories.isNotEmpty()) {
-				item {
-					TextButton(
-						modifier = Modifier.fillMaxWidth(),
-						onClick = onMoreRepositoriesClicked
-					) {
-						Text("Show More Repositories")
+					is NetworkResult.Loading -> {
+						item {
+							LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+						}
+					}
 
-						Icon(Icons.AutoMirrored.Filled.ArrowForward, "")
+					is NetworkResult.Success -> {
+						repositories.data?.let { repositories ->
+							items(repositories) {
+								GHRepositoryCard(
+									modifier = Modifier.fillMaxWidth()
+										.padding(horizontal = 16.dp, vertical = 8.dp),
+									fullName = it.fullName,
+									tags = it.tags,
+									languages = it.languages,
+									onTagClicked = {
+										onTagClicked(it)
+									},
+									onCardClicked = {
+										onCardClicked(it.id)
+									}
+								)
+							}
+
+							if (repositories.isNotEmpty()) {
+								item {
+									TextButton(
+										modifier = Modifier.fillMaxWidth(),
+										onClick = onMoreRepositoriesClicked
+									) {
+										Text("Show More Repositories")
+
+										Icon(Icons.AutoMirrored.Filled.ArrowForward, "")
+									}
+								}
+							}
+						}
+
 					}
 				}
 			}
+
+			if (pullToRefreshState.isRefreshing) {
+				LaunchedEffect(true) {
+					onRefresh()
+				}
+			}
+
+			LaunchedEffect(isRefreshing) {
+				if (isRefreshing) {
+					pullToRefreshState.startRefresh()
+				} else {
+					pullToRefreshState.endRefresh()
+				}
+			}
+
+			PullToRefreshContainer(
+				state = pullToRefreshState,
+				modifier = Modifier
+					.align(Alignment.TopCenter),
+			)
 		}
-
-
 	}
 }
 

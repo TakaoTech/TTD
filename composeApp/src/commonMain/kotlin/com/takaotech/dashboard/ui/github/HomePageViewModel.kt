@@ -2,11 +2,14 @@ package com.takaotech.dashboard.ui.github
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.isSuccess
+import com.github.kittinunf.result.map
 import com.takaotech.dashboard.model.github.GHLanguageDao
 import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
 import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.repository.GHRepository
+import com.takaotech.dashboard.ui.utils.NetworkResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,29 +26,67 @@ class HomePageViewModel(
 	val uiState = mUiState.asStateFlow()
 
 	init {
-		getGHRepository()
+		initGHRepository()
 		getTags()
 	}
 
-	fun getGHRepository() {
-		screenModelScope.launch(Dispatchers.IO) {
-			val repositoryResult = ghRepository.getRepositories(1, 10)
-			mUiState.update {
-				if (repositoryResult.isSuccess()) {
-					val repository = repositoryResult.get().data.map {
-						val languagesGrouped = mutableListOf<GHLanguageDao>()
-						var languageGrouped = GHLanguageDao("Other", 0)
+	private fun initGHRepository() {
+		screenModelScope.launch {
+			val result = getGHRepository()
 
-						it.languages.forEach {
-							if (it.weight > 1) {
-								languagesGrouped.add(it)
-							} else {
-								languageGrouped.copy(
-									weight = languageGrouped.weight + it.weight,
-									lines = languageGrouped.lines + it.lines
-								)
-							}
+			mUiState.update {
+				it.copy(
+					repositoryList = if (result.isSuccess()) {
+						NetworkResult.Success(result.get())
+					} else {
+						//TODO Manage error with a message
+						NetworkResult.Error("s")
+					}
+				)
+
+			}
+		}
+	}
+
+	fun refresh() {
+		getTags()
+		screenModelScope.launch {
+			mUiState.update {
+				it.copy(refreshing = true)
+			}
+			val result = getGHRepository()
+
+			mUiState.update {
+				it.copy(
+					repositoryList = if (result.isSuccess()) {
+						NetworkResult.Success(result.get())
+					} else {
+						NetworkResult.Error("s")
+					},
+					refreshing = false
+				)
+			}
+		}
+	}
+
+
+	private suspend fun getGHRepository(): Result<List<GHRepositoryMiniDao>, Throwable> {
+		return ghRepository.getRepositories(1, 10)
+			.map {
+				it.data.map {
+					val languagesGrouped = mutableListOf<GHLanguageDao>()
+					var languageGrouped = GHLanguageDao("Other", 0)
+
+					it.languages.forEach {
+						if (it.weight > 1) {
+							languagesGrouped.add(it)
+						} else {
+							languageGrouped = languageGrouped.copy(
+								weight = languageGrouped.weight + it.weight,
+								lines = languageGrouped.lines + it.lines
+							)
 						}
+					}
 //						Alternative grouping
 //						if (it.languages.size > 5) {
 //							it.languages.forEach {
@@ -62,22 +103,16 @@ class HomePageViewModel(
 //							languagesGrouped.addAll(it.languages)
 //						}
 
-						if (languageGrouped.lines > 0) {
-							languagesGrouped.add(languageGrouped)
-						}
-
-						it.copy(languages = languagesGrouped.sortedByDescending { it.weight })
+					if (languageGrouped.lines > 0) {
+						languagesGrouped.add(languageGrouped)
 					}
 
-					it.copy(repositoryList = repository)
-				} else {
-					it
+					it.copy(languages = languagesGrouped.sortedByDescending { it.weight })
 				}
 			}
-		}
 	}
 
-	fun getTags() {
+	private fun getTags() {
 		screenModelScope.launch(Dispatchers.IO) {
 			val tagsResult = ghRepository.getTags(1, 10)
 
@@ -96,5 +131,6 @@ class HomePageViewModel(
 
 data class HomePageUi(
 	val tags: List<TagDao> = listOf(),
-	val repositoryList: List<GHRepositoryMiniDao> = listOf(),
+	val repositoryList: NetworkResult<List<GHRepositoryMiniDao>> = NetworkResult.Loading(),
+	val refreshing: Boolean = false
 )

@@ -29,6 +29,7 @@ object HomePageTab : Tab {
 		HomePageScreen(
 			tags = uiState.tags,
 			repositories = uiState.repositoryList,
+			isRefreshing = uiState.refreshing,
 			onTagClicked = {
 				parent?.push(GHHomepageListPage(tagId = it))
 			},
@@ -40,6 +41,9 @@ object HomePageTab : Tab {
 			},
 			onCardClicked = {
 				parent?.push(GHRepositoryDetail(it))
+			},
+			onRefresh = {
+				viewModel.refresh()
 			}
 		)
 	}
