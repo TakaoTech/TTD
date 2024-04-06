@@ -134,6 +134,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 			GithubColorControllerImpl(colors)
 		)
 
+		//TODO Sistemare Test, Nella zona dei context il DB non deve essere resettato
 		beforeEach {
 			val dbConfiguration by inject<DbConfiguration>()
 			val database by inject<HikariDatabase>()
@@ -293,6 +294,7 @@ class DepositoryRepositoryTest : FunSpec(), KoinTest {
 						assertEquals(languageInput.lines, languageOutput.lines)
 						//weight and color are skipped
 					}
+					//TODO Missing test tag
 					assertEquals(inputRepo.tags, outputRepo.tags)
 				}
 
