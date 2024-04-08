@@ -2,10 +2,7 @@ package com.takaotech.dashboard.route.github.repository
 
 import com.github.kittinunf.result.isFailure
 import com.github.kittinunf.result.isSuccess
-import com.takaotech.dashboard.model.github.GHLanguageDao
-import com.takaotech.dashboard.model.github.GHRepositoryDao
-import com.takaotech.dashboard.model.github.GHUser
-import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.model.github.*
 import com.takaotech.dashboard.route.github.data.GithubUserEntity
 import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.utils.HikariDatabase
@@ -141,8 +138,7 @@ class DepositoryRepositoryTest : FunSpec() {
 			GithubColorControllerImpl(colors)
 		)
 
-		//TODO Sistemare Test, Nella zona dei context il DB non deve essere resettato
-		beforeEach {
+		beforeContainer {
 			database.dbExec {
 				addLogger(StdOutSqlLogger)
 				SchemaUtils.drop(*dbTables)
@@ -226,7 +222,11 @@ class DepositoryRepositoryTest : FunSpec() {
 				assertTrue { outputRepositories.isNotEmpty() }
 
 				for (outputRepo in outputRepositories) {
-					val inputRepo = inputRepository.single { it.id == outputRepo.id }
+					val inputRepo = try {
+						inputRepository.single { it.id == outputRepo.id }
+					} catch (ex: Exception) {
+						inputRepositories.single { it.id == outputRepo.id }
+					}
 
 					assertEquals(inputRepo.id, outputRepo.id)
 					assertEquals(inputRepo.name, outputRepo.name)
@@ -309,6 +309,80 @@ class DepositoryRepositoryTest : FunSpec() {
 					userSlot.size == userSlot.distinctBy { it.id }.size
 				}
 			}
+
+			val inputTags = listOf(
+				TagNewDao("TesTag1", "Description of Test1", "#8521C7"),
+				TagNewDao("TesTag2", "Description of Test2", "#FF0034"),
+				TagNewDao("TesTag3", "Description of Test3", "#00FF23"),
+			)
+
+			var inputTagsEntity: List<TagsEntity> = listOf()
+
+			test("Add tags at repo") {
+				val spyDepositoryRepository = spyk(depositoryRepository)
+
+				val currentRepositories = spyDepositoryRepository.getGHRepository()
+				assertTrue { spyDepositoryRepository.getGHRepository().isNotEmpty() }
+				assertTrue { currentRepositories.find { it.id == inputRepository1.id }!!.tags.isEmpty() }
+				inputTagsEntity = database.dbExec {
+					inputTags.map {
+						TagsEntity.new {
+							name = it.name
+							description = it.description
+							color = it.color
+						}
+					}
+				}
+
+				spyDepositoryRepository.setTagsAtRepository(inputRepository1.id, inputTagsEntity)
+
+				val updatedRepositories = spyDepositoryRepository.getGHRepository()
+
+				for (outputRepository in updatedRepositories) {
+					val outputTags = outputRepository.tags
+					if (outputRepository.id == inputRepository1.id) {
+						assertTrue { outputTags.isNotEmpty() }
+						inputTags.forEach { inputTag ->
+							val outputTag = outputTags.find { outputTag -> outputTag.name == inputTag.name }!!
+							assertEquals(inputTag.name, outputTag.name)
+							assertEquals(inputTag.description, outputTag.description)
+							assertEquals(inputTag.color, outputTag.color)
+						}
+					} else {
+						assertTrue { outputTags.isEmpty() }
+					}
+				}
+			}
+
+			test("Remove tag at repo") {
+				val spyDepositoryRepository = spyk(depositoryRepository)
+				val tagRemoved = inputTagsEntity.last()
+
+				val inputForRemoveTags = inputTagsEntity.toMutableList().apply {
+					remove(tagRemoved)
+				}
+
+				spyDepositoryRepository.setTagsAtRepository(inputRepository1.id, inputForRemoveTags)
+
+				val updatedRepositories = spyDepositoryRepository.getGHRepository()
+
+				for (outputRepository in updatedRepositories) {
+					val outputTags = outputRepository.tags
+					if (outputRepository.id == inputRepository1.id) {
+						assertTrue { outputTags.isNotEmpty() }
+						inputForRemoveTags.forEach { inputTag ->
+							val outputTag = outputTags.find { outputTag -> outputTag.name == inputTag.name }!!
+							assertEquals(inputTag.name, outputTag.name)
+							assertEquals(inputTag.description, outputTag.description)
+							assertEquals(inputTag.color, outputTag.color)
+						}
+						assertEquals(inputForRemoveTags.size, outputTags.size)
+					} else {
+						assertTrue { outputTags.isEmpty() }
+					}
+				}
+			}
+
 		}
 
 		context("Save User") {
