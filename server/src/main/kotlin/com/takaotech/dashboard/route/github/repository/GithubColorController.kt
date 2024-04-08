@@ -63,7 +63,7 @@ class GithubColorControllerImpl(
 	override suspend fun getColorLanguageByName(language: String): String? {
 		val colorMapping = getColorLanguagesMapping()
 
-		return colorMapping[language]?.jsonObject?.get("color")?.jsonPrimitive?.contentOrNull
+		return colorMapping[language]?.jsonObject?.get("color")?.jsonPrimitive?.contentOrNull ?: FALLBACK_COLOR
 	}
 
 	private suspend fun getColorLanguagesMappingRemote(): JsonObject {
@@ -117,5 +117,6 @@ class GithubColorControllerImpl(
 
 	companion object {
 		private const val LAST_UPDATE_FIELD = "lastUpdate"
+		private const val FALLBACK_COLOR = "#ededed"
 	}
 }
