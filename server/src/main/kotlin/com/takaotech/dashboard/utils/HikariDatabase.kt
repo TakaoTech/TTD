@@ -24,12 +24,17 @@ class HikariDatabase(
 	private val logger: Logger
 ) {
 	lateinit var database: Database
+	private lateinit var connection: HikariDataSource
 
 	fun connect() {
 		//log.info("Initialising database")
-		val pool = hikari()
-		database = Database.connect(pool)
+		connection = hikari()
+		database = Database.connect(connection)
 		setupSchema()
+	}
+
+	fun disconnect() {
+		connection.close()
 	}
 
 	private fun hikari(): HikariDataSource {
