@@ -1,33 +1,33 @@
 package com.takaotech.dashboard.route.github.repository
 
-import com.takaotech.dashboard.configuration.DbConfiguration
-import com.takaotech.dashboard.di.connectToDatabase
 import com.takaotech.dashboard.model.github.TagNewDao
 import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.utils.HikariDatabase
 import com.takaotech.dashboard.utils.dbTables
-import com.takaotech.dashboard.utils.getBaseTestKoin
+import com.takaotech.dashboard.utils.getDbConfiguration
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.koin.KoinExtension
+import io.ktor.util.logging.*
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
-import org.koin.test.KoinTest
-import org.koin.test.inject
+import kotlin.reflect.jvm.jvmName
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
-class TagsRepositoryTest : FunSpec(), KoinTest {
-	override fun extensions() = listOf(
-		KoinExtension(getBaseTestKoin())
-	)
-
+class TagsRepositoryTest : FunSpec() {
 	init {
+		val logger = KtorSimpleLogger(this::class.jvmName)
+
+		val dbConfiguration = getDbConfiguration()
+		val database = HikariDatabase(
+			dbConfiguration,
+			logger
+		)
+
+		val tagsRepository = TagsRepository(database)
+
 		beforeEach {
-			val dbConfiguration by inject<DbConfiguration>()
-			val database by inject<HikariDatabase>()
-			connectToDatabase(dbConfiguration)
 			database.dbExec {
 				addLogger(StdOutSqlLogger)
 				SchemaUtils.drop(*dbTables)
@@ -38,9 +38,6 @@ class TagsRepositoryTest : FunSpec(), KoinTest {
 
 		test("Title only") {
 			val tagInput = TagNewDao(name = "Kotlin Official")
-
-			val tagsRepository by inject<TagsRepository>()
-			val database by inject<HikariDatabase>()
 			tagsRepository.addTag(tagInput)
 
 			val tagListOutput = database.dbExec {
@@ -56,8 +53,6 @@ class TagsRepositoryTest : FunSpec(), KoinTest {
 		}
 
 		test("Add&Get Tag No Paging") {
-			val tagsRepository by inject<TagsRepository>()
-
 			val testList = listOf(
 				TagNewDao("Kotlin Official"),
 				TagNewDao("Recommended", "Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
@@ -84,8 +79,6 @@ class TagsRepositoryTest : FunSpec(), KoinTest {
 
 		test("Add&Get Tag Paging") {
 			val pageSize = 2
-
-			val tagsRepository by inject<TagsRepository>()
 
 			val testList = listOf(
 				TagNewDao("Kotlin Official"),
@@ -115,7 +108,6 @@ class TagsRepositoryTest : FunSpec(), KoinTest {
 		}
 
 		test("Add&Get&Remove Tag") {
-			val tagsRepository by inject<TagsRepository>()
 			val tagRemovedTest = TagNewDao("Recommended")
 
 			val testList = listOf(TagNewDao("Kotlin Official"), tagRemovedTest)
@@ -142,11 +134,9 @@ class TagsRepositoryTest : FunSpec(), KoinTest {
 		}
 
 		test("getTagById") {
-			val tagsRepository by inject<TagsRepository>()
 			val tagForNew =
 				TagNewDao("Recommended", "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", color = "#123456")
 
-			val database by inject<HikariDatabase>()
 			database.dbExec {
 				TagsEntity.new(123) {
 					name = tagForNew.name
@@ -165,11 +155,9 @@ class TagsRepositoryTest : FunSpec(), KoinTest {
 		}
 
 		test("getTagByIdInternal") {
-			val tagsRepository by inject<TagsRepository>()
 			val tagForNew =
 				TagNewDao("Recommended", "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", color = "#123456")
 
-			val database by inject<HikariDatabase>()
 			database.dbExec {
 				TagsEntity.new(123) {
 					name = tagForNew.name
@@ -188,7 +176,6 @@ class TagsRepositoryTest : FunSpec(), KoinTest {
 		}
 
 		test("Update Tag") {
-			val tagsRepository by inject<TagsRepository>()
 			val tagForUpdate = TagNewDao("Recommended", "Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
 
 

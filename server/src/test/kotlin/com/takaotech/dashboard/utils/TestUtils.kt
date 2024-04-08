@@ -10,15 +10,17 @@ import org.koin.ksp.generated.defaultModule
 
 val LOGGER = KtorSimpleLogger("TestLogger")
 
+fun getDbConfiguration() = DbConfiguration(
+	url = System.getenv("DB_URL"),
+	driver = System.getenv("DB_DRIVER"),
+	user = System.getenv("DB_USER"),
+	password = System.getenv("DB_PASSWORD")
+)
+
 fun getBaseTestKoin() = listOf(
 	getGeneralModule(
 		log = LOGGER,
-		dbConfiguration = DbConfiguration(
-			url = System.getenv("DB_URL"),
-			driver = System.getenv("DB_DRIVER"),
-			user = System.getenv("DB_USER"),
-			password = System.getenv("DB_PASSWORD")
-		),
+		dbConfiguration = getDbConfiguration(),
 		githubConfiguration = GithubConfiguration(
 			githubToken = System.getenv("GITHUB_TOKEN")
 		),
