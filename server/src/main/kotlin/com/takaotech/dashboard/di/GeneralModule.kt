@@ -9,7 +9,6 @@ import io.ktor.util.*
 import io.ktor.util.logging.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.jetbrains.exposed.sql.Database
 import org.kohsuke.github.GitHubBuilder
 import org.kohsuke.github.extras.okhttp3.OkHttpGitHubConnector
 import org.koin.core.module.Module
@@ -57,8 +56,4 @@ fun getGeneralModule(
 			digester = digestFunction
 		)
 	}
-}
-
-fun connectToDatabase(dbConfiguration: DbConfiguration): Database {
-	return Database.connect(dbConfiguration.url, dbConfiguration.driver)
 }
