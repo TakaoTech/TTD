@@ -40,8 +40,8 @@ class GHRepository(
 	suspend fun getTags(
 		page: Int?,
 		size: Int?
-	): Result<List<TagDao>, Throwable> {
-		return Result.of<List<TagDao>, Throwable> {
+	): Result<TakaoPaging<TagDao>, Throwable> {
+		return Result.of<TakaoPaging<TagDao>, Throwable> {
 			githubApi.getTags(
 				page = page,
 				size = size

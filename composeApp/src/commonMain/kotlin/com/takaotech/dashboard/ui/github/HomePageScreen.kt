@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
 import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.ui.platform.components.TagChip
 import com.takaotech.dashboard.ui.utils.NetworkResult
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
@@ -90,14 +91,12 @@ fun HomePageScreen(
 							}
 
 							items(tags) {
-								AssistChip(
-									onClick = {
-										onTagClicked(it.id)
-									},
-									label = {
-										Text(it.name)
-									}
-								)
+								TagChip(
+									text = it.name,
+									color = it.color
+								) {
+									onTagClicked(it.id)
+								}
 							}
 
 							item {

@@ -67,7 +67,7 @@ class GithubController(
 		githubDepositoryRepository.updateGhRepositoryMainCategory(repositoryId, category)
 	}
 
-	suspend fun getTags(page: Int? = null, size: Int? = null): List<TagDao> {
+	suspend fun getTags(page: Int? = null, size: Int? = null): TakaoPaging<TagDao> {
 		return tagsRepository.getTags(page, size)
 	}
 

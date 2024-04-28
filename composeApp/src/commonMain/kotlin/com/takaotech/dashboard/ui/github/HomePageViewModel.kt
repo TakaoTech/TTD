@@ -118,7 +118,7 @@ class HomePageViewModel(
 
 			mUiState.update {
 				if (tagsResult.isSuccess()) {
-					it.copy(tags = tagsResult.get())
+					it.copy(tags = tagsResult.get().data)
 				} else {
 					it
 				}

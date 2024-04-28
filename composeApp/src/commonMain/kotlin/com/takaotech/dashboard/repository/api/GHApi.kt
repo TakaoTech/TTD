@@ -25,5 +25,5 @@ interface GHApi {
 	suspend fun getTags(
 		@Query("page") page: Int?,
 		@Query("size") size: Int?
-	): List<TagDao>
+	): TakaoPaging<TagDao>
 }

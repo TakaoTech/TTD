@@ -4,14 +4,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.takaotech.dashboard.ui.utils.assistChipColors
-import com.takaotech.dashboard.ui.utils.toColor
+import com.takaotech.dashboard.ui.platform.components.TagChip
 
 @Composable
 fun TagList(
@@ -32,15 +29,12 @@ fun TagList(
 				contentPadding = PaddingValues(16.dp)
 			) {
 				items(tagListUi.tagList) {
-					AssistChip(
-						onClick = {
-							onTagClicked(it.id)
-						},
-						colors = it.color?.toColor().assistChipColors(),
-						label = {
-							Text(text = it.name)
-						}
-					)
+					TagChip(
+						text = it.name,
+						color = it.color
+					) {
+						onTagClicked(it.id)
+					}
 				}
 			}
 		}

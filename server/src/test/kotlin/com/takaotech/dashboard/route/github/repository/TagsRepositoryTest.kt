@@ -67,7 +67,7 @@ class TagsRepositoryTest : FunSpec() {
 				tagsRepository.addTag(it)
 			}
 
-			val outputTags = tagsRepository.getTags(null, null)
+			val outputTags = tagsRepository.getTags(null, null).data
 
 			outputTags.forEachIndexed { index, outputTag ->
 				val inputTag = testList[index]
@@ -94,7 +94,7 @@ class TagsRepositoryTest : FunSpec() {
 				tagsRepository.addTag(it)
 			}
 
-			val outputTags = tagsRepository.getTags(1, pageSize)
+			val outputTags = tagsRepository.getTags(1, pageSize).data
 
 			outputTags.forEachIndexed { index, outputTag ->
 				val inputTag = testList[index]
@@ -116,7 +116,7 @@ class TagsRepositoryTest : FunSpec() {
 				tagsRepository.addTag(it)
 			}
 
-			val tags = tagsRepository.getTags(null, null)
+			val tags = tagsRepository.getTags(null, null).data
 
 			tags.forEachIndexed { index, outputTag ->
 				val inputTag = testList[index]
@@ -127,7 +127,7 @@ class TagsRepositoryTest : FunSpec() {
 
 			tagsRepository.removeTag(tags.find { it.name == tagRemovedTest.name }!!.id)
 
-			val tags2 = tagsRepository.getTags(null, null)
+			val tags2 = tagsRepository.getTags(null, null).data
 
 			assertTrue { tags2.find { it.name == tagRemovedTest.name } == null }
 
@@ -193,7 +193,7 @@ class TagsRepositoryTest : FunSpec() {
 				tagsRepository.addTag(it)
 			}
 
-			val outputTags = tagsRepository.getTags(null, null)
+			val outputTags = tagsRepository.getTags(null, null).data
 
 			outputTags.forEachIndexed { index, outputTag ->
 				val inputTag = testList[index]
@@ -202,12 +202,12 @@ class TagsRepositoryTest : FunSpec() {
 				assertEquals(inputTag.color, outputTag.color)
 			}
 
-			tagsRepository.getTags(null, null).find {
+			tagsRepository.getTags(null, null).data.find {
 				it.name == tagForUpdate.name
 			}?.let {
 				val updatedTag = it.copy(description = "Description Updated")
 				tagsRepository.updateTag(updatedTag)
-				updatedTag to tagsRepository.getTags(null, null).find { it.name == updatedTag.name }
+				updatedTag to tagsRepository.getTags(null, null).data.find { it.name == updatedTag.name }
 			}?.let {
 				assertEquals(it.first.id, it.second?.id)
 				assertEquals(it.first.name, it.second?.name)

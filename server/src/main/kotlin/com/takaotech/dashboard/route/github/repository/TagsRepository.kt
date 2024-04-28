@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.route.github.repository
 
+import com.takaotech.dashboard.model.TakaoPaging
 import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.model.github.TagNewDao
 import com.takaotech.dashboard.route.github.data.TagsEntity
@@ -30,19 +31,32 @@ class TagsRepository(private val database: HikariDatabase) {
 		}
 	}
 
-	suspend fun getTags(page: Int?, size: Int?): List<TagDao> {
+	suspend fun getTags(page: Int?, size: Int?): TakaoPaging<TagDao> {
 		return database.dbExec {
-			TagsEntity.all().let {
+			TagsEntity.all().run {
 				if (page != null && size != null) {
 					val limit: Int = size
 					val pageSize: Int = size
 					val skip: Int = (page - 1) * pageSize
-					it.limit(offset = skip.toLong(), n = limit)
+
+					val totalPages = (count() / pageSize).let {
+						if (it == 0L) {
+							1
+						} else {
+							it
+						}
+					}
+
+					totalPages to limit(offset = skip.toLong(), n = limit)
 				} else {
-					it
+					1L to this
 				}
-			}.map {
-				it.convertToTagDao()
+			}.run {
+				TakaoPaging(
+					data = second.map { it.convertToTagDao() },
+					page = page ?: 1,
+					totalPage = first
+				)
 			}
 		}
 	}
