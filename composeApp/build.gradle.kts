@@ -209,7 +209,7 @@ buildkonfig {
 		buildConfigField(
 			FieldSpec.Type.STRING,
 			"baseUrl",
-			System.getenv("ENDPOINT_URL") ?: localProps?.getProperty("ENDPOINT_URL")
+			providers.environmentVariable("ENDPOINT_URL").orNull ?: localProps?.getProperty("ENDPOINT_URL")
 		)
 	}
 }
