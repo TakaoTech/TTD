@@ -15,8 +15,12 @@ plugins {
 	alias(libs.plugins.depscredit)
 }
 
-val localProps = Properties().apply {
-	load(FileInputStream(File(rootProject.rootDir, "local.properties")))
+val localProps: Properties? = try {
+	Properties().apply {
+		load(FileInputStream(File(rootProject.rootDir, "local.properties")))
+	}
+} catch (ex: Exception) {
+	null
 }
 
 kotlin {
@@ -205,7 +209,7 @@ buildkonfig {
 		buildConfigField(
 			FieldSpec.Type.STRING,
 			"baseUrl",
-			System.getenv("ENDPOINT_URL") ?: localProps.getProperty("ENDPOINT_URL")
+			System.getenv("ENDPOINT_URL") ?: localProps?.getProperty("ENDPOINT_URL")
 		)
 	}
 }

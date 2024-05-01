@@ -1,3 +1,4 @@
+import io.ktor.plugin.features.*
 import java.io.FileInputStream
 import java.util.*
 
@@ -13,7 +14,7 @@ plugins {
 }
 
 group = projectPackage
-version = "1.0.0"
+version = "0.1.0-preview"
 application {
 	mainClass.set("com.takaotech.dashboard.ApplicationKt")
 	applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${extra["development"] ?: "false"}")
@@ -25,7 +26,7 @@ repositories {
 }
 
 val localProps = Properties().apply {
-	load(FileInputStream(File(rootProject.rootDir, "local.properties")))
+	load(FileInputStream(File(rootProject.rootDir, "test-server.properties")))
 }
 
 
@@ -99,6 +100,31 @@ dependencies {
 	testImplementation(libs.koin.test)
 	testImplementation(libs.koin.junit)
 	testImplementation(libs.mockk)
+}
+
+ktor {
+	docker {
+		//https://github.com/ktorio/ktor-build-plugins/blob/main/plugin/src/main/kotlin/io/ktor/plugin/features/Docker.kt
+		jreVersion.set(JavaVersion.VERSION_17)
+//		localImageName.set("ttd")
+		imageTag.set(version.toString())
+		portMappings.set(
+			listOf(
+				DockerPortMapping(
+					80,
+					8080,
+					DockerPortMappingProtocol.TCP
+				)
+			)
+		)
+		externalRegistry.set(
+			DockerImageRegistry.dockerHub(
+				username = providers.environmentVariable("DOCKER_HUB_USERNAME"),
+				password = providers.environmentVariable("DOCKER_HUB_TOKEN"),
+				appName = provider { "ttd" }
+			)
+		)
+	}
 }
 
 koverReport {
