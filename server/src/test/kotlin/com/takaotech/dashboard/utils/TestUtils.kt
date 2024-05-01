@@ -22,7 +22,7 @@ fun getBaseTestKoin() = listOf(
 		log = LOGGER,
 		dbConfiguration = getDbConfiguration(),
 		githubConfiguration = GithubConfiguration(
-			githubToken = System.getenv("GITHUB_TOKEN")
+			githubToken = System.getenv("SERVER_GITHUB_TOKEN")
 		),
 		credentialConfig = CredentialConfig(
 			digestAlgorithm = System.getenv("auth.digest.alg"),

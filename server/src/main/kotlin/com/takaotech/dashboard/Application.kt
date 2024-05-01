@@ -24,7 +24,7 @@ fun Application.module() {
 	)
 
 	val githubConfiguration = GithubConfiguration(
-		githubToken = System.getenv("GITHUB_TOKEN")
+		githubToken = System.getenv("SERVER_GITHUB_TOKEN")
 	)
 
 	val credentialConfig = CredentialConfig(

@@ -15,7 +15,7 @@
             <env name="DB_DRIVER" value=""/>
             <env name="DB_USER" value=""/>
             <env name="DB_PASSWORD" value=""/>
-            <env name="GITHUB_TOKEN" value=""/>
+            <env name="SERVER_GITHUB_TOKEN" value=""/>
             <env name="auth.digest.alg" value=""/>
             <env name="auth.digest" value=""/>
             <env name="auth.password" value=""/>
