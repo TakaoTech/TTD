@@ -206,10 +206,14 @@ buildkonfig {
 	objectName = "AppBuildKonfig"
 //    // exposeObjectWithName = 'YourAwesomePublicConfig'
 	defaultConfigs {
+		val baseUrl = providers.environmentVariable("ENDPOINT_URL").orNull.let {
+			it ?: localProps?.getProperty("ENDPOINT_URL").orEmpty()
+		}
+
 		buildConfigField(
 			FieldSpec.Type.STRING,
 			"baseUrl",
-			providers.environmentVariable("ENDPOINT_URL").orNull ?: localProps?.getProperty("ENDPOINT_URL")
+			baseUrl
 		)
 	}
 }

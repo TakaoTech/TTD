@@ -4,7 +4,9 @@
 
 name: 'Server build workflow'
 on:
-  push: {}
+  push:
+    branches:
+    - 'test'
 jobs:
   check_yaml_consistency:
     name: 'Check YAML consistency'
@@ -37,5 +39,9 @@ jobs:
       name: 'Checkout'
       uses: 'actions/checkout@v4'
     - id: 'step-3'
+      name: 'Change permission for Act execution'
+      run: 'chmod +x -R *'
+      if: '${{ env.ACT }}'
+    - id: 'step-4'
       name: 'Generate image'
       run: './gradlew server:publishImage'
