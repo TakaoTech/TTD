@@ -41,6 +41,8 @@ class HikariDatabase(
 		val config = HikariConfig().apply {
 			driverClassName = dbConfiguration.driver
 			jdbcUrl = dbConfiguration.url
+			username = dbConfiguration.user
+			password = dbConfiguration.password
 			maximumPoolSize = 3
 			isAutoCommit = false
 			transactionIsolation = "TRANSACTION_REPEATABLE_READ"
