@@ -52,6 +52,10 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 
+androidx-credentials = {module = "androidx.credentials:credentials", version = "1.2.2"}
+androidx-credentials-googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version = "1.1.0"}
+androidx-credentials-playservices = { module = "androidx.credentials:credentials-play-services-auth", version = "1.2.2"}
+
 
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kotlin-result = { module = "com.github.kittinunf.result:result", version = "5.5.0" }
@@ -118,6 +122,8 @@ ktor-client-test = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 ktor-client-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor"}
+ktor-client-contentnegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor"}
 
 depscredit-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "depscredit" }
 depscredit-uim3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "depscredit" }

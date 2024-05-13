@@ -3,136 +3,105 @@ package com.takaotech.dashboard.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.VisualTransformation
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
+import co.touchlab.kermit.Logger
 import com.takaotech.dashboard.ui.credits.CreditScreen
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import ttd.composeapp.generated.resources.Res
 import ttd.composeapp.generated.resources.credit_opensource_licence_label
 
-object LoginScreen : Tab {
+object LoginScreen : Tab, KoinComponent {
 //object LoginScreen : Screen {
 
 
-	override val options: TabOptions
-		@Composable
-		get() {
-			val title = "Login"
-			val icon = rememberVectorPainter(Icons.Filled.Person)
+    override val options: TabOptions
+        @Composable
+        get() {
+            val title = "Login"
+            val icon = rememberVectorPainter(Icons.Filled.Person)
 
-			return remember {
-				TabOptions(
-					index = 4u,
-					title = title,
-					icon = icon
-				)
-			}
-		}
+            return remember {
+                TabOptions(
+                    index = 4u,
+                    title = title,
+                    icon = icon
+                )
+            }
+        }
 
-	@Composable
-	override fun Content() {
-		val navigator = LocalNavigator.currentOrThrow
-		val viewModel = getScreenModel<LoginViewModel>()
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        val viewModel = getScreenModel<LoginViewModel>()
 
-		val uiState by viewModel.uiState.collectAsState()
+        val logger = get<Logger>()
 
-		LoginScreenUi(
-			username = uiState.username,
-			password = uiState.password,
-			modifier = Modifier.fillMaxSize(),
-			onUsernameChanged = {
-				viewModel.onUsernameChanged(it)
-			},
-			onPasswordChanged = {
-				viewModel.onPasswordChanged(it)
-			},
-			onCreditClicked = {
-				navigator.parent?.push(CreditScreen())
-			},
-			loginClicked = {
-				//TODO
-			}
-		)
-	}
+
+        LoginScreenUi(
+            modifier = Modifier.fillMaxSize(),
+            onCreditClicked = {
+                navigator.parent?.push(CreditScreen())
+            },
+            onGoogleLoginClicked = {
+
+            },
+            onAppleLoginClicked = {
+            }
+
+        )
+    }
 }
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 internal fun LoginScreenUi(
-	username: TextFieldValue,
-	password: TextFieldValue,
-	modifier: Modifier = Modifier,
-	onUsernameChanged: (TextFieldValue) -> Unit,
-	onPasswordChanged: (TextFieldValue) -> Unit,
-	onCreditClicked: () -> Unit,
-	loginClicked: () -> Unit
+    modifier: Modifier = Modifier,
+    onGoogleLoginClicked: () -> Unit,
+    onAppleLoginClicked: () -> Unit,
+    onCreditClicked: () -> Unit
 ) {
-	Column(
-		modifier = modifier,
-		verticalArrangement = Arrangement.Center,
-		horizontalAlignment = Alignment.CenterHorizontally
-	) {
-		var passwordVisible by remember {
-			mutableStateOf(false)
-		}
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
-		OutlinedTextField(
-			value = username,
-			onValueChange = onUsernameChanged
-		)
+        //TODO Replace with ProviderIcon + Text
+        OutlinedButton(
+            onClick = onGoogleLoginClicked, //Login with Google,
+            content = {
 
-		OutlinedTextField(
-			value = password,
-			onValueChange = onPasswordChanged,
-			trailingIcon = {
-				IconToggleButton(
-					passwordVisible,
-					onCheckedChange = {
-						passwordVisible = it
-					}
-				) {
-					Icon(
-						if (passwordVisible) {
-							Icons.Default.Visibility
-						} else {
-							Icons.Default.VisibilityOff
-						}, if (passwordVisible) {
-							"Hide Password"
-						} else {
-							"Show Password"
-						}
-					)
-				}
-			},
-			visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-			keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-		)
+            }
+        )
+        Button(
+            onClick = onAppleLoginClicked, //Login with Twitch,
+            content = {
 
-		Button(onClick = loginClicked) {
-			//TODO Convert to strings
-			Text("Login")
-		}
+            }
+        )
 
-		TextButton(onClick = onCreditClicked) {
-			Text(stringResource(Res.string.credit_opensource_licence_label))
-		}
-	}
+        TextButton(onClick = onCreditClicked) {
+            Text(stringResource(Res.string.credit_opensource_licence_label))
+        }
+    }
 }

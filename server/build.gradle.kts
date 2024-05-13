@@ -71,6 +71,8 @@ dependencies {
 	implementation(libs.ktor.server.cors)
 
 	implementation(libs.ktor.client)
+	implementation(libs.ktor.client.cio)
+	implementation(libs.ktor.client.contentnegotiation)
 	testImplementation(libs.ktor.client.test)
 
 	implementation(libs.exposed.core)

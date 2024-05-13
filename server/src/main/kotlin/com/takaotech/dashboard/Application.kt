@@ -5,6 +5,7 @@ import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.configuration.GithubConfiguration
 import com.takaotech.dashboard.configuration.SessionConfig
 import com.takaotech.dashboard.plugins.*
+import com.takaotech.dashboard.plugins.auth.configureAuth
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.tomcat.*

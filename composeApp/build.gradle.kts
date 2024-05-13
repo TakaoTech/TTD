@@ -70,6 +70,10 @@ kotlin {
 			implementation(libs.androidx.activity.compose)
 			implementation(libs.koin.android)
 
+			implementation(libs.androidx.credentials)
+			implementation(libs.androidx.credentials.googleid)
+			implementation(libs.androidx.credentials.playservices)
+
 			implementation(libs.androidx.browser)
 		}
 		val commonMain by getting {
@@ -206,17 +210,27 @@ buildkonfig {
 	objectName = "AppBuildKonfig"
 //    // exposeObjectWithName = 'YourAwesomePublicConfig'
 	defaultConfigs {
-		val baseUrl = providers.environmentVariable("ENDPOINT_URL").orNull.let {
-			it ?: localProps?.getProperty("ENDPOINT_URL").orEmpty()
-		}
-
 		buildConfigField(
 			FieldSpec.Type.STRING,
 			"baseUrl",
-			baseUrl
+			getEnvProperty("ENDPOINT_URL")
+		)
+
+		buildConfigField(
+			FieldSpec.Type.STRING,
+			"googleWebAuth",
+			getEnvProperty("AUTH_GOOGLE_CLIENT_ID_ANDROID_WEB")
 		)
 	}
 }
+
+fun getEnvProperty(envName: String): String {
+	return providers.environmentVariable(envName).orNull.let {
+		it ?: localProps?.getProperty(envName).orEmpty()
+	}
+}
+
+
 //i18n4k {
 //	packageName = projectPackage
 //	inputDirectory = "src/commonMain/resources/i18n"
