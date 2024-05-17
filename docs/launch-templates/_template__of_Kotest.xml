@@ -16,12 +16,8 @@
             <env name="DB_USER" value=""/>
             <env name="DB_PASSWORD" value=""/>
             <env name="SERVER_GITHUB_TOKEN" value=""/>
-            <env name="auth.digest.alg" value=""/>
-            <env name="auth.digest" value=""/>
-            <env name="auth.password" value=""/>
-            <env name="auth.username" value=""/>
-            <env name="auth.session.name" value=""/>
-            <env name="auth.session.realm" value=""/>
+            <env name="jwt.google.issuer" value=""/>
+            <env name="jwt.google.audience" value=""/>
         </envs>
         <method v="2">
             <option name="Make" enabled="true"/>

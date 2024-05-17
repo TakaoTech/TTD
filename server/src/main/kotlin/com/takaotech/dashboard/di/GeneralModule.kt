@@ -45,15 +45,4 @@ fun getGeneralModule(
 			withOAuthToken(githubConfiguration.githubToken)
 		}.build()
 	}
-
-	single<UserHashedTableAuth> {
-		val digestFunction = getDigestFunction(credentialConfig.digestAlgorithm) { credentialConfig.digest + it.length }
-
-		UserHashedTableAuth(
-			table = mapOf(
-				credentialConfig.username to digestFunction(credentialConfig.password),
-			),
-			digester = digestFunction
-		)
-	}
 }

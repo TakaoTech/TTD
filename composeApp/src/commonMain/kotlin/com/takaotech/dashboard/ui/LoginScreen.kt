@@ -23,6 +23,7 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import co.touchlab.kermit.Logger
 import com.takaotech.dashboard.ui.credits.CreditScreen
+import com.takaotech.dashboard.ui.login.GoogleLogin
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.component.KoinComponent
@@ -55,6 +56,7 @@ object LoginScreen : Tab, KoinComponent {
         val viewModel = getScreenModel<LoginViewModel>()
 
         val logger = get<Logger>()
+        val googleLogin = get<GoogleLogin>()
 
 
         LoginScreenUi(
@@ -63,7 +65,7 @@ object LoginScreen : Tab, KoinComponent {
                 navigator.parent?.push(CreditScreen())
             },
             onGoogleLoginClicked = {
-
+                googleLogin.startLogin()
             },
             onAppleLoginClicked = {
             }
