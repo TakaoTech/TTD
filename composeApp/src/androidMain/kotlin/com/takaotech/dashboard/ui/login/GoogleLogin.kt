@@ -1,12 +1,19 @@
 package com.takaotech.dashboard.ui.login
 
 import android.content.Context
-import androidx.credentials.*
+import android.util.Log
+import androidx.credentials.CredentialManager
+import androidx.credentials.CustomCredential
+import androidx.credentials.GetCredentialRequest
+import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.takaotech.dashboard.AppBuildKonfig
+import io.ktor.client.*
+import io.ktor.client.plugins.*
+import io.ktor.client.request.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -14,11 +21,11 @@ import kotlinx.coroutines.launch
 import java.security.MessageDigest
 import java.util.*
 
-class GoogleLogin {
+class GoogleLoginImpl(private val context: Context) : GoogleLogin {
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    fun startLogin(context: Context) {
+    override fun startLogin() {
         val credentialManager = CredentialManager.create(context)
 
         // Generate a nonce and hash it with sha-256
@@ -33,7 +40,7 @@ class GoogleLogin {
         val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(true)
             .setServerClientId(AppBuildKonfig.googleWebAuth)
-            .setAutoSelectEnabled(true)
+            .setAutoSelectEnabled(false)
             .setNonce(hashedNonce)
             .build()
 
@@ -47,14 +54,15 @@ class GoogleLogin {
                     request = request,
                     context = context,
                 )
-                handleSignIn(result)
+                handleSignIn(result, hashedNonce)
             } catch (e: GetCredentialException) {
+                Log.e("Err", "bruh", e)
 //                handleFailure(e)
             }
         }
     }
 
-    fun handleSignIn(result: GetCredentialResponse) {
+    fun handleSignIn(result: GetCredentialResponse, hashedNonce: String) {
         // Handle the successfully returned credential.
         val credential = result.credential
 

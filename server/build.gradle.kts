@@ -67,6 +67,7 @@ dependencies {
 	implementation(libs.ktor.server.serialization)
 	implementation(libs.ktor.server.tomcat)
 	implementation(libs.ktor.server.auth)
+	implementation(libs.ktor.server.auth.jwt)
 	implementation(libs.ktor.server.sessions)
 	implementation(libs.ktor.server.cors)
 
