@@ -1,9 +1,6 @@
 package com.takaotech.dashboard.utils
 
-import com.takaotech.dashboard.configuration.CredentialConfig
-import com.takaotech.dashboard.configuration.DbConfiguration
-import com.takaotech.dashboard.configuration.GithubConfiguration
-import com.takaotech.dashboard.configuration.SessionConfig
+import com.takaotech.dashboard.configuration.*
 import com.takaotech.dashboard.di.getGeneralModule
 import io.ktor.util.logging.*
 import org.koin.ksp.generated.defaultModule
@@ -25,13 +22,9 @@ fun getBaseTestKoin() = listOf(
 			githubToken = System.getenv("SERVER_GITHUB_TOKEN")
 		),
 		credentialConfig = CredentialConfig(
-			digestAlgorithm = System.getenv("auth.digest.alg"),
-			digest = System.getenv("auth.digest"),
-			username = System.getenv("auth.username"),
-			password = System.getenv("auth.password"),
-			sessionConfig = SessionConfig(
-				name = System.getenv("auth.session.name"),
-				realm = System.getenv("auth.session.realm")
+			googleJwtConfig = GoogleJwtConfig(
+				issuer = System.getenv("jwt.google.issuer"),
+				audience = System.getenv("jwt.google.audience")
 			)
 		)
 	), defaultModule
