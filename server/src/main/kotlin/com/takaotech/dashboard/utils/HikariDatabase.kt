@@ -1,10 +1,15 @@
 package com.takaotech.dashboard.utils
 
 import com.takaotech.dashboard.configuration.DbConfiguration
+import com.takaotech.dashboard.route.administration.data.UserRoleTable
 import com.takaotech.dashboard.route.github.data.GithubDepositoryTable
 import com.takaotech.dashboard.route.github.data.GithubDepositoryTagsTable
 import com.takaotech.dashboard.route.github.data.GithubUserTable
 import com.takaotech.dashboard.route.github.data.TagsTable
+import com.takaotech.dashboard.route.administration.data.role.RoleEntity
+import com.takaotech.dashboard.route.administration.data.role.RoleTable
+import com.takaotech.dashboard.route.administration.data.role.TakaoRole
+import com.takaotech.dashboard.route.administration.data.user.UserTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.util.logging.*
@@ -20,50 +25,70 @@ import org.koin.core.annotation.Singleton
 
 @Singleton
 class HikariDatabase(
-	private val dbConfiguration: DbConfiguration,
-	private val logger: Logger
+    private val dbConfiguration: DbConfiguration,
+    private val logger: Logger
 ) {
-	lateinit var database: Database
-	private lateinit var connection: HikariDataSource
+    lateinit var database: Database
+    private lateinit var connection: HikariDataSource
 
-	fun connect() {
-		//log.info("Initialising database")
-		connection = hikari()
-		database = Database.connect(connection)
-		setupSchema()
-	}
+    fun connect() {
+        //log.info("Initialising database")
+        connection = hikari()
+        database = Database.connect(connection)
+        setupSchema()
+    }
 
-	fun disconnect() {
-		connection.close()
-	}
+    fun disconnect() {
+        connection.close()
+    }
 
-	private fun hikari(): HikariDataSource {
-		val config = HikariConfig().apply {
-			driverClassName = dbConfiguration.driver
-			jdbcUrl = dbConfiguration.url
-			username = dbConfiguration.user
-			password = dbConfiguration.password
-			maximumPoolSize = 3
-			isAutoCommit = false
-			transactionIsolation = "TRANSACTION_REPEATABLE_READ"
-			validate()
-		}
-		return HikariDataSource(config)
-	}
+    private fun hikari(): HikariDataSource {
+        val config = HikariConfig().apply {
+            driverClassName = dbConfiguration.driver
+            jdbcUrl = dbConfiguration.url
+            username = dbConfiguration.user
+            password = dbConfiguration.password
+            maximumPoolSize = 3
+            isAutoCommit = false
+            transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+            validate()
+        }
+        return HikariDataSource(config)
+    }
 
-	private fun setupSchema() {
-		transaction(database) {
-			withDataBaseLock {
-				SchemaUtils.createMissingTablesAndColumns(*dbTables)
-			}
-		}
-	}
+    private fun setupSchema() {
+        transaction(database) {
+            withDataBaseLock {
+                SchemaUtils.createMissingTablesAndColumns(*dbTables)
 
-	suspend fun <T> dbExec(
-		statement: suspend Transaction.() -> T
-	): T = withContext(Dispatchers.IO) {
-		newSuspendedTransaction(statement = statement)
-	}
+                TakaoRole.entries.mapNotNull {
+                    if (RoleEntity.findById(it) != null) {
+                        null
+                    } else {
+                        it
+                    }
+                }.map {
+                    RoleEntity.new(it) {}
+                }
+
+            }
+        }
+    }
+
+    suspend fun <T> dbExec(
+        statement: suspend Transaction.() -> T
+    ): T = withContext(Dispatchers.IO) {
+        newSuspendedTransaction(statement = statement)
+    }
 }
 
-val dbTables = arrayOf(TagsTable, GithubDepositoryTable, GithubUserTable, GithubDepositoryTagsTable)
+val dbTables = arrayOf(
+    TagsTable,
+    GithubDepositoryTable,
+    GithubUserTable,
+    GithubDepositoryTagsTable,
+
+    UserTable,
+    RoleTable,
+    UserRoleTable
+)

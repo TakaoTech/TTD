@@ -3,7 +3,7 @@ package com.takaotech.dashboard.plugins
 import com.takaotech.dashboard.route.github.adminGithubRouter
 import com.takaotech.dashboard.route.github.adminTagsRoute
 import com.takaotech.dashboard.route.github.githubRouter
-import com.takaotech.dashboard.route.loginRoute
+import com.takaotech.dashboard.route.login.sessionRoute
 import io.ktor.resources.*
 import io.ktor.server.application.*
 import io.ktor.server.resources.Resources
@@ -19,7 +19,7 @@ fun Application.configureRouting() {
 		}
 		githubRouter()
 	}
-	loginRoute()
+	sessionRoute()
 
 }
 

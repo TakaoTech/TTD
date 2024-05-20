@@ -2,6 +2,7 @@ package com.takaotech.dashboard.plugins.auth
 
 import com.auth0.jwk.JwkProviderBuilder
 import com.takaotech.dashboard.configuration.CredentialConfig
+import com.takaotech.dashboard.route.administration.data.role.TakaoRole
 import io.ktor.http.auth.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -19,7 +20,10 @@ import java.util.concurrent.TimeUnit
  * For my Google JWT configuration, I pass the [ApplicationConfig]
  * from the top level [Authentication] plugin.
  */
-fun AuthenticationConfig.configureGoogleJWT(config: CredentialConfig) {
+fun AuthenticationConfig.configureGoogleJWT(
+    config: CredentialConfig,
+    getRoles: suspend (id: String) -> Set<TakaoRole>
+) {
 
     /**
      * Next, I use the [ApplicationConfig] to get the issuer and the audience values
@@ -84,7 +88,7 @@ fun AuthenticationConfig.configureGoogleJWT(config: CredentialConfig) {
             /**
              * Finally, if validation is successful, I return the payload.
              */
-            JWTPrincipal(jwtCredential.payload)
+            TakaoJWTPrincipal(jwtCredential.payload, getRoles(jwtCredential.payload.id))
 
         }
         /**
