@@ -1,4 +1,4 @@
-package com.takaotech.dashboard.utils
+package com.takaotech.dashboard.utils.tables
 
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass

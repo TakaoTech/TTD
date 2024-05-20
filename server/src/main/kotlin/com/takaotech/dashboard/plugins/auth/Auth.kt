@@ -1,9 +1,12 @@
 package com.takaotech.dashboard.plugins.auth
 
 import com.takaotech.dashboard.configuration.CredentialConfig
+import com.takaotech.dashboard.route.administration.controller.UserController
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import org.koin.ktor.ext.get
+import org.koin.ktor.ext.inject
 
 fun Application.configureAuth(credentialConfig: CredentialConfig = get()) {
 	//https://gist.github.com/nomisRev/a42110d095e3fd2c82d8137c995569b1
@@ -20,10 +23,13 @@ fun Application.configureAuth(credentialConfig: CredentialConfig = get()) {
 //	}
 
 //	val redirects = mutableMapOf<String, String>()
+	val userController by inject<UserController>()
 
 	authentication {
 		// and then api key provider
-		configureGoogleJWT(credentialConfig)
+		configureGoogleJWT(credentialConfig){
+			userController.getUserRolesById(it).orEmpty()
+		}
 	}
 
 	//https://github.com/santansarah/ktor-city-api/blob/google-one-tap/src/main/kotlin/com/santansarah/plugins/JWT.kt
