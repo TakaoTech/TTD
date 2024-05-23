@@ -11,9 +11,6 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.takaotech.dashboard.AppBuildKonfig
-import io.ktor.client.*
-import io.ktor.client.plugins.*
-import io.ktor.client.request.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -25,7 +22,7 @@ class GoogleLoginImpl(private val context: Context) : GoogleLogin {
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    override fun startLogin() {
+    override suspend fun startLogin(): String? {
         val credentialManager = CredentialManager.create(context)
 
         // Generate a nonce and hash it with sha-256
@@ -38,7 +35,7 @@ class GoogleLoginImpl(private val context: Context) : GoogleLogin {
         val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) }
 
         val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(true)
+            .setFilterByAuthorizedAccounts(false)
             .setServerClientId(AppBuildKonfig.googleWebAuth)
             .setAutoSelectEnabled(false)
             .setNonce(hashedNonce)
@@ -48,39 +45,37 @@ class GoogleLoginImpl(private val context: Context) : GoogleLogin {
             .addCredentialOption(googleIdOption)
             .build()
 
-        coroutineScope.launch {
-            try {
-                val result = credentialManager.getCredential(
-                    request = request,
-                    context = context,
-                )
-                handleSignIn(result, hashedNonce)
-            } catch (e: GetCredentialException) {
-                Log.e("Err", "bruh", e)
+        try {
+            val result = credentialManager.getCredential(
+                request = request,
+                context = context,
+            )
+           return handleSignIn(result, hashedNonce)
+        } catch (e: GetCredentialException) {
+            Log.e("Err", "bruh", e)
 //                handleFailure(e)
-            }
+            return null
         }
     }
 
-    fun handleSignIn(result: GetCredentialResponse, hashedNonce: String) {
+    private fun handleSignIn(result: GetCredentialResponse, hashedNonce: String): String? {
         // Handle the successfully returned credential.
-        val credential = result.credential
-
-        when (credential) {
+        return when (val credential = result.credential) {
             // GoogleIdToken credential
             is CustomCredential -> {
                 if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                     try {
                         // Use googleIdTokenCredential and extract id to validate and
                         // authenticate on your server.
-                        val googleIdTokenCredential = GoogleIdTokenCredential
+                       GoogleIdTokenCredential
                             .createFrom(credential.data)
-
-
+                            .idToken
                     } catch (e: GoogleIdTokenParsingException) {
 //                        Log.e(TAG, "Received an invalid google id token response", e)
+                        null
                     }
                 } else {
+                    null
                     // Catch any unrecognized custom credential type here.
 //                    Log.e(TAG, "Unexpected type of credential")
                 }
@@ -89,6 +84,7 @@ class GoogleLoginImpl(private val context: Context) : GoogleLogin {
             else -> {
                 // Catch any unrecognized credential type here.
 //                Log.e(TAG, "Unexpected type of credential")
+                null
             }
         }
     }

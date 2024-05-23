@@ -24,6 +24,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import co.touchlab.kermit.Logger
 import com.takaotech.dashboard.ui.credits.CreditScreen
 import com.takaotech.dashboard.ui.login.GoogleLogin
+import com.takaotech.dashboard.ui.login.SessionManager
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.component.KoinComponent
@@ -56,21 +57,31 @@ object LoginScreen : Tab, KoinComponent {
         val viewModel = getScreenModel<LoginViewModel>()
 
         val logger = get<Logger>()
-        val googleLogin = get<GoogleLogin>()
+        val sessionManager = get<SessionManager>()
+
+        val session by sessionManager.sessionFlow.collectAsState(null)
 
 
-        LoginScreenUi(
-            modifier = Modifier.fillMaxSize(),
-            onCreditClicked = {
-                navigator.parent?.push(CreditScreen())
-            },
-            onGoogleLoginClicked = {
-                googleLogin.startLogin()
-            },
-            onAppleLoginClicked = {
+        if (session == null){
+            LoginScreenUi(
+                modifier = Modifier.fillMaxSize(),
+                onCreditClicked = {
+                    navigator.parent?.push(CreditScreen())
+                },
+                onGoogleLoginClicked = {
+                    sessionManager.startGoogleLogin()
+                },
+                onAppleLoginClicked = {
+                }
+
+            )
+        }else{
+            Button({
+                sessionManager.logout()
+            }){
+                Text("Logout")
             }
-
-        )
+        }
     }
 }
 

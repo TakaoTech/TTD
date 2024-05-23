@@ -13,6 +13,7 @@ plugins {
 	alias(libs.plugins.buildkonfig)
 	alias(libs.plugins.serialization)
 	alias(libs.plugins.depscredit)
+	alias(libs.plugins.cfu)
 }
 
 val localProps: Properties? = try {
@@ -90,7 +91,10 @@ kotlin {
 				//https://github.com/DevSrSouza/compose-icons
 				implementation(projects.shared)
 
+				implementation(libs.androidx.datastore.preferences)
+
 				implementation(libs.kotlin.datetime)
+				implementation(libs.kotlin.atomicfu)
 				implementation(libs.kermit)
 
 				implementation(libs.ktorfit.lib)
