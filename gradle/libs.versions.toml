@@ -52,6 +52,7 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 
+androidx-datastore-preferences = {module = "androidx.datastore:datastore-preferences-core", version = "1.1.1"}
 androidx-credentials = {module = "androidx.credentials:credentials", version = "1.2.2"}
 androidx-credentials-googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version = "1.1.0"}
 androidx-credentials-playservices = { module = "androidx.credentials:credentials-play-services-auth", version = "1.2.2"}
@@ -60,6 +61,7 @@ androidx-credentials-playservices = { module = "androidx.credentials:credentials
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kotlin-result = { module = "com.github.kittinunf.result:result", version = "5.5.0" }
 kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.0-RC.2" }
+kotlin-atomicfu = {module ="org.jetbrains.kotlinx:atomicfu", version = "0.24.0"}
 
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
@@ -155,3 +157,4 @@ ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.7.6" }
 depscredit = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "depscredit" }
+cfu = {id = "org.jetbrains.kotlin.plugin.atomicfu", version = "2.0.0"}
