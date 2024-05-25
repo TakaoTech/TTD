@@ -19,7 +19,9 @@ class AdminGHRepository(
 
 	suspend fun getRepositories(mainCategory: MainCategory? = null): Result<List<GHRepositoryDao>, Throwable> {
 		return Result.of<List<GHRepositoryDao>, Throwable> {
-			githubApi.getRepositories(category = mainCategory)
+			githubApi.getRepositories(category = mainCategory).data
+		}.onFailure {
+			logger.e(it) { "Error getRepositories" }
 		}
 	}
 

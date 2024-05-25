@@ -47,8 +47,8 @@ class GithubController(
 
 	}
 
-	suspend fun getRepository(category: MainCategory? = null): List<GHRepositoryDao> {
-		return githubDepositoryRepository.getGHRepository(category)
+	suspend fun getRepository(category: MainCategory? = null): GHRepositoriesDao {
+		return GHRepositoriesDao(githubDepositoryRepository.getGHRepository(category))
 	}
 
 	suspend fun getRepositoryMini(page: Int, size: Int): TakaoPaging<GHRepositoryMiniDao> {

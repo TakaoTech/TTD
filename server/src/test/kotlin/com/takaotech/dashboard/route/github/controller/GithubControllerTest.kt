@@ -264,6 +264,6 @@ class GithubControllerTest : FunSpec({
 
 		coEvery { depository.getGHRepository() } returns testList
 
-		assertEquals(testList, controller.getRepository())
+		assertEquals(testList, controller.getRepository().data)
 	}
 })
