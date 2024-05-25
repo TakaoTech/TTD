@@ -3,6 +3,7 @@ package com.takaotech.dashboard.ui.platform
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.util.Base64
 import androidx.annotation.RequiresApi
 import org.koin.core.annotation.Single
 import java.io.InputStream
@@ -30,6 +31,7 @@ class CryptoManager {
     }
 
     private fun getKey(): SecretKey {
+        //TODO Make this configurable
         val existingKey = keyStore.getEntry("secret", null) as? KeyStore.SecretKeyEntry
         return existingKey?.secretKey ?: createKey()
     }
@@ -38,6 +40,7 @@ class CryptoManager {
         return KeyGenerator.getInstance(ALGORITHM).apply {
             init(
                 KeyGenParameterSpec.Builder(
+                    //TODO Make this configurable
                     "secret",
                     KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
                 )
@@ -51,10 +54,16 @@ class CryptoManager {
     }
 
     fun encrypt(bytes: ByteArray, outputStream: OutputStream) {
-        val encryptedBytes = encryptCipher.doFinal(bytes)
+        val mEncryptCipher = encryptCipher
+
+        val encryptedBytes = mEncryptCipher.doFinal(bytes)
         outputStream.use {
-            it.write(encryptCipher.iv.size)
-            it.write(encryptCipher.iv)
+            it.write(mEncryptCipher.iv.size)
+            it.write(mEncryptCipher.iv)
+
+            val coils = encryptedBytes.size / 256
+            it.write(coils)
+
             it.write(encryptedBytes.size)
             it.write(encryptedBytes)
         }
@@ -68,9 +77,9 @@ class CryptoManager {
             val iv = ByteArray(ivSize)
             it.read(iv)
 
+            val coils = it.read()
             var encryptedBytesSize = it.read()
-            //TODO this is not a safe conversion, serialize 4
-            encryptedBytesSize += 4 * 256
+            encryptedBytesSize += coils * 256
             val encryptedBytes = ByteArray(encryptedBytesSize)
             it.read(encryptedBytes)
 

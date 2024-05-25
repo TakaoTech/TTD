@@ -9,10 +9,14 @@ import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.model.github.TagNewDao
 import com.takaotech.dashboard.model.github.request.TagsUpdateRequest
 import com.takaotech.dashboard.repository.api.AdminGHApi
+import com.takaotech.dashboard.ui.login.SessionManager
+import kotlinx.coroutines.flow.last
 import org.koin.core.annotation.Single
 
+//TODO Need pass token to every request
 @Single
 class AdminGHRepository(
+	private val sessionManager: SessionManager,
 	private val githubApi: AdminGHApi,
 	private val logger: Logger
 ) {
