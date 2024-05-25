@@ -5,6 +5,12 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class GHRepositoriesDao(
+	@SerialName("data")
+	val data: List<GHRepositoryDao>
+)
+
+@Serializable
 data class GHRepositoryDao(
 	@SerialName("id")
 	override val id: Long,

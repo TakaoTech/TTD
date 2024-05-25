@@ -18,8 +18,7 @@ import kotlinx.coroutines.sync.withLock
 import org.koin.ktor.ext.inject
 import kotlin.time.Duration.Companion.seconds
 
-@OptIn(InternalCoroutinesApi::class)
-inline fun Route.adminGithubRouter() {
+fun Route.adminGithubRouter() {
 	val jobGithubRefreshMutex = Mutex()
 	var jobGithubRefresh: Job? = null
 
