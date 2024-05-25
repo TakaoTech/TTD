@@ -27,9 +27,7 @@ fun Application.configureAuth(credentialConfig: CredentialConfig = get()) {
 
 	authentication {
 		// and then api key provider
-		configureGoogleJWT(credentialConfig){
-			userController.getUserRolesById(it).orEmpty()
-		}
+		configureGoogleJWT(credentialConfig)
 	}
 
 	//https://github.com/santansarah/ktor-city-api/blob/google-one-tap/src/main/kotlin/com/santansarah/plugins/JWT.kt

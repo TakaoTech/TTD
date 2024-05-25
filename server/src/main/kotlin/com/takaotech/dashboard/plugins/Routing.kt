@@ -6,20 +6,24 @@ import com.takaotech.dashboard.route.github.githubRouter
 import com.takaotech.dashboard.route.login.sessionRoute
 import io.ktor.resources.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.resources.Resources
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 
 fun Application.configureRouting() {
-	install(Resources)
-	routing {
-		route("/admin") {
-			adminGithubRouter()
-			adminTagsRoute()
-		}
-		githubRouter()
-	}
-	sessionRoute()
+    install(Resources)
+    routing {
+
+        route("/admin") {
+            authenticate("google") {
+                adminGithubRouter()
+                adminTagsRoute()
+            }
+        }
+        githubRouter()
+    }
+    sessionRoute()
 
 }
 

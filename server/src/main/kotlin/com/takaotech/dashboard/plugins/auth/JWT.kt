@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit
  */
 fun AuthenticationConfig.configureGoogleJWT(
     config: CredentialConfig,
-    getRoles: suspend (id: String) -> Set<TakaoRole>
 ) {
 
     /**
@@ -88,7 +87,7 @@ fun AuthenticationConfig.configureGoogleJWT(
             /**
              * Finally, if validation is successful, I return the payload.
              */
-            TakaoJWTPrincipal(jwtCredential.payload, getRoles(jwtCredential.payload.id))
+            JWTPrincipal(jwtCredential.payload)
 
         }
         /**
