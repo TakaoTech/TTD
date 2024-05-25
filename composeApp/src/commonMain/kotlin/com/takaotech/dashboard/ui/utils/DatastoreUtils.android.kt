@@ -7,7 +7,7 @@ import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
 import okio.Path.Companion.toPath
 
-internal const val sessionDataStoreFileName = "session.preferences_ds"
+internal const val sessionDataStoreFileName = "session.preferences_pb"
 private lateinit var sessionDatastore: DataStore<Preferences>
 
 private val lock = SynchronizedObject()
