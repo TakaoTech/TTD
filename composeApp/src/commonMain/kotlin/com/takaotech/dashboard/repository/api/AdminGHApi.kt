@@ -1,9 +1,6 @@
 package com.takaotech.dashboard.repository.api
 
-import com.takaotech.dashboard.model.github.GHRepositoryDao
-import com.takaotech.dashboard.model.github.MainCategory
-import com.takaotech.dashboard.model.github.TagDao
-import com.takaotech.dashboard.model.github.TagNewDao
+import com.takaotech.dashboard.model.github.*
 import com.takaotech.dashboard.model.github.request.TagsUpdateRequest
 import com.takaotech.dashboard.repository.api.ApiConstant.ADMIN_URL_PREFIX
 import de.jensklingenberg.ktorfit.http.*
@@ -13,7 +10,7 @@ interface AdminGHApi {
 	@GET("$ADMIN_URL_PREFIX/github")
 	suspend fun getRepositories(
 		@Query("category") category: MainCategory? = null
-	): List<GHRepositoryDao>
+	): GHRepositoriesDao
 
 	@GET("$ADMIN_URL_PREFIX/github/{id}")
 	suspend fun getRepository(@Path("id") repositoryId: Long): GHRepositoryDao
