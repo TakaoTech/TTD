@@ -8,6 +8,5 @@ class AuthRepository(
 ) {
 
 	fun login() {
-		authApi.login()
 	}
 }

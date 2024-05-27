@@ -3,6 +3,7 @@ package com.takaotech.dashboard.route.administration.repository
 import com.takaotech.dashboard.route.administration.data.role.RoleEntity
 import com.takaotech.dashboard.route.administration.data.user.UserEntity
 import com.takaotech.dashboard.utils.HikariDatabase
+import com.takaotech.dashboard.utils.sha256
 import io.ktor.util.logging.*
 import org.koin.core.annotation.Factory
 
@@ -27,6 +28,22 @@ class UserRepository(
     suspend fun getUserRolesById(id: String): List<RoleEntity>? {
        return database.dbExec {
             UserEntity.findById(id)?.roles?.toList()
+        }
+    }
+
+    suspend fun createUser(email: String, name: String, picture: String) {
+        database.dbExec {
+            UserEntity.new(email.sha256()) {
+                this.email = email
+                displayName = name
+                profileImage = picture
+            }
+        }
+    }
+
+    suspend fun getUser(id: String): UserEntity? {
+        return database.dbExec {
+            UserEntity.findById(id)
         }
     }
 }

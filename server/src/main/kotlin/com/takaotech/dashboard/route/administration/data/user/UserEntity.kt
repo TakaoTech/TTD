@@ -9,5 +9,8 @@ import org.jetbrains.exposed.dao.id.EntityID
 class UserEntity(id: EntityID<String>) : StringEntity(id) {
     companion object : StringEntityClass<UserEntity>(UserTable)
 
-    val roles by RoleEntity via UserRoleTable
+    var email by UserTable.email
+    var displayName by UserTable.displayName
+    var profileImage by UserTable.profileImageUrl
+    var roles by RoleEntity via UserRoleTable
 }
