@@ -57,7 +57,9 @@ object LoginScreen : Tab, KoinComponent {
         val viewModel = getScreenModel<LoginViewModel>()
 
         val logger = get<Logger>()
-        val sessionManager = get<SessionManager>()
+        val sessionManager = remember {
+            get<SessionManager>()
+        }
 
         val session by sessionManager.sessionFlow.collectAsState(null)
 

@@ -6,4 +6,7 @@ import io.ktor.resources.*
 class SessionRoute {
     @Resource("login")
     class Login(val parent: SessionRoute = SessionRoute())
+
+    @Resource("signup")
+    class Signup(val parent: SessionRoute = SessionRoute())
 }

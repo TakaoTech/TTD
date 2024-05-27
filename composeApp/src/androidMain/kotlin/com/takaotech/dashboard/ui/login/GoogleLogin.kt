@@ -11,14 +11,17 @@ import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import com.takaotech.dashboard.AppBuildKonfig
+import com.takaotech.dashboard.repository.AuthApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import java.security.MessageDigest
 import java.util.*
 
-class GoogleLoginImpl(private val context: Context) : GoogleLogin {
+class GoogleLoginImpl(
+    private val context: Context,
+    private val authApi: AuthApi,
+) : GoogleLogin {
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -50,7 +53,7 @@ class GoogleLoginImpl(private val context: Context) : GoogleLogin {
                 request = request,
                 context = context,
             )
-           return handleSignIn(result, hashedNonce)
+            return handleSignIn(result, hashedNonce)
         } catch (e: GetCredentialException) {
             Log.e("Err", "bruh", e)
 //                handleFailure(e)
@@ -58,7 +61,7 @@ class GoogleLoginImpl(private val context: Context) : GoogleLogin {
         }
     }
 
-    private fun handleSignIn(result: GetCredentialResponse, hashedNonce: String): String? {
+    private suspend fun handleSignIn(result: GetCredentialResponse, hashedNonce: String): String? {
         // Handle the successfully returned credential.
         return when (val credential = result.credential) {
             // GoogleIdToken credential
@@ -67,9 +70,30 @@ class GoogleLoginImpl(private val context: Context) : GoogleLogin {
                     try {
                         // Use googleIdTokenCredential and extract id to validate and
                         // authenticate on your server.
-                       GoogleIdTokenCredential
+
+                        val googleToken = GoogleIdTokenCredential
                             .createFrom(credential.data)
                             .idToken
+
+                        try {
+                            //TODO
+//                            authApi.signup(
+//                                hashedNonce = hashedNonce,
+//                                googleToken = "Bearer $googleToken"
+//                            )
+
+                            val response = authApi.login(
+                                hashedNonce = hashedNonce,
+                                googleToken = "Bearer $googleToken"
+                            )
+
+                            response
+                        } catch (ex: Throwable) {
+
+                        }
+
+                        googleToken
+
                     } catch (e: GoogleIdTokenParsingException) {
 //                        Log.e(TAG, "Received an invalid google id token response", e)
                         null

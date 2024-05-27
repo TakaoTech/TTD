@@ -2,7 +2,6 @@ package com.takaotech.dashboard.plugins.auth
 
 import com.auth0.jwk.JwkProviderBuilder
 import com.takaotech.dashboard.configuration.CredentialConfig
-import com.takaotech.dashboard.route.administration.data.role.TakaoRole
 import io.ktor.http.auth.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

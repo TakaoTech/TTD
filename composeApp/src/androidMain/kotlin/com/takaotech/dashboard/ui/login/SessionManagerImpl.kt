@@ -1,16 +1,14 @@
 package com.takaotech.dashboard.ui.login
 
 import android.content.Context
-import android.util.Log
 import androidx.datastore.preferences.core.byteArrayPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import com.takaotech.dashboard.repository.AuthApi
 import com.takaotech.dashboard.ui.platform.CryptoManager
 import com.takaotech.dashboard.ui.utils.createSessionDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Single
