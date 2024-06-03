@@ -9,6 +9,7 @@ import com.takaotech.dashboard.route.github.data.TagsTable
 import com.takaotech.dashboard.route.administration.data.role.RoleEntity
 import com.takaotech.dashboard.route.administration.data.role.RoleTable
 import com.takaotech.dashboard.route.administration.data.role.TakaoRole
+import com.takaotech.dashboard.route.administration.data.session.TokenTable
 import com.takaotech.dashboard.route.administration.data.user.UserTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -90,5 +91,7 @@ val dbTables = arrayOf(
 
     UserTable,
     RoleTable,
-    UserRoleTable
+    UserRoleTable,
+
+    TokenTable
 )

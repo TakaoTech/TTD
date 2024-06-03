@@ -14,5 +14,7 @@ data class TakaoJwtConfig(
     val secret: String,
     val issuer: String,
     val audience: String,
-    val realm: String
+    val realm: String,
+    val accessLifetime: String,
+    val refreshLifetime: String
 )
