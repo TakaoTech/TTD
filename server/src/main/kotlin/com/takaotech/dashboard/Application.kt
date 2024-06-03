@@ -34,8 +34,9 @@ fun Application.module() {
 			secret = System.getenv("jwt.takao.secret"),
 			issuer =  System.getenv("jwt.takao.issuer"),
 			audience = System.getenv("jwt.takao.audience"),
-			realm = System.getenv("jwt.takao.realm")
-
+			realm = System.getenv("jwt.takao.realm"),
+			accessLifetime = System.getenv("jwt.takao.access.lifetime"),
+			refreshLifetime = System.getenv("jwt.takao.refresh.lifetime")
 		)
 	)
 
