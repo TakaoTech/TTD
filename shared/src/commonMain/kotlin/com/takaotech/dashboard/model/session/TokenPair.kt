@@ -1,4 +1,18 @@
 package com.takaotech.dashboard.model.session
 
-data class TokenPair(val accessToken: String, val refreshToken: String)
-data class RefreshToken(val refreshToken: String)
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class TokenPair(
+    @SerialName("accessToken")
+    val accessToken: String,
+    @SerialName("refreshToken")
+    val refreshToken: String
+)
+
+@Serializable
+data class RefreshToken(
+    @SerialName("refreshToken")
+    val refreshToken: String
+)

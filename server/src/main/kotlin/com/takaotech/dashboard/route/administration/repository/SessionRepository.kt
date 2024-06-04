@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.route.administration.repository
 
+import com.takaotech.dashboard.configuration.CredentialConfig
 import com.takaotech.dashboard.configuration.TakaoJwtConfig
 import com.takaotech.dashboard.route.administration.data.session.TokenTable
 import com.takaotech.dashboard.route.administration.data.session.toToken
@@ -14,8 +15,9 @@ import kotlin.time.Duration
 @Factory
 class SessionRepository(
     private val database: HikariDatabase,
-    private val takaoJwtConfig: TakaoJwtConfig
+    credentialConfig: CredentialConfig
 ) {
+    private val takaoJwtConfig = credentialConfig.takaoJwtConfig
 
     suspend fun saveNewToken(
         userId: String,

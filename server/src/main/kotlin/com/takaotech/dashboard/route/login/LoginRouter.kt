@@ -1,6 +1,7 @@
 package com.takaotech.dashboard.route.login
 
 import com.auth0.jwt.interfaces.Payload
+import com.takaotech.dashboard.model.session.TokenPair
 import com.takaotech.dashboard.route.administration.controller.SessionController
 import com.takaotech.dashboard.route.administration.controller.UserController
 import io.ktor.server.application.*
@@ -27,9 +28,10 @@ fun Application.sessionRoute() {
                     val token = sessionController.generateTokenPair(userPayload)
 
                     call.respond(
-                        mapOf(
-                            "accessToken" to token.accessToken,
-                            "refreshToken" to token.refreshToken
+                        TokenPair(
+                            accessToken = token.accessToken,
+                            refreshToken = token.refreshToken
+
                         )
                     )
                 } else {
@@ -41,35 +43,18 @@ fun Application.sessionRoute() {
                 val newUser = call.principal<JWTPrincipal>()
 
                 if (newUser != null) {
-                    //sub
-                    //email
-                    //email_verified
-                    //name (as display name)
-                    //picture
-                    with(newUser.payload) {
-                        if (getClaim("email_verified").asBoolean() == true) {
-                            val email = getClaim("email").asString()
-                            val name = getClaim("name").asString()
-                            val picture = getClaim("picture").asString()
+                    userController.signUp(newUser.payload)
 
-                            userController.signUp(
-                                email,
-                                name,
-                                picture
-                            )
+                    val token = sessionController.generateTokenPair(newUser.payload)
 
-                            val token = sessionController.generateTokenPair(newUser.payload)
+                    //TODO Im not sure i can do it
+                    call.respond(
+                        TokenPair(
+                            accessToken = token.accessToken,
+                            refreshToken = token.refreshToken
 
-                            call.respond(
-                                mapOf(
-                                    "accessToken" to token.accessToken,
-                                    "refreshToken" to token.refreshToken
-                                )
-                            )
-                        } else {
-                            //TODO Exit, email not verified
-                        }
-                    }
+                        )
+                    )
 
                 }
 
@@ -79,4 +64,3 @@ fun Application.sessionRoute() {
     }
 }
 
-fun Payload.getEmail() = getClaim("email").asString()
