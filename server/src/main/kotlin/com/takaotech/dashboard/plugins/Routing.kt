@@ -14,9 +14,8 @@ import kotlinx.serialization.Serializable
 fun Application.configureRouting() {
     install(Resources)
     routing {
-
         route("/admin") {
-            authenticate("google") {
+            authenticate("tjwt") {
                 adminGithubRouter()
                 adminTagsRoute()
             }

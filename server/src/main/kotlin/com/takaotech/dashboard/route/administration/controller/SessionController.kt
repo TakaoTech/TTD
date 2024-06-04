@@ -4,10 +4,9 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.Payload
-import com.takaotech.dashboard.configuration.TakaoJwtConfig
+import com.takaotech.dashboard.configuration.CredentialConfig
 import com.takaotech.dashboard.model.session.TokenPair
 import com.takaotech.dashboard.route.administration.repository.SessionRepository
-import com.takaotech.dashboard.route.login.getEmail
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
 import org.koin.core.annotation.Single
@@ -18,8 +17,10 @@ import kotlin.time.Duration
 class SessionController(
     private val sessionRepository: SessionRepository,
     private val userController: UserController,
-    private val takaoJwtConfig: TakaoJwtConfig
+    credentialConfig: CredentialConfig
 ) {
+    private val takaoJwtConfig = credentialConfig.takaoJwtConfig
+
     suspend fun generateTokenPair(googlePayload: Payload): TokenPair {
         if (googlePayload.getClaim("email_verified").asBoolean() == true) {
             val user = userController.getUserById(googlePayload.getEmail())
