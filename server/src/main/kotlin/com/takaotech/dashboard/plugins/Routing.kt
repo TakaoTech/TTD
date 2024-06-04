@@ -25,7 +25,3 @@ fun Application.configureRouting() {
     sessionRoute()
 
 }
-
-@Serializable
-@Resource("/articles")
-class Articles(val sort: String? = "new")
