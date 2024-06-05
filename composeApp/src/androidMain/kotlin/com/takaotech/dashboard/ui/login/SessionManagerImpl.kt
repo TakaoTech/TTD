@@ -3,9 +3,14 @@ package com.takaotech.dashboard.ui.login
 import android.content.Context
 import androidx.datastore.preferences.core.byteArrayPreferencesKey
 import androidx.datastore.preferences.core.edit
+import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.isSuccess
+import com.github.kittinunf.result.onSuccess
+import com.takaotech.dashboard.model.session.TokenPair
 import com.takaotech.dashboard.repository.AuthApi
 import com.takaotech.dashboard.ui.platform.CryptoManager
 import com.takaotech.dashboard.ui.utils.createSessionDataStore
+import io.ktor.client.request.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -16,10 +21,11 @@ import java.io.ByteArrayOutputStream
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-@Single
+//@Single
 @OptIn(ExperimentalEncodingApi::class)
 class SessionManagerImpl(
     private val googleLogin: GoogleLogin,
+    private val authApi: AuthApi,
     context: Context
 ) : SessionManager {
 
@@ -35,7 +41,7 @@ class SessionManagerImpl(
             val base = Base64.decode(sessionEncrypted)
             val decoded = cryptoManager.decrypt(base.inputStream())
 
-           String(Base64.decode(decoded))
+            TokenPair.parse(String(Base64.decode(decoded)))
         } else {
             null
         }
@@ -43,19 +49,60 @@ class SessionManagerImpl(
 
 
     override fun startGoogleLogin() {
-        coroutineScope.launch {
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            val googleToken = googleLogin.startLogin()
-            if (googleToken != null) {
-                cryptoManager.encrypt(
-                    Base64.encode(googleToken.toByteArray()).toByteArray(),
-                    byteArrayOutputStream
-                )
+        coroutineScope.launch(Dispatchers.IO) {
+            val googleLoginResult = googleLogin.startLogin()
+            if (googleLoginResult.isSuccess()) {
+                Result.of<TokenPair, Exception> {
+                    authApi.login(
+                        hashedNonce = googleLoginResult.value.first,
+                    ) {
+                        bearerAuth(googleLoginResult.value.second)
+                    }
+                }.onSuccess {
+                    val byteArrayOutputStream = ByteArrayOutputStream()
+                    cryptoManager.encrypt(
+                        Base64.encode(it.toString().toByteArray()).toByteArray(),
+                        byteArrayOutputStream
+                    )
 
-                sessionDatastore.edit {
-                    it[SESSION_KEY] = Base64.encodeToByteArray(byteArrayOutputStream.toByteArray())
+                    sessionDatastore.edit {
+                        it[SESSION_KEY] = Base64.encodeToByteArray(byteArrayOutputStream.toByteArray())
+                    }
                 }
 
+
+            } else {
+                //TODO Error on login
+            }
+
+        }
+    }
+
+    override fun startGoogleSignup() {
+        coroutineScope.launch(Dispatchers.IO) {
+            val googleLoginResult = googleLogin.startLogin()
+            if (googleLoginResult.isSuccess()) {
+                Result.of<TokenPair, Exception> {
+                    authApi.signup(
+                        hashedNonce = googleLoginResult.value.first,
+                    ) {
+                        bearerAuth(googleLoginResult.value.second)
+                    }
+                }.onSuccess {
+                    val byteArrayOutputStream = ByteArrayOutputStream()
+                    cryptoManager.encrypt(
+                        Base64.encode(it.toString().toByteArray()).toByteArray(),
+                        byteArrayOutputStream
+                    )
+
+                    sessionDatastore.edit {
+                        it[SESSION_KEY] = Base64.encodeToByteArray(byteArrayOutputStream.toByteArray())
+                    }
+                }
+
+
+            } else {
+                //TODO Error on login
             }
 
         }
