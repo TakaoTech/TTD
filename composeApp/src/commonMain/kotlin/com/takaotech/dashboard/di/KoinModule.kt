@@ -39,13 +39,19 @@ fun getApiModule(baseUrl: String) = module {
                 level = LogLevel.ALL
             }
 
-//            install(Auth){
-//                bearer {
+            install(Auth) {
+                bearer {
 //                    loadTokens {
-//
+//                        val tokenPair = sessionManager.sessionFlow.value
+//                        if (tokenPair != null) {
+//                            BearerTokens(tokenPair.accessToken, tokenPair.refreshToken)
+//                        } else {
+//                            null
+//                        }
 //                    }
-//                }
-//            }
+
+                }
+            }
 
             defaultRequest {
                 headers {
