@@ -2,6 +2,7 @@ package com.takaotech.dashboard.route.github
 
 import com.github.kittinunf.result.onFailure
 import com.github.kittinunf.result.onSuccess
+import com.takaotech.dashboard.model.github.GHRefreshStatus
 import com.takaotech.dashboard.model.github.request.TagsUpdateRequest
 import com.takaotech.dashboard.route.github.controller.GithubController
 import io.ktor.http.*
@@ -15,6 +16,7 @@ import io.ktor.util.logging.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.kohsuke.github.GHRef
 import org.koin.ktor.ext.inject
 import kotlin.time.Duration.Companion.seconds
 
@@ -83,9 +85,9 @@ fun Route.adminGithubRouter() {
 		jobGithubRefreshMutex.withLock {
 			val mJobGithubRefresh = jobGithubRefresh
 			if (mJobGithubRefresh != null) {
-				call.respond(mapOf("active" to mJobGithubRefresh.isActive))
+				call.respond(GHRefreshStatus(mJobGithubRefresh.isActive))
 			} else {
-				call.respond(mapOf("active" to null))
+				call.respond(GHRefreshStatus(null))
 			}
 		}
 	}

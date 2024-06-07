@@ -10,70 +10,127 @@ import com.takaotech.dashboard.model.github.TagNewDao
 import com.takaotech.dashboard.model.github.request.TagsUpdateRequest
 import com.takaotech.dashboard.repository.api.AdminGHApi
 import com.takaotech.dashboard.ui.login.SessionManager
-import kotlinx.coroutines.flow.last
+import io.ktor.client.request.*
 import org.koin.core.annotation.Single
 
 //TODO Need pass token to every request
 @Single
 class AdminGHRepository(
-	private val sessionManager: SessionManager,
-	private val githubApi: AdminGHApi,
-	private val logger: Logger
+    private val sessionManager: SessionManager,
+    private val githubApi: AdminGHApi,
+    private val logger: Logger
 ) {
 
-	suspend fun getRepositories(mainCategory: MainCategory? = null): Result<List<GHRepositoryDao>, Throwable> {
-		return Result.of<List<GHRepositoryDao>, Throwable> {
-			githubApi.getRepositories(category = mainCategory).data
-		}.onFailure {
-			logger.e(it) { "Error getRepositories" }
-		}
-	}
+    suspend fun refreshRepositories(): Result<Unit, Exception> {
+        return Result.of<Unit, Exception> {
+            githubApi.refreshRepositories(
+                ext = {
+                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
+                }
+            )
+        }.onFailure {
+            logger.e(it) { "Error refreshRepositories" }
+        }
+    }
 
-	suspend fun getRepositoryById(repositoryId: Long): Result<GHRepositoryDao, Throwable> {
-		return Result.of<GHRepositoryDao, Throwable> {
-			githubApi.getRepository(repositoryId)
-		}.onFailure {
-			logger.e(it) { "Error getRepositoryById" }
-		}
-	}
+    suspend fun getStatusOfRefreshRepositories(): Result<Boolean?, Exception> {
+        return Result.of<Boolean?, Exception> {
+            githubApi.refreshRepositoriesStatus(
+                ext = {
+                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
+                }
+            ).active
+        }.onFailure {
+            logger.e(it) { "Error getStatusOfRefreshRepositories" }
+        }
+    }
 
-	suspend fun updateCategoryRepository(id: Long, newCategory: MainCategory) {
-		githubApi.updateRepositoryCategory(id, newCategory)
-	}
+    suspend fun getRepositories(mainCategory: MainCategory? = null): Result<List<GHRepositoryDao>, Throwable> {
+        return Result.of<List<GHRepositoryDao>, Throwable> {
+            githubApi.getRepositories(
+                category = mainCategory,
+                ext = {
+                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
+                }
+            ).data
+        }.onFailure {
+            logger.e(it) { "Error getRepositories" }
+        }
+    }
 
-	suspend fun getTags(): Result<List<TagDao>, Throwable> {
-		return Result.of<List<TagDao>, Throwable> {
-			githubApi.getTags()
-		}
-	}
+    suspend fun getRepositoryById(repositoryId: Long): Result<GHRepositoryDao, Throwable> {
+        return Result.of<GHRepositoryDao, Throwable> {
+            githubApi.getRepository(repositoryId)
+        }.onFailure {
+            logger.e(it) { "Error getRepositoryById" }
+        }
+    }
 
-	suspend fun getTagById(tagId: Int): Result<TagDao, Throwable> {
-		return Result.of<TagDao, Throwable> {
-			githubApi.getTagById(tagId)
-		}
-	}
+    suspend fun updateCategoryRepository(id: Long, newCategory: MainCategory) {
+        githubApi.updateRepositoryCategory(
+            id,
+            newCategory,
+            ext = {
+                sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
+            }
+        )
+    }
 
-	suspend fun addTag(tag: TagNewDao): Result<Unit, Throwable> {
-		return Result.of<Unit, Throwable> {
-			githubApi.addTag(tag)
-		}.onFailure {
-			logger.e(it) { "Error Save Tag" }
-		}
-	}
+    suspend fun getTags(): Result<List<TagDao>, Throwable> {
+        return Result.of<List<TagDao>, Throwable> {
+            githubApi.getTags(
+                ext = {
+                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
+                }
+            )
+        }
+    }
 
-	suspend fun updateTag(tag: TagDao): Result<Unit, Throwable> {
-		return Result.of<Unit, Throwable> {
-			githubApi.updateTag(tag)
-		}.onFailure {
-			logger.e(it) { "Error Update Tag" }
-		}
-	}
+    suspend fun getTagById(tagId: Int): Result<TagDao, Throwable> {
+        return Result.of<TagDao, Throwable> {
+            githubApi.getTagById(
+                tagId,
+                ext = {
+                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
+                }
+            )
+        }
+    }
 
-	suspend fun updateRepositoryTags(repositoryId: Long, newTags: List<Int>): Result<Unit, Throwable> {
-		return Result.of<Unit, Throwable> {
-			githubApi.updateRepositoryTags(repositoryId, TagsUpdateRequest(newTags))
-		}.onFailure {
-			logger.e(it) { "Error Update Tags for Repository $repositoryId" }
-		}
-	}
+    suspend fun addTag(tag: TagNewDao): Result<Unit, Throwable> {
+        return Result.of<Unit, Throwable> {
+            githubApi.addTag(tag,
+                ext = {
+                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
+                }
+            )
+        }.onFailure {
+            logger.e(it) { "Error Save Tag" }
+        }
+    }
+
+    suspend fun updateTag(tag: TagDao): Result<Unit, Throwable> {
+        return Result.of<Unit, Throwable> {
+            githubApi.updateTag(tag,
+                ext = {
+                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
+                }
+            )
+        }.onFailure {
+            logger.e(it) { "Error Update Tag" }
+        }
+    }
+
+    suspend fun updateRepositoryTags(repositoryId: Long, newTags: List<Int>): Result<Unit, Throwable> {
+        return Result.of<Unit, Throwable> {
+            githubApi.updateRepositoryTags(repositoryId,
+                TagsUpdateRequest(newTags),
+                ext = {
+                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
+                }
+            )
+        }.onFailure {
+            logger.e(it) { "Error Update Tags for Repository $repositoryId" }
+        }
+    }
 }
