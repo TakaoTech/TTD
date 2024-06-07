@@ -8,8 +8,7 @@ import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
 data class RefreshTokenFromDB(val userId: String, val refreshToken: String, val expiresAt: Instant)
 
 object TokenTable: Table(){
-
-    var userId = varchar("userId", 256)
+    var userId = varchar("user", 512)
     var refreshToken = varchar("refreshToken", 300)
     var expiresAt = timestamp("expiresAt")
 }

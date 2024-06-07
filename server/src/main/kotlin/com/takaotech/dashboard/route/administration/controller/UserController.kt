@@ -29,10 +29,16 @@ class UserController(
         with(payload) {
             if (getClaim("email_verified").asBoolean() == true) {
                 val email = getEmail()
-                val name = getClaim("name").asString()
-                val picture = getClaim("picture").asString()
 
-                userRepository.createUser(email, name, picture)
+                if (getUserById(email) == null){
+                    val name = getClaim("name").asString()
+                    val picture = getClaim("picture").asString()
+
+                    userRepository.createUser(email, name, picture)
+                }else{
+                    //TODO User Exist, use signin flow
+                    throw Exception()
+                }
             }else{
                 //TODO Email not verified
                 throw Exception()
