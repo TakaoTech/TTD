@@ -6,9 +6,11 @@ import androidx.datastore.preferences.core.byteArrayPreferencesKey
 import androidx.datastore.preferences.core.edit
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.isSuccess
+import com.github.kittinunf.result.onFailure
 import com.github.kittinunf.result.onSuccess
 import com.takaotech.dashboard.model.session.TokenPair
 import com.takaotech.dashboard.repository.AuthApi
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.time.Duration.Companion.minutes
 
 @OptIn(ExperimentalEncodingApi::class)
 abstract class SessionManager(
@@ -54,18 +57,26 @@ abstract class SessionManager(
             val googleLoginResult = googleLogin.startLogin()
             if (googleLoginResult.isSuccess()) {
                 Result.of<TokenPair, Exception> {
-                    authApi.signup(
+                    authApi.login(
                         hashedNonce = googleLoginResult.value.first,
                     ) {
+                        timeout {
+                            requestTimeoutMillis = 1.minutes.inWholeMilliseconds
+                            connectTimeoutMillis = 1.minutes.inWholeMilliseconds
+                        }
+
                         bearerAuth(googleLoginResult.value.second)
                     }
                 }.onSuccess { tokenPair ->
                     sessionDatastore.edit {
                         it[SESSION_KEY] = encryptTokens(tokenPair)
                     }
+                }.onFailure {
+                    //TODO Error Takao Login
+                    it
                 }
             } else {
-                //TODO Error on login
+                //TODO Error google on login
             }
 
         }
