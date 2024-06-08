@@ -77,6 +77,7 @@ private fun getBaseKtor(
     kermitLogger: KermitLogger
 ): HttpClient {
     return HttpClient {
+        install(HttpTimeout)
         install(ContentNegotiation) {
             json()
         }

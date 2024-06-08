@@ -1,7 +1,5 @@
 package com.takaotech.dashboard.route.login
 
-import com.auth0.jwt.interfaces.Payload
-import com.takaotech.dashboard.model.session.TokenPair
 import com.takaotech.dashboard.route.administration.controller.SessionController
 import com.takaotech.dashboard.route.administration.controller.UserController
 import io.ktor.server.application.*
@@ -27,13 +25,7 @@ fun Application.sessionRoute() {
                 if (userPayload != null) {
                     val token = sessionController.generateTokenPair(userPayload)
 
-                    call.respond(
-                        TokenPair(
-                            accessToken = token.accessToken,
-                            refreshToken = token.refreshToken
-
-                        )
-                    )
+                    call.respond(token)
                 } else {
                     //TODO Login Error
                 }
@@ -48,14 +40,7 @@ fun Application.sessionRoute() {
                     val token = sessionController.generateTokenPair(newUser.payload)
 
                     //TODO Im not sure i can do it
-                    call.respond(
-                        TokenPair(
-                            accessToken = token.accessToken,
-                            refreshToken = token.refreshToken
-
-                        )
-                    )
-
+                    call.respond(token)
                 }
 
 

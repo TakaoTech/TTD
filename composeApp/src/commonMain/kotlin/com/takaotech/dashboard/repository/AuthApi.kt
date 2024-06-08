@@ -7,19 +7,19 @@ import de.jensklingenberg.ktorfit.http.ReqBuilder
 import io.ktor.client.request.*
 
 interface AuthApi {
-    @GET("/session/login")
+    @GET("session/login")
     suspend fun login(
         @Header("x-nonce") hashedNonce: String,
         @ReqBuilder ext: HttpRequestBuilder.() -> Unit
     ): TokenPair
 
-    @GET("/session/signup")
+    @GET("session/signup")
     suspend fun signup(
         @Header("x-nonce") hashedNonce: String,
         @ReqBuilder ext: HttpRequestBuilder.() -> Unit
     ): TokenPair
 
-    @GET("/session/refresh")
+    @GET("session/refresh")
     suspend fun refresh(
         @ReqBuilder ext: HttpRequestBuilder.() -> Unit
     ): TokenPair
