@@ -27,7 +27,9 @@ actual fun KoinApplication.platformModules() {
                     googleLogin = get(),
                     authApi = get(),
                     context = get()
-                )
+                ).apply {
+                    init()
+                }
             } bind SessionManager::class withOptions {
                 createdAtStart()
             }

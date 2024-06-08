@@ -18,47 +18,39 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import org.koin.core.KoinApplication
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import co.touchlab.kermit.Logger as KermitLogger
 
-fun getApiModule(baseUrl: String) = module {
-    single {
-        HttpClient {
-            install(ContentNegotiation) {
-                json()
-            }
 
-            install(Logging) {
-                val kermitLogger = get<KermitLogger>()
-                logger = object : Logger {
-                    override fun log(message: String) {
-                        kermitLogger.largeLog(message)
+fun getApiModule(baseUrl: String) = module {
+
+    single(named("AuthKtor")) {
+        Ktorfit.Builder()
+            .baseUrl(baseUrl)
+            .httpClient(getBaseKtor(get<KermitLogger>()))
+            .build()
+    }
+
+    single {
+        val sessionManager = get<SessionManager>()
+
+        getBaseKtor(get<KermitLogger>())
+            .config {
+                //TODO Need complete this part
+                Auth {
+                    bearer {
+                        loadTokens {
+                            val pair = sessionManager.sessionFlow.value
+                            if (pair != null) {
+                                BearerTokens(pair.accessToken, pair.refreshToken)
+                            } else {
+                                null
+                            }
+                        }
                     }
                 }
-
-                level = LogLevel.ALL
             }
-
-            install(Auth) {
-                bearer {
-//                    loadTokens {
-//                        val tokenPair = sessionManager.sessionFlow.value
-//                        if (tokenPair != null) {
-//                            BearerTokens(tokenPair.accessToken, tokenPair.refreshToken)
-//                        } else {
-//                            null
-//                        }
-//                    }
-
-                }
-            }
-
-            defaultRequest {
-                headers {
-                    contentType(ContentType.Application.Json)
-                }
-            }
-        }
     }
 
     single {
@@ -69,7 +61,7 @@ fun getApiModule(baseUrl: String) = module {
     }
 
     single {
-        get<Ktorfit>().create<AuthApi>()
+        get<Ktorfit>(named("AuthKtor")).create<AuthApi>()
     }
 
     single {
@@ -78,6 +70,32 @@ fun getApiModule(baseUrl: String) = module {
 
     single {
         get<Ktorfit>().create<GHApi>()
+    }
+}
+
+private fun getBaseKtor(
+    kermitLogger: KermitLogger
+): HttpClient {
+    return HttpClient {
+        install(ContentNegotiation) {
+            json()
+        }
+
+        install(Logging) {
+            logger = object : Logger {
+                override fun log(message: String) {
+                    kermitLogger.largeLog(message)
+                }
+            }
+
+            level = LogLevel.ALL
+        }
+
+        defaultRequest {
+            headers {
+                contentType(ContentType.Application.Json)
+            }
+        }
     }
 }
 
