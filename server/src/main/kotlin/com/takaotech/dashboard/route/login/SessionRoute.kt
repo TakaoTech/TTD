@@ -9,4 +9,7 @@ class SessionRoute {
 
     @Resource("signup")
     class Signup(val parent: SessionRoute = SessionRoute())
+
+    @Resource("refresh")
+    class Refresh(val parent: SessionRoute = SessionRoute())
 }

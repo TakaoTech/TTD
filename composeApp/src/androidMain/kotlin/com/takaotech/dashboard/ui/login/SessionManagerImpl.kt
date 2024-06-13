@@ -3,7 +3,9 @@ package com.takaotech.dashboard.ui.login
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.takaotech.dashboard.model.session.TokenPair
+import com.auth0.android.jwt.JWT
+import com.takaotech.dashboard.model.session.AccessToken
+import com.takaotech.dashboard.model.session.TokenPairDao
 import com.takaotech.dashboard.repository.AuthApi
 import com.takaotech.dashboard.ui.platform.CryptoManager
 import com.takaotech.dashboard.ui.utils.createSessionDataStore
@@ -23,14 +25,14 @@ class SessionManagerImpl(
 
     override fun initSessionDatastore(): DataStore<Preferences> = createSessionDataStore(context)
 
-    override fun decryptTokens(sessionEncrypted: ByteArray): TokenPair {
+    override fun decryptTokens(sessionEncrypted: ByteArray): TokenPairDao {
         val base = Base64.decode(sessionEncrypted)
         val decoded = cryptoManager.decrypt(base.inputStream())
 
-        return TokenPair.parse(String(Base64.decode(decoded)))
+        return TokenPairDao.parse(String(Base64.decode(decoded)))
     }
 
-    override fun encryptTokens(tokenPair: TokenPair): ByteArray {
+    override fun encryptTokens(tokenPair: TokenPairDao): ByteArray {
         val byteArrayOutputStream = ByteArrayOutputStream()
         cryptoManager.encrypt(
             Base64.encode(tokenPair.toString().toByteArray()).toByteArray(),

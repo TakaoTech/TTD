@@ -12,15 +12,19 @@ class UserController(
     private val userRepository: UserRepository
 ) {
 
-    suspend fun getUserById(id: String): UserEntity? {
+    suspend fun getUserByGoogle(id: String): UserEntity? {
         return userRepository.getUser(id.sha256())
+    }
+
+    suspend fun getUserById(id: String): UserEntity? {
+        return userRepository.getUser(id)
     }
 
     suspend fun getUserRolesById(id: String): Set<TakaoRole>? {
         return userRepository.getUserRolesById(id)?.map { it.id.value }?.toSet()
     }
 
-    suspend fun signUp(payload: Payload) {
+    suspend fun signUpByGoogle(payload: Payload) {
         //sub
         //email
         //email_verified
@@ -30,7 +34,7 @@ class UserController(
             if (getClaim("email_verified").asBoolean() == true) {
                 val email = getEmail()
 
-                if (getUserById(email) == null){
+                if (getUserByGoogle(email) == null) {
                     val name = getClaim("name").asString()
                     val picture = getClaim("picture").asString()
 

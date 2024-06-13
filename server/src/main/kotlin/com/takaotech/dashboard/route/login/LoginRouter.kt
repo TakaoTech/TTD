@@ -1,11 +1,14 @@
 package com.takaotech.dashboard.route.login
 
+import com.takaotech.dashboard.model.session.RefreshTokenDao
 import com.takaotech.dashboard.route.administration.controller.SessionController
 import com.takaotech.dashboard.route.administration.controller.UserController
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import io.ktor.server.request.*
 import io.ktor.server.resources.*
+import io.ktor.server.resources.post
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
@@ -23,7 +26,7 @@ fun Application.sessionRoute() {
                 val userPayload = userPrincipal?.payload
 
                 if (userPayload != null) {
-                    val token = sessionController.generateTokenPair(userPayload)
+                    val token = sessionController.generateTokenPairFromGoogle(userPayload)
 
                     call.respond(token)
                 } else {
@@ -35,9 +38,9 @@ fun Application.sessionRoute() {
                 val newUser = call.principal<JWTPrincipal>()
 
                 if (newUser != null) {
-                    userController.signUp(newUser.payload)
+                    userController.signUpByGoogle(newUser.payload)
 
-                    val token = sessionController.generateTokenPair(newUser.payload)
+                    val token = sessionController.generateTokenPairFromGoogle(newUser.payload)
 
                     //TODO Im not sure i can do it
                     call.respond(token)
@@ -45,6 +48,13 @@ fun Application.sessionRoute() {
 
 
             }
+        }
+
+        post<SessionRoute.Refresh> {
+            val refreshToken = call.receive<RefreshTokenDao>().refreshToken
+
+            call.respond(sessionController.refreshToken(refreshToken))
+
         }
     }
 }

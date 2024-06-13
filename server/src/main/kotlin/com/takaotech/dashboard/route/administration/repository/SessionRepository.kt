@@ -1,7 +1,6 @@
 package com.takaotech.dashboard.route.administration.repository
 
 import com.takaotech.dashboard.configuration.CredentialConfig
-import com.takaotech.dashboard.configuration.TakaoJwtConfig
 import com.takaotech.dashboard.route.administration.data.session.TokenTable
 import com.takaotech.dashboard.route.administration.data.session.toToken
 import com.takaotech.dashboard.utils.HikariDatabase
@@ -32,7 +31,17 @@ class SessionRepository(
         }
     }
 
-    suspend fun saveRefreshToken(
+    suspend fun getUserIdByToken(token: String): String? {
+        return database.dbExec {
+            TokenTable.select { TokenTable.refreshToken eq token }
+                .firstOrNull()
+                ?.let {
+                    it[TokenTable.userId]
+                }
+        }
+    }
+
+    suspend fun updateRefreshToken(
         oldToken: String,
         newToken: String
     ) {
