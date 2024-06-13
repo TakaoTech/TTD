@@ -11,7 +11,6 @@ import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
-import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
@@ -34,23 +33,13 @@ fun getApiModule(baseUrl: String) = module {
 
     single {
         val sessionManager = get<SessionManager>()
+        val baseKtor = getBaseKtor(get<KermitLogger>()).config {
+            Auth {
 
-        getBaseKtor(get<KermitLogger>())
-            .config {
-                //TODO Need complete this part
-                Auth {
-                    bearer {
-                        loadTokens {
-                            val pair = sessionManager.sessionFlow.value
-                            if (pair != null) {
-                                BearerTokens(pair.accessToken, pair.refreshToken)
-                            } else {
-                                null
-                            }
-                        }
-                    }
-                }
             }
+        }
+        sessionManager.bindKtor(baseKtor)
+        baseKtor
     }
 
     single {

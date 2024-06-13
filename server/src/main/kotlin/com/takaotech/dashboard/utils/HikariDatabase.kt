@@ -2,21 +2,22 @@ package com.takaotech.dashboard.utils
 
 import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.route.administration.data.UserRoleTable
-import com.takaotech.dashboard.route.github.data.GithubDepositoryTable
-import com.takaotech.dashboard.route.github.data.GithubDepositoryTagsTable
-import com.takaotech.dashboard.route.github.data.GithubUserTable
-import com.takaotech.dashboard.route.github.data.TagsTable
 import com.takaotech.dashboard.route.administration.data.role.RoleEntity
 import com.takaotech.dashboard.route.administration.data.role.RoleTable
 import com.takaotech.dashboard.route.administration.data.role.TakaoRole
 import com.takaotech.dashboard.route.administration.data.session.TokenTable
 import com.takaotech.dashboard.route.administration.data.user.UserTable
+import com.takaotech.dashboard.route.github.data.GithubDepositoryTable
+import com.takaotech.dashboard.route.github.data.GithubDepositoryTagsTable
+import com.takaotech.dashboard.route.github.data.GithubUserTable
+import com.takaotech.dashboard.route.github.data.TagsTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.util.logging.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.DatabaseConfig
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.SchemaUtils.withDataBaseLock
 import org.jetbrains.exposed.sql.Transaction
@@ -35,7 +36,11 @@ class HikariDatabase(
     fun connect() {
         //log.info("Initialising database")
         connection = hikari()
-        database = Database.connect(connection)
+        database = Database.connect(datasource = connection,
+            databaseConfig = DatabaseConfig.invoke {
+                keepLoadedReferencesOutOfTransaction = true
+            }
+        )
         setupSchema()
     }
 

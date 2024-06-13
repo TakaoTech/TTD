@@ -3,21 +3,24 @@ package com.takaotech.dashboard.model.session
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+typealias AccessToken = String
+typealias RefreshToken = String
+
 @Serializable
-data class TokenPair(
+data class TokenPairDao(
     @SerialName("accessToken")
-    val accessToken: String,
+    val accessToken: AccessToken,
     @SerialName("refreshToken")
-    val refreshToken: String
+    val refreshToken: RefreshToken
 ) {
     override fun toString(): String {
         return "$accessToken|$refreshToken"
     }
 
     companion object {
-        fun parse(mergedToken: String): TokenPair {
+        fun parse(mergedToken: String): TokenPairDao {
             val splitToken = mergedToken.split("|")
-            return TokenPair(
+            return TokenPairDao(
                 splitToken[0],
                 splitToken[1]
             )
@@ -26,7 +29,7 @@ data class TokenPair(
 }
 
 @Serializable
-data class RefreshToken(
+data class RefreshTokenDao(
     @SerialName("refreshToken")
-    val refreshToken: String
+    val refreshToken: RefreshToken
 )

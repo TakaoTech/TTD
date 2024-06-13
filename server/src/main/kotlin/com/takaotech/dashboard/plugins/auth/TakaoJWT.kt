@@ -1,13 +1,12 @@
 package com.takaotech.dashboard.plugins.auth
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import com.takaotech.dashboard.configuration.TakaoJwtConfig
 import com.takaotech.dashboard.route.administration.controller.SessionController
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
+import kotlinx.datetime.toKotlinInstant
 
 fun AuthenticationConfig.configureTakaoJWT(
     sessionController: SessionController,
@@ -21,9 +20,12 @@ fun AuthenticationConfig.configureTakaoJWT(
         )
 
         validate { credential ->
-            //TODO Add check?
-            JWTPrincipal(credential.payload)
-
+            val isValid = sessionController.checkJwtIsValid(credential.payload.expiresAtAsInstant.toKotlinInstant())
+            if (isValid) {
+                JWTPrincipal(credential.payload)
+            } else {
+                null
+            }
         }
 
         challenge { defaultScheme, realm ->
