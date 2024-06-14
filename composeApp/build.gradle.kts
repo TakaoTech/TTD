@@ -76,6 +76,9 @@ kotlin {
 			implementation(libs.androidx.credentials.playservices)
 
 			implementation(libs.androidx.browser)
+
+			implementation("com.auth0.android:jwtdecode:2.0.2")
+
 		}
 		val commonMain by getting {
 			kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")

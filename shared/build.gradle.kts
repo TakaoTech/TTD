@@ -31,6 +31,19 @@ kotlin {
 			implementation(libs.serialization)
 			api(libs.kotlin.result)
 		}
+
+		val commonTest by getting {
+			dependencies {
+				implementation(kotlin("test"))
+				// https://mvnrepository.com/artifact/org.hamcrest/hamcrest
+			}
+		}
+
+		val androidUnitTest by getting {
+			dependencies {
+				implementation("org.hamcrest:hamcrest:2.2")
+			}
+		}
 	}
 }
 
