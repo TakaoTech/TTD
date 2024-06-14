@@ -34,18 +34,25 @@ kotlin {
 
 		val commonTest by getting {
 			dependencies {
-				implementation(kotlin("test"))
+				implementation(kotlin("test")) {
+					exclude(group = "org.hamcrest")
+				}
 				// https://mvnrepository.com/artifact/org.hamcrest/hamcrest
 			}
 		}
 
 		val androidUnitTest by getting {
 			dependencies {
-				implementation("org.hamcrest:hamcrest:2.2")
+//				implementation("org.hamcrest:hamcrest:2.2")
 			}
 		}
 	}
 }
+
+tasks.withType<Test>().configureEach {
+	useJUnitPlatform()
+}
+
 
 dependencies {
 	with(libs.ktorfit.ksp.get()) {

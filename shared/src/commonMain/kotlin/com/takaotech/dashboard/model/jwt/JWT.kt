@@ -41,7 +41,7 @@ class JWT(token: String) {
          *
          * @return the Issuer value or null.
          */
-        get() = payload?.iss
+        get() = payload.iss
 
     val subject: String?
         /**
@@ -49,15 +49,15 @@ class JWT(token: String) {
          *
          * @return the Subject value or null.
          */
-        get() = payload!!.sub
+        get() = payload.sub
 
-    val audience: List<String>?
+    val audience: List<String>
         /**
          * Get the value of the "aud" claim, or an empty list if it's not available.
          *
          * @return the Audience value or an empty list.
          */
-        get() = payload!!.aud
+        get() = payload.aud
 
     val expiresAt: Instant?
         /**
@@ -73,7 +73,7 @@ class JWT(token: String) {
          *
          * @return the Not Before value or null.
          */
-        get() = payload!!.nbf
+        get() = payload.nbf
 
     val issuedAt: Instant?
         /**
@@ -81,7 +81,7 @@ class JWT(token: String) {
          *
          * @return the Issued At value or null.
          */
-        get() = payload!!.iat
+        get() = payload.iat
 
     val id: String?
         /**
@@ -89,25 +89,25 @@ class JWT(token: String) {
          *
          * @return the JWT ID value or null.
          */
-        get() = payload!!.jti
+        get() = payload.jti
 
     /**
      * Get a Claim given it's name. If the Claim wasn't specified in the JWT payload, a BaseClaim will be returned.
      *
      * @param name the name of the Claim to retrieve.
-     * @return a valid Claim.
+     * @return a valid Claim or null if not exist
      */
     fun getClaim(name: String): Claim? {
-        return payload!!.claimForName(name)
+        return payload.claimForName(name)
     }
 
-    val claims: Map<String, Claim?>?
+    val claims: Map<String, Claim?>
         /**
          * Get all the Claims.
          *
          * @return a valid Map of Claims.
          */
-        get() = payload?.tree
+        get() = payload.tree
 
     /**
      * Validates that this JWT was issued in the past and hasn't expired yet.
@@ -125,8 +125,8 @@ class JWT(token: String) {
         val futureToday = todayTime + leeway
         val pastToday = todayTime - leeway
 
-        val exp = payload?.exp
-        val iat = payload!!.iat
+        val exp = payload.exp
+        val iat = payload.iat
 
         val expValid = exp == null || pastToday <= exp
         val iatValid = iat == null || futureToday >= (iat)

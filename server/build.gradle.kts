@@ -95,7 +95,9 @@ dependencies {
 	implementation(libs.okhttp.logging)
 	implementation(libs.okhttp.client)
 
-	testImplementation(libs.ktor.server.tests)
+	testImplementation(libs.ktor.server.tests) {
+		exclude(group = "org.hamcrest", module = "hamcrest-core")
+	}
 	testImplementation(libs.kotlin.test.junit)
 	testImplementation(libs.kotest.runner)
 	testImplementation(libs.kotest.koin)
