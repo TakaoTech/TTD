@@ -3,40 +3,20 @@ package com.takaotech.dashboard.model.jwt
 import kotlinx.datetime.Instant
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.*
-import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.arrayContaining
-import org.hamcrest.collection.IsArrayWithSize
-import org.hamcrest.collection.IsEmptyCollection
-import org.hamcrest.core.IsCollectionContaining
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.junit.rules.ExpectedException
+import kotlin.test.*
 
 @OptIn(ExperimentalSerializationApi::class)
 class ClaimImplTest {
-    //    private Gson gson;
 
     val json = Json { ignoreUnknownKeys = true }
-
-    @JvmField
-    @Rule
-    var exception: ExpectedException = ExpectedException.none()
-
-    @Before
-    fun setUp() {
-
-    }
 
     @Test
     fun shouldGetBooleanValue() {
         val value: JsonElement = JsonPrimitive(true)
         val claim = Claim(value)
 
-        assertThat(claim.asBoolean(), CoreMatchers.`is`(CoreMatchers.notNullValue()))
-        assertThat(claim.asBoolean(), CoreMatchers.`is`(true))
+        assertNotNull(claim.asBoolean())
+        assertTrue { claim.asBoolean() == true }
     }
 
     @Test
@@ -44,7 +24,7 @@ class ClaimImplTest {
         val value: JsonElement = JsonPrimitive(null)
         val claim = Claim(value)
 
-        assertThat(claim.asBoolean(), CoreMatchers.`is`(CoreMatchers.nullValue()))
+        assertNull(claim.asBoolean())
     }
 
     @Test
@@ -52,8 +32,8 @@ class ClaimImplTest {
         val value: JsonElement = JsonPrimitive(123)
         val claim = Claim(value)
 
-        assertThat(claim.asInt(), CoreMatchers.`is`(CoreMatchers.notNullValue()))
-        assertThat(claim.asInt(), CoreMatchers.`is`(123))
+        assertNotNull(claim.asInt())
+        assertEquals(123, claim.asInt())
     }
 
     @Test
@@ -61,8 +41,8 @@ class ClaimImplTest {
         val value: JsonElement = JsonPrimitive(123L)
         val claim = Claim(value)
 
-        assertThat(claim.asLong(), CoreMatchers.`is`(CoreMatchers.notNullValue()))
-        assertThat(claim.asLong(), CoreMatchers.`is`(123L))
+        assertNotNull(claim.asLong())
+        assertEquals(123L, claim.asLong())
     }
 
     @Test
@@ -70,7 +50,7 @@ class ClaimImplTest {
         val value: JsonElement = JsonPrimitive(null)
         val claim = Claim(value)
 
-        assertThat(claim.asInt(), CoreMatchers.`is`(CoreMatchers.nullValue()))
+        assertNull(claim.asInt())
     }
 
     @Test
@@ -78,7 +58,7 @@ class ClaimImplTest {
         val value: JsonElement = JsonPrimitive(null)
         val claim = Claim(value)
 
-        assertThat(claim.asLong(), CoreMatchers.`is`(CoreMatchers.nullValue()))
+        assertNull(claim.asLong())
     }
 
     @Test
@@ -86,8 +66,8 @@ class ClaimImplTest {
         val value: JsonElement = JsonPrimitive(1.5)
         val claim = Claim(value)
 
-        assertThat(claim.asDouble(), CoreMatchers.`is`(CoreMatchers.notNullValue()))
-        assertThat(claim.asDouble(), CoreMatchers.`is`(1.5))
+        assertNotNull(claim.asDouble())
+        assertEquals(1.5, claim.asDouble())
     }
 
     @Test
@@ -95,7 +75,7 @@ class ClaimImplTest {
         val value: JsonElement = JsonPrimitive(null)
         val claim = Claim(value)
 
-        assertThat(claim.asDouble(), CoreMatchers.`is`(CoreMatchers.nullValue()))
+        assertNull(claim.asDouble())
     }
 
     @Test
@@ -105,9 +85,9 @@ class ClaimImplTest {
         val claim = Claim(value)
 
         val date = claim.asInstantFromSeconds()
-        MatcherAssert.assertThat(date, CoreMatchers.`is`(CoreMatchers.notNullValue()))
-        MatcherAssert.assertThat(date?.toEpochMilliseconds(), CoreMatchers.`is`(seconds * 1000))
-        MatcherAssert.assertThat(date?.toEpochMilliseconds(), CoreMatchers.`is`(2147493647L * 1000))
+        assertNotNull(date)
+        assertEquals(seconds * 1000, date.toEpochMilliseconds())
+        assertEquals(2147493647L * 1000, date.toEpochMilliseconds())
     }
 
     @Test
@@ -115,15 +95,15 @@ class ClaimImplTest {
         val value: JsonElement = JsonPrimitive("1476824844")
         val claim = Claim(value)
 
-        assertThat(claim.asInstantFromSeconds(), CoreMatchers.`is`(CoreMatchers.notNullValue()))
-        assertThat(
-            claim.asInstantFromSeconds(),
-            CoreMatchers.`is`(Instant.fromEpochMilliseconds(1476824844L * 1000))
+        assertNotNull(claim.asInstantFromSeconds())
+        assertEquals(
+            Instant.fromEpochMilliseconds(1476824844L * 1000),
+            claim.asInstantFromSeconds()
         )
 
-        assertThat(
-            claim.asInstantFromMilliseconds(),
-            CoreMatchers.`is`(Instant.fromEpochMilliseconds(1476824844L))
+        assertEquals(
+            Instant.fromEpochMilliseconds(1476824844L),
+            claim.asInstantFromMilliseconds()
         )
     }
 
@@ -132,8 +112,8 @@ class ClaimImplTest {
         val value: JsonElement = JsonPrimitive(null)
         val claim = Claim(value)
 
-        assertThat(claim.asInstantFromMilliseconds(), CoreMatchers.`is`(CoreMatchers.nullValue()))
-        assertThat(claim.asInstantFromSeconds(), CoreMatchers.`is`(CoreMatchers.nullValue()))
+        assertNull(claim.asInstantFromMilliseconds())
+        assertNull(claim.asInstantFromSeconds())
     }
 
     @Test
@@ -141,8 +121,8 @@ class ClaimImplTest {
         val value: JsonElement = JsonPrimitive("string")
         val claim = Claim(value)
 
-        assertThat(claim.asString(), CoreMatchers.`is`(CoreMatchers.notNullValue()))
-        assertThat(claim.asString(), CoreMatchers.`is`("string"))
+        assertNotNull(claim.asString())
+        assertEquals("string", claim.asString())
     }
 
     @Test
@@ -150,7 +130,7 @@ class ClaimImplTest {
         val value: JsonElement = JsonPrimitive(null)
         val claim = Claim(value)
 
-        assertThat(claim.asString(), CoreMatchers.`is`(CoreMatchers.nullValue()))
+        assertNull(claim.asString())
     }
 
     @Test
@@ -159,15 +139,13 @@ class ClaimImplTest {
         val value: JsonElement = json.encodeToJsonElement(arrayOf(UserPojo("George", 1), UserPojo("Mark", 2)))
         val claim = Claim(value)
 
-        assertThat(
-            json.decodeFromJsonElement<Array<UserPojo>>(claim.value),
-            CoreMatchers.`is`(CoreMatchers.notNullValue())
+        assertNotNull(
+            json.decodeFromJsonElement<Array<UserPojo>>(claim.value)
         )
-        assertThat(
-            json.decodeFromJsonElement<Array<UserPojo>>(claim.value),
-            CoreMatchers.`is`(arrayContaining(UserPojo("George", 1), UserPojo("Mark", 2)))
-        )
-
+        assertTrue {
+            arrayOf(UserPojo("George", 1), UserPojo("Mark", 2))
+                .contentEquals(json.decodeFromJsonElement<Array<UserPojo>>(claim.value))
+        }
     }
 
     @Test
@@ -175,14 +153,11 @@ class ClaimImplTest {
         val value: JsonElement = json.encodeToJsonElement(arrayOf("string1", "string2"))
         val claim = Claim(value)
 
-        assertThat(
-            json.decodeFromJsonElement<Array<String>>(claim.value),
-            CoreMatchers.`is`(CoreMatchers.notNullValue())
-        )
-        assertThat(
-            json.decodeFromJsonElement<Array<String>>(claim.value),
-            CoreMatchers.`is`(arrayContaining("string1", "string2"))
-        )
+        assertNotNull(json.decodeFromJsonElement<Array<String>>(claim.value))
+        assertTrue {
+            arrayOf("string1", "string2")
+                .contentEquals(json.decodeFromJsonElement<Array<String>>(claim.value))
+        }
     }
 
     @Test
@@ -190,14 +165,11 @@ class ClaimImplTest {
         val value: JsonElement = JsonArray(listOf())
         val claim = Claim(value)
 
-        assertThat(
-            json.decodeFromJsonElement<Array<String>>(claim.value),
-            CoreMatchers.`is`(CoreMatchers.notNullValue())
-        )
-        assertThat(
-            json.decodeFromJsonElement<Array<String>>(claim.value),
-            CoreMatchers.`is`(IsArrayWithSize.emptyArray())
-        )
+        assertNotNull(json.decodeFromJsonElement<Array<String>>(claim.value))
+
+        assertTrue {
+            arrayOf<String>().contentEquals(json.decodeFromJsonElement<Array<String>>(claim.value))
+        }
     }
 
     //Skipped array deserialization delegated to library user
@@ -228,14 +200,14 @@ class ClaimImplTest {
         val value: JsonElement = json.encodeToJsonElement(listOf(UserPojo("George", 1), UserPojo("Mark", 2)))
         val claim = Claim(value)
 
-        assertThat(
-            json.decodeFromJsonElement<List<UserPojo>>(claim.value),
-            CoreMatchers.`is`(CoreMatchers.notNullValue())
-        )
-        assertThat(
-            json.decodeFromJsonElement<List<UserPojo>>(claim.value),
-            CoreMatchers.`is`(IsCollectionContaining.hasItems(UserPojo("George", 1), UserPojo("Mark", 2)))
-        )
+        assertNotNull(json.decodeFromJsonElement<List<UserPojo>>(claim.value))
+        assertTrue {
+            json.decodeFromJsonElement<List<UserPojo>>(claim.value).containsAll(
+                listOf(
+                    UserPojo("George", 1), UserPojo("Mark", 2)
+                )
+            )
+        }
     }
 
     @Test
@@ -243,13 +215,12 @@ class ClaimImplTest {
         val value: JsonElement = json.encodeToJsonElement(mutableListOf("string1", "string2"))
         val claim = Claim(value)
 
-        assertThat(
-            json.decodeFromJsonElement<List<String>>(claim.value),
-            CoreMatchers.`is`(CoreMatchers.notNullValue())
+        assertNotNull(
+            json.decodeFromJsonElement<List<String>>(claim.value)
         )
-        assertThat(
-            json.decodeFromJsonElement<List<String>>(claim.value),
-            CoreMatchers.`is`(IsCollectionContaining.hasItems("string1", "string2"))
+        assertEquals(
+            listOf("string1", "string2"),
+            json.decodeFromJsonElement<List<String>>(claim.value)
         )
     }
 
@@ -258,16 +229,12 @@ class ClaimImplTest {
         val value: JsonElement = JsonArray(listOf())
         val claim = Claim(value)
 
-        assertThat(
-            json.decodeFromJsonElement<List<String>>(claim.value),
-            CoreMatchers.`is`(CoreMatchers.notNullValue())
+        assertNotNull(
+            json.decodeFromJsonElement<List<String>>(claim.value)
         )
-        assertThat(
-            json.decodeFromJsonElement<List<String>>(claim.value), CoreMatchers.`is`(
-                IsEmptyCollection.emptyCollectionOf(
-                    String::class.java
-                )
-            )
+        assertEquals(
+            listOf(),
+            json.decodeFromJsonElement<List<String>>(claim.value)
         )
     }
 
