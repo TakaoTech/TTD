@@ -5,6 +5,9 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.Payload
 import com.takaotech.dashboard.configuration.CredentialConfig
+import com.takaotech.dashboard.model.jwt.TAKAO_JWT_PERMISSION
+import com.takaotech.dashboard.model.jwt.TAKAO_JWT_USER
+import com.takaotech.dashboard.model.jwt.TAKAO_JWT_VERSION
 import com.takaotech.dashboard.model.session.TokenPairDao
 import com.takaotech.dashboard.route.administration.data.user.UserEntity
 import com.takaotech.dashboard.route.administration.repository.SessionRepository
@@ -43,8 +46,10 @@ class SessionController(
             val accessToken = JWT.create()
                 .withAudience(audience)
                 .withIssuer(issuer)
-                .withClaim("user", user.id.value)
-                .withClaim("permission",
+                .withClaim(TAKAO_JWT_VERSION, version)
+                .withClaim(TAKAO_JWT_USER, user.id.value)
+                .withClaim(
+                    TAKAO_JWT_PERMISSION,
                     user.roles.toList().map { it.id.value.name }
                 )
                 .withExpiresAt((Clock.System.now() + Duration.parse(takaoJwtConfig.accessLifetime)).toJavaInstant())

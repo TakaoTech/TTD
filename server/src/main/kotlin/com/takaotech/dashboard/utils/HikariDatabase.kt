@@ -1,10 +1,10 @@
 package com.takaotech.dashboard.utils
 
 import com.takaotech.dashboard.configuration.DbConfiguration
+import com.takaotech.dashboard.model.role.TakaoRole
 import com.takaotech.dashboard.route.administration.data.UserRoleTable
 import com.takaotech.dashboard.route.administration.data.role.RoleEntity
 import com.takaotech.dashboard.route.administration.data.role.RoleTable
-import com.takaotech.dashboard.route.administration.data.role.TakaoRole
 import com.takaotech.dashboard.route.administration.data.session.TokenTable
 import com.takaotech.dashboard.route.administration.data.user.UserTable
 import com.takaotech.dashboard.route.github.data.GithubDepositoryTable

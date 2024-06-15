@@ -1,7 +1,7 @@
 package com.takaotech.dashboard.route.administration.controller
 
 import com.auth0.jwt.interfaces.Payload
-import com.takaotech.dashboard.route.administration.data.role.TakaoRole
+import com.takaotech.dashboard.model.role.TakaoRole
 import com.takaotech.dashboard.route.administration.data.user.UserEntity
 import com.takaotech.dashboard.route.administration.repository.UserRepository
 import com.takaotech.dashboard.utils.sha256

@@ -31,6 +31,7 @@ fun Application.module() {
 			audience = System.getenv("jwt.google.audience")
 		),
 		takaoJwtConfig = TakaoJwtConfig(
+			version = System.getenv("jwt.takao.version").toInt(),
 			secret = System.getenv("jwt.takao.secret"),
 			issuer =  System.getenv("jwt.takao.issuer"),
 			audience = System.getenv("jwt.takao.audience"),
