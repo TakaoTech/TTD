@@ -24,6 +24,8 @@ actual fun KoinApplication.platformModules() {
             single { GoogleLoginImpl(get()) } bind (GoogleLogin::class)
             single {
                 SessionManagerImpl(
+                    json = get(),
+                    logger = get(),
                     googleLogin = get(),
                     authApi = get(),
                     context = get()

@@ -57,7 +57,7 @@ object LoginScreen : Tab, KoinComponent {
             get<SessionManager>()
         }
 
-        val session by sessionManager.sessionFlow.collectAsState(null)
+        val session by sessionManager.takaoSession.collectAsState(null)
 
         var isLogin by remember { mutableStateOf(false) }
 

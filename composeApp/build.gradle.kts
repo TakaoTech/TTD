@@ -229,6 +229,14 @@ buildkonfig {
 			"googleWebAuth",
 			getEnvProperty("AUTH_GOOGLE_CLIENT_ID_ANDROID_WEB")
 		)
+
+		//TODO env this prop
+
+		buildConfigField(
+			FieldSpec.Type.BOOLEAN,
+			"debug",
+			"true"
+		)
 	}
 }
 
