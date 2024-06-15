@@ -9,25 +9,17 @@ import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.model.github.TagNewDao
 import com.takaotech.dashboard.model.github.request.TagsUpdateRequest
 import com.takaotech.dashboard.repository.api.AdminGHApi
-import com.takaotech.dashboard.ui.login.SessionManager
-import io.ktor.client.request.*
 import org.koin.core.annotation.Single
 
-//TODO Need pass token to every request
 @Single
 class AdminGHRepository(
-    private val sessionManager: SessionManager,
     private val githubApi: AdminGHApi,
     private val logger: Logger
 ) {
 
     suspend fun refreshRepositories(): Result<Unit, Exception> {
         return Result.of<Unit, Exception> {
-            githubApi.refreshRepositories(
-                ext = {
-                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
-                }
-            )
+            githubApi.refreshRepositories()
         }.onFailure {
             logger.e(it) { "Error refreshRepositories" }
         }
@@ -35,11 +27,7 @@ class AdminGHRepository(
 
     suspend fun getStatusOfRefreshRepositories(): Result<Boolean?, Exception> {
         return Result.of<Boolean?, Exception> {
-            githubApi.refreshRepositoriesStatus(
-                ext = {
-                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
-                }
-            ).active
+            githubApi.refreshRepositoriesStatus().active
         }.onFailure {
             logger.e(it) { "Error getStatusOfRefreshRepositories" }
         }
@@ -48,10 +36,7 @@ class AdminGHRepository(
     suspend fun getRepositories(mainCategory: MainCategory? = null): Result<List<GHRepositoryDao>, Throwable> {
         return Result.of<List<GHRepositoryDao>, Throwable> {
             githubApi.getRepositories(
-                category = mainCategory,
-                ext = {
-                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
-                }
+                category = mainCategory
             ).data
         }.onFailure {
             logger.e(it) { "Error getRepositories" }
@@ -69,41 +54,25 @@ class AdminGHRepository(
     suspend fun updateCategoryRepository(id: Long, newCategory: MainCategory) {
         githubApi.updateRepositoryCategory(
             id,
-            newCategory,
-            ext = {
-                sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
-            }
+            newCategory
         )
     }
 
     suspend fun getTags(): Result<List<TagDao>, Throwable> {
         return Result.of<List<TagDao>, Throwable> {
-            githubApi.getTags(
-                ext = {
-                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
-                }
-            )
+            githubApi.getTags()
         }
     }
 
     suspend fun getTagById(tagId: Int): Result<TagDao, Throwable> {
         return Result.of<TagDao, Throwable> {
-            githubApi.getTagById(
-                tagId,
-                ext = {
-                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
-                }
-            )
+            githubApi.getTagById(tagId)
         }
     }
 
     suspend fun addTag(tag: TagNewDao): Result<Unit, Throwable> {
         return Result.of<Unit, Throwable> {
-            githubApi.addTag(tag,
-                ext = {
-                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
-                }
-            )
+            githubApi.addTag(tag)
         }.onFailure {
             logger.e(it) { "Error Save Tag" }
         }
@@ -111,11 +80,7 @@ class AdminGHRepository(
 
     suspend fun updateTag(tag: TagDao): Result<Unit, Throwable> {
         return Result.of<Unit, Throwable> {
-            githubApi.updateTag(tag,
-                ext = {
-                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
-                }
-            )
+            githubApi.updateTag(tag)
         }.onFailure {
             logger.e(it) { "Error Update Tag" }
         }
@@ -123,11 +88,9 @@ class AdminGHRepository(
 
     suspend fun updateRepositoryTags(repositoryId: Long, newTags: List<Int>): Result<Unit, Throwable> {
         return Result.of<Unit, Throwable> {
-            githubApi.updateRepositoryTags(repositoryId,
-                TagsUpdateRequest(newTags),
-                ext = {
-                    sessionManager.sessionFlow.value?.accessToken?.let { bearerAuth(it) }
-                }
+            githubApi.updateRepositoryTags(
+                repositoryId,
+                TagsUpdateRequest(newTags)
             )
         }.onFailure {
             logger.e(it) { "Error Update Tags for Repository $repositoryId" }
