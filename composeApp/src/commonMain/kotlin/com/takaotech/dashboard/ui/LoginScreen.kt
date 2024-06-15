@@ -1,8 +1,6 @@
 package com.takaotech.dashboard.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
@@ -12,23 +10,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.takaotech.dashboard.ui.credits.CreditScreen
-import com.takaotech.dashboard.ui.login.SessionManager
 import com.takaotech.dashboard.ui.platform.components.SignInButton
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
-import ttd.composeapp.generated.resources.Res
-import ttd.composeapp.generated.resources.credit_opensource_licence_label
-import ttd.composeapp.generated.resources.ic_google_logo
+import ttd.composeapp.generated.resources.*
 
+@OptIn(ExperimentalResourceApi::class)
 object LoginScreen : Tab, KoinComponent {
 //object LoginScreen : Screen {
 
@@ -36,7 +32,7 @@ object LoginScreen : Tab, KoinComponent {
     override val options: TabOptions
         @Composable
         get() {
-            val title = "Login"
+            val title = stringResource(Res.string.login)
             val icon = rememberVectorPainter(Icons.Filled.Person)
 
             return remember {
@@ -53,13 +49,9 @@ object LoginScreen : Tab, KoinComponent {
         val navigator = LocalNavigator.currentOrThrow
         val viewModel = getScreenModel<LoginViewModel>()
 
-        val sessionManager = remember {
-            get<SessionManager>()
-        }
+        val session by viewModel.takaoSession.collectAsState(null)
 
-        val session by sessionManager.takaoSession.collectAsState(null)
-
-        var isLogin by remember { mutableStateOf(false) }
+        var isLogin by remember { mutableStateOf(true) }
 
         if (session == null) {
             LoginScreenUi(
@@ -69,10 +61,10 @@ object LoginScreen : Tab, KoinComponent {
                     navigator.parent?.push(CreditScreen())
                 },
                 onGoogleLoginClicked = {
-                    sessionManager.startGoogleLogin()
+                    viewModel.startGoogleLogin()
                 },
                 onGoogleSignupClicked = {
-                    sessionManager.startGoogleSignup()
+                    viewModel.startGoogleSignup()
                 },
                 onAppleLoginClicked = {
 
@@ -85,12 +77,15 @@ object LoginScreen : Tab, KoinComponent {
                 }
             )
         } else {
-            Button(
-                onClick = {
-                    sessionManager.logout()
+            Box(modifier = Modifier.fillMaxSize()) {
+                Button(
+                    modifier = Modifier.align(Alignment.Center),
+                    onClick = {
+                        viewModel.logout()
+                    }
+                ) {
+                    Text(stringResource(Res.string.logout))
                 }
-            ) {
-                Text("Logout")
             }
         }
     }
@@ -108,42 +103,52 @@ internal fun LoginScreenUi(
     onCreditClicked: () -> Unit,
     onLoginSwitch: () -> Unit
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    Box(modifier = modifier) {
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (isLogin) {
+                SignInButton(
+                    onClick = onGoogleLoginClicked,
+                    text = stringResource(Res.string.login_with_google),
+                    icon = painterResource(Res.drawable.ic_google_logo),
+                    isLoading = false,
 
-        if (isLogin) {
-            //TODO Replace with ProviderIcon + Text
-            SignInButton(
-                onClick = onGoogleLoginClicked,
-                text = "Login with Google",
-                icon = painterResource(Res.drawable.ic_google_logo),
-                isLoading = false,
+                    )
+//            Button(
+//                onClick = onAppleLoginClicked, //Login with Twitch,
+//                content = {
+//
+//                }
+//            )
+            } else {
+                SignInButton(
+                    onClick = onGoogleSignupClicked,
+                    text = stringResource(Res.string.signup_with_google),
+                    icon = painterResource(Res.drawable.ic_google_logo),
+                    isLoading = false
 
                 )
-            Button(
-                onClick = onAppleLoginClicked, //Login with Twitch,
-                content = {
+            }
 
+            TextButton(onClick = onLoginSwitch) {
+                if (isLogin) {
+                    Text(stringResource(Res.string.new_account))
+                } else {
+                    Text(stringResource(Res.string.already_account))
                 }
-            )
-        } else {
-            SignInButton(
-                onClick = onGoogleSignupClicked,
-                text = "Signup with Google",
-                icon = painterResource(Res.drawable.ic_google_logo),
-                isLoading = false
 
-            )
+            }
         }
 
-        TextButton(onClick = onLoginSwitch) {
-            Text("New Account")
-        }
-
-        TextButton(onClick = onCreditClicked) {
+        TextButton(
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.BottomCenter),
+            onClick = onCreditClicked
+        ) {
             Text(stringResource(Res.string.credit_opensource_licence_label))
         }
     }
