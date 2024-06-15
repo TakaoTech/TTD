@@ -1,7 +1,7 @@
 package com.takaotech.dashboard.route.administration.repository
 
+import com.takaotech.dashboard.model.role.TakaoRole
 import com.takaotech.dashboard.route.administration.data.role.RoleEntity
-import com.takaotech.dashboard.route.administration.data.role.TakaoRole
 import com.takaotech.dashboard.route.administration.data.user.UserEntity
 import com.takaotech.dashboard.utils.HikariDatabase
 import com.takaotech.dashboard.utils.sha256
@@ -40,7 +40,7 @@ class UserRepository(
                 this.email = email
                 displayName = name
                 profileImage = picture
-                roles = SizedCollection(listOf(RoleEntity.findById(TakaoRole.USER)!!))
+                roles = SizedCollection(listOf(RoleEntity.findById(TakaoRole.BASE_USER)!!))
             }
         }
     }

@@ -11,6 +11,7 @@ data class GoogleJwtConfig(
 )
 
 data class TakaoJwtConfig(
+    val version: Int,
     val secret: String,
     val issuer: String,
     val audience: String,

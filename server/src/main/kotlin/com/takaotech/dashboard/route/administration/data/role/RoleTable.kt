@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.route.administration.data.role
 
+import com.takaotech.dashboard.model.role.TakaoRole
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Column

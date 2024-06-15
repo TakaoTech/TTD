@@ -1,12 +1,10 @@
 package com.takaotech.dashboard.plugins.auth
 
-import com.takaotech.dashboard.route.administration.controller.UserController
-import com.takaotech.dashboard.route.administration.data.role.TakaoRole
+import com.takaotech.dashboard.model.role.TakaoRole
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.routing.*
-import org.koin.ktor.ext.inject
 
 //https://github.com/JAOOOOO/ktor-role-based-authorization/blob/master/src/main/kotlin/jaocom/auth/RoleBasedAuthorization.kt
 

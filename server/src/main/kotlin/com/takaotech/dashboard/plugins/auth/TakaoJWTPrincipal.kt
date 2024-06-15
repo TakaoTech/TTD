@@ -1,7 +1,7 @@
 package com.takaotech.dashboard.plugins.auth
 
 import com.auth0.jwt.interfaces.Payload
-import com.takaotech.dashboard.route.administration.data.role.TakaoRole
+import com.takaotech.dashboard.model.role.TakaoRole
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 
