@@ -4,11 +4,12 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.byteArrayPreferencesKey
 import androidx.datastore.preferences.core.edit
+import co.touchlab.kermit.Logger
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.isSuccess
-import com.github.kittinunf.result.onFailure
 import com.github.kittinunf.result.onSuccess
-import com.takaotech.dashboard.model.session.AccessToken
+import com.takaotech.dashboard.AppBuildKonfig
+import com.takaotech.dashboard.model.jwt.TakaoSession
 import com.takaotech.dashboard.model.session.RefreshTokenDao
 import com.takaotech.dashboard.model.session.TokenPairDao
 import com.takaotech.dashboard.repository.AuthApi
@@ -22,13 +23,17 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.serialization.json.Json
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalEncodingApi::class)
 abstract class SessionManager(
+    private val json: Json,
+    protected val logger: Logger,
     protected val googleLogin: GoogleLogin,
-    protected val authApi: AuthApi,
+    protected val authApi: AuthApi
 ) {
     //https://github.com/android/kotlin-multiplatform-samples/tree/main/DiceRoller
 
@@ -37,11 +42,13 @@ abstract class SessionManager(
     private val SESSION_KEY = byteArrayPreferencesKey("SESSION_LOGIN")
     private lateinit var sessionDatastore: DataStore<Preferences>
 
-    lateinit var sessionFlow: StateFlow<TokenPairDao?>
+    private lateinit var sessionFlow: StateFlow<TokenPairDao?>
+    lateinit var takaoSession: StateFlow<TakaoSession?>
 
     private lateinit var authKtor: HttpClient
 
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun init() {
         sessionDatastore = initSessionDatastore()
         sessionFlow = sessionDatastore.data.map {
@@ -52,68 +59,80 @@ abstract class SessionManager(
                 null
             }
         }.stateIn(coroutineScope, SharingStarted.Eagerly, null)
+
+        takaoSession = sessionFlow.map {
+            if (it != null) {
+                try {
+                    TakaoSession(json, it.accessToken)
+                } catch (ex: Exception) {
+                    logger.e(ex) { "Error while loading session, logout executed" }
+                    logout()
+                    null
+                }
+            } else {
+                null
+            }
+        }.stateIn(coroutineScope, SharingStarted.Eagerly, null)
+
     }
 
     abstract fun initSessionDatastore(): DataStore<Preferences>
     abstract fun decryptTokens(sessionEncrypted: ByteArray): TokenPairDao?
     abstract fun encryptTokens(tokenPair: TokenPairDao): ByteArray
-    abstract fun decodeToken(token: AccessToken)
 
 
     fun startGoogleLogin() {
         coroutineScope.launch(Dispatchers.IO) {
-            val googleLoginResult = googleLogin.startLogin()
-            if (googleLoginResult.isSuccess()) {
-                Result.of<TokenPairDao, Exception> {
-                    authApi.login(
-                        hashedNonce = googleLoginResult.value.first,
-                    ) {
-                        timeout {
-                            requestTimeoutMillis = 1.minutes.inWholeMilliseconds
-                            connectTimeoutMillis = 1.minutes.inWholeMilliseconds
-                        }
+            internalGoogleLogin {
+                authApi.login(
+                    hashedNonce = it.first,
+                ) {
+                    timeout {
+                        requestTimeoutMillis = 1.minutes.inWholeMilliseconds
+                        connectTimeoutMillis = 1.minutes.inWholeMilliseconds
+                    }
 
-                        bearerAuth(googleLoginResult.value.second)
-                    }
-                }.onSuccess { tokenPair ->
-                    sessionDatastore.edit {
-                        it[SESSION_KEY] = encryptTokens(tokenPair)
-                    }
-                    decodeToken(tokenPair.accessToken)
-                    installBearer()
-                }.onFailure {
-                    //TODO Error Takao Login
-                    it
+                    bearerAuth(it.second)
                 }
-            } else {
-                //TODO Error google on login
             }
-
         }
     }
 
 
     fun startGoogleSignup() {
         coroutineScope.launch(Dispatchers.IO) {
-            val googleLoginResult = googleLogin.startLogin()
-            if (googleLoginResult.isSuccess()) {
-                Result.of<TokenPairDao, Exception> {
-                    authApi.signup(
-                        hashedNonce = googleLoginResult.value.first,
-                    ) {
-                        bearerAuth(googleLoginResult.value.second)
-                    }
-                }.onSuccess { tokenPair ->
-                    sessionDatastore.edit {
-                        it[SESSION_KEY] = encryptTokens(tokenPair)
+            internalGoogleLogin {
+                authApi.signup(
+                    hashedNonce = it.first,
+                ) {
+                    timeout {
+                        requestTimeoutMillis = 1.minutes.inWholeMilliseconds
+                        connectTimeoutMillis = 1.minutes.inWholeMilliseconds
                     }
 
-                    installBearer()
+                    bearerAuth(it.second)
                 }
-            } else {
-                //TODO Error on login
             }
+        }
+    }
 
+    private suspend inline fun internalGoogleLogin(crossinline callService: suspend (googleTokenPair: Pair<Nonce, GoogleToken>) -> TokenPairDao?) {
+        val googleLoginResult = googleLogin.startLogin()
+        if (googleLoginResult.isSuccess()) {
+            Result.of<TokenPairDao, Exception> {
+                if (AppBuildKonfig.debug) {
+                    delay(1.seconds)
+                }
+                callService(googleLoginResult.value)
+            }.onSuccess { tokenPair ->
+                sessionDatastore.edit {
+                    it[SESSION_KEY] = encryptTokens(tokenPair)
+                }
+
+                installBearer()
+            }
+        } else {
+            //TODO Error on login
         }
     }
 
@@ -132,10 +151,14 @@ abstract class SessionManager(
     }
 
     private fun uninstallBearer() {
-        authKtor.plugin(Auth).providers.let {
-            it.remove(
-                it.filterIsInstance<BearerAuthProvider>().first()
-            )
+        try {
+            authKtor.plugin(Auth).providers.let {
+                it.remove(
+                    it.filterIsInstance<BearerAuthProvider>().first()
+                )
+            }
+        } catch (ex: Exception) {
+            logger.e(ex) { "Unsuccessful uninstallBearer, Auth module not found" }
         }
     }
 

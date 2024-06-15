@@ -16,6 +16,7 @@ import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 import org.koin.core.KoinApplication
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -23,6 +24,12 @@ import co.touchlab.kermit.Logger as KermitLogger
 
 
 fun getApiModule(baseUrl: String) = module {
+
+    single {
+        Json {
+            ignoreUnknownKeys = true
+        }
+    }
 
     single(named("AuthKtor")) {
         Ktorfit.Builder()

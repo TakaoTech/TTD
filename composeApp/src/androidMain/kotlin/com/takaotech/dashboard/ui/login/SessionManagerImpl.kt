@@ -3,12 +3,12 @@ package com.takaotech.dashboard.ui.login
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.auth0.android.jwt.JWT
-import com.takaotech.dashboard.model.session.AccessToken
+import co.touchlab.kermit.Logger
 import com.takaotech.dashboard.model.session.TokenPairDao
 import com.takaotech.dashboard.repository.AuthApi
 import com.takaotech.dashboard.ui.platform.CryptoManager
 import com.takaotech.dashboard.ui.utils.createSessionDataStore
+import kotlinx.serialization.json.Json
 import java.io.ByteArrayOutputStream
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -16,10 +16,12 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 //@Single
 @OptIn(ExperimentalEncodingApi::class)
 class SessionManagerImpl(
+    json: Json,
+    logger: Logger,
     googleLogin: GoogleLogin,
     authApi: AuthApi,
-    private val context: Context
-) : SessionManager(googleLogin, authApi) {
+    private val context: Context,
+) : SessionManager(json, logger, googleLogin, authApi) {
 
     private val cryptoManager = CryptoManager()
 
