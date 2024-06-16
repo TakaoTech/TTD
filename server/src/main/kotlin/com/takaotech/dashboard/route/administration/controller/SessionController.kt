@@ -92,11 +92,23 @@ class SessionController(
     }
 
     fun verifyToken(): JWTVerifier {
-        //TODO Align clamis
-        return JWT.require(Algorithm.HMAC512(takaoJwtConfig.secret))
-            .withAudience(takaoJwtConfig.audience)
-            .withIssuer(takaoJwtConfig.issuer)
-            .build()
+        return with(takaoJwtConfig) {
+            JWT.require(Algorithm.HMAC512(takaoJwtConfig.secret))
+                .withAudience(takaoJwtConfig.audience)
+                .withIssuer(takaoJwtConfig.issuer)
+                .withClaim(
+                    TAKAO_JWT_VERSION
+                ) { claim, jwt ->
+                    claim.asInt() == version
+                }
+                .withClaim(TAKAO_JWT_USER) { claim, _ ->
+                    claim.asString() != null
+                }
+                .withClaim(TAKAO_JWT_PERMISSION) { claim, _ ->
+                    claim.asList(TakaoRole::class.java).isNotEmpty()
+                }
+                .build()
+        }
     }
 
     private fun generateRefreshToken() = UUID.randomUUID().toString()

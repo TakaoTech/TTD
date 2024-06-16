@@ -22,7 +22,7 @@ fun AuthenticationConfig.configureTakaoJWT(
         validate { credential ->
             val isValid = sessionController.checkJwtIsValid(credential.payload.expiresAtAsInstant.toKotlinInstant())
             if (isValid) {
-                JWTPrincipal(credential.payload)
+                TakaoJWTPrincipal(credential.payload)
             } else {
                 null
             }
