@@ -13,7 +13,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
-inline fun Route.adminTagsRoute() {
+fun Route.adminTagsRoute() {
 	val controller by inject<GithubController>()
 
 	get<AdminGithubRoute.Tags> {
