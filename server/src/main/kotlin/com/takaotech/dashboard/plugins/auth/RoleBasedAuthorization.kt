@@ -3,7 +3,6 @@ package com.takaotech.dashboard.plugins.auth
 import com.takaotech.dashboard.model.role.TakaoRole
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.routing.*
 
 //https://github.com/JAOOOOO/ktor-role-based-authorization/blob/master/src/main/kotlin/jaocom/auth/RoleBasedAuthorization.kt
@@ -30,7 +29,7 @@ val RoleBasedAuthorization = createRouteScopedPlugin(
     val type = pluginConfig.type
     val getUserRoles = pluginConfig.getRoles
     on(AuthenticationChecked) { call ->
-        val user = call.principal<JWTPrincipal>() ?: throw AuthenticationException()
+        val user = call.principal<TakaoJWTPrincipal>() ?: throw AuthenticationException()
         val userRoles = getUserRoles(user)
         val denyReasons = mutableListOf<String>()
 
