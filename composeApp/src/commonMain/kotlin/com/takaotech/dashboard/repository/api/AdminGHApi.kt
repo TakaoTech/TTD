@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.repository.api
 
+import com.takaotech.dashboard.model.TakaoPaging
 import com.takaotech.dashboard.model.github.*
 import com.takaotech.dashboard.model.github.request.TagsUpdateRequest
 import com.takaotech.dashboard.repository.api.ApiConstant.ADMIN_URL_PREFIX
@@ -38,9 +39,7 @@ interface AdminGHApi {
     )
 
     @GET("$ADMIN_URL_PREFIX/github/tags")
-    suspend fun getTags(
-
-    ): List<TagDao>
+    suspend fun getTags(): TakaoPaging<TagDao>
 
     @GET("$ADMIN_URL_PREFIX/github/tags/{id}")
     suspend fun getTagById(

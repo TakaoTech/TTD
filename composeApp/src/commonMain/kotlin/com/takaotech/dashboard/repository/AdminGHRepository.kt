@@ -60,7 +60,7 @@ class AdminGHRepository(
 
     suspend fun getTags(): Result<List<TagDao>, Throwable> {
         return Result.of<List<TagDao>, Throwable> {
-            githubApi.getTags()
+            githubApi.getTags().data
         }
     }
 
