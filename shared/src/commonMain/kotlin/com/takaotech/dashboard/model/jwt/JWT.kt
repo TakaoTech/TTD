@@ -65,7 +65,7 @@ class JWT(token: String) {
          *
          * @return the Expiration Time value or null.
          */
-        get() = payload!!.exp
+        get() = payload.exp
 
     val notBefore: Instant?
         /**

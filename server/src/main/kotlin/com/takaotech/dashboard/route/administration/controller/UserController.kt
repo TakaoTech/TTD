@@ -32,7 +32,8 @@ class UserController(
         //picture
         with(payload) {
             if (getClaim("email_verified").asBoolean() == true) {
-                val email = getEmail()
+                //Email not found
+                val email = getEmail() ?: throw Exception()
 
                 if (getUserByGoogle(email) == null) {
                     val name = getClaim("name").asString()

@@ -8,6 +8,7 @@ import com.takaotech.dashboard.configuration.CredentialConfig
 import com.takaotech.dashboard.model.jwt.TAKAO_JWT_PERMISSION
 import com.takaotech.dashboard.model.jwt.TAKAO_JWT_USER
 import com.takaotech.dashboard.model.jwt.TAKAO_JWT_VERSION
+import com.takaotech.dashboard.model.role.TakaoRole
 import com.takaotech.dashboard.model.session.TokenPairDao
 import com.takaotech.dashboard.route.administration.data.user.UserEntity
 import com.takaotech.dashboard.route.administration.repository.SessionRepository
@@ -28,7 +29,7 @@ class SessionController(
 
     suspend fun generateTokenPairFromGoogle(googlePayload: Payload): TokenPairDao {
         if (googlePayload.getClaim("email_verified").asBoolean() == true) {
-            val user = userController.getUserByGoogle(googlePayload.getEmail())
+            val user = googlePayload.getEmail()?.let { userController.getUserByGoogle(it) }
                 ?: throw Exception("User not found for generate tokens")
             return generateTokenPairFromUser(user)
         } else {
@@ -70,7 +71,7 @@ class SessionController(
         }
     }
 
-    suspend fun checkJwtIsValid(tokenExpire: Instant): Boolean {
+    fun checkJwtIsValid(tokenExpire: Instant): Boolean {
         return tokenExpire > Clock.System.now()
     }
 
