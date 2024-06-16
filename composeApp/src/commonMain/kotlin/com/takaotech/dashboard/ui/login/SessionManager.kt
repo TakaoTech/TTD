@@ -167,15 +167,29 @@ abstract class SessionManager(
             BearerAuthProvider(
                 refreshTokens = {
                     val mOldToken = oldTokens ?: return@BearerAuthProvider null
-                    authApi.refresh(RefreshTokenDao(mOldToken.refreshToken),
-                        ext = {
-                            timeout {
-                                requestTimeoutMillis = 1.minutes.inWholeMilliseconds
-                                connectTimeoutMillis = 1.minutes.inWholeMilliseconds
+                    //TODO Manage Error 500, execute logout
+                    // Error getRepositories
+                    // io.ktor.client.call.NoTransformationFoundException: Expected response body of the type 'class com.takaotech.dashboard.model.session.TokenPairDao (Kotlin reflection is not available)' but was 'class
+                    // io.ktor.utils.io.ByteBufferChannel (Kotlin reflection is not available)'
+                    // In response from `http://<IP>/session/refresh`
+                    // Response status `500 `
+                    // Response header `ContentType: null`
+                    // Request header `Accept: application/json`
+                    try {
+                        withContext(coroutineScope.coroutineContext) {
+                            authApi.refresh(RefreshTokenDao(mOldToken.refreshToken),
+                                ext = {
+                                    timeout {
+                                        requestTimeoutMillis = 1.minutes.inWholeMilliseconds
+                                        connectTimeoutMillis = 1.minutes.inWholeMilliseconds
+                                    }
+                                }
+                            ).let {
+                                BearerTokens(it.accessToken, it.refreshToken)
                             }
                         }
-                    ).let {
-                        BearerTokens(it.accessToken, it.refreshToken)
+                    } catch (ex: Exception) {
+                        null
                     }
                 },
                 loadTokens = {
