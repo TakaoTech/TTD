@@ -1,4 +1,3 @@
-import io.ktor.plugin.features.*
 import java.io.FileInputStream
 import java.util.*
 
@@ -109,27 +108,8 @@ dependencies {
 }
 
 ktor {
-	docker {
-		//https://github.com/ktorio/ktor-build-plugins/blob/main/plugin/src/main/kotlin/io/ktor/plugin/features/Docker.kt
-		jreVersion.set(JavaVersion.VERSION_17)
-//		localImageName.set("ttd")
-		imageTag.set(version.toString())
-		portMappings.set(
-			listOf(
-				DockerPortMapping(
-					80,
-					8080,
-					DockerPortMappingProtocol.TCP
-				)
-			)
-		)
-		externalRegistry.set(
-			DockerImageRegistry.dockerHub(
-				username = providers.environmentVariable("DOCKER_HUB_USERNAME"),
-				password = providers.environmentVariable("DOCKER_HUB_TOKEN"),
-				appName = provider { "ttd" }
-			)
-		)
+	fatJar {
+
 	}
 }
 
