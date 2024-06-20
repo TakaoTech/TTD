@@ -153,6 +153,15 @@ android {
 		versionCode = 1
 		versionName = "1.0"
 	}
+
+	signingConfigs {
+		create("config") {
+			keyAlias = System.getenv("KEY_ALIAS")
+			keyPassword = System.getenv("KEY_PASSWORD")
+			storeFile = file(rootDir.absolutePath + "/TTD-App-Keystore.jks")
+			storePassword = System.getenv("KEYSTORE_PASSWORD")
+		}
+	}
 	packaging {
 		resources {
 			excludes += "/META-INF/{AL2.0,LGPL2.1}"

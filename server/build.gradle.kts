@@ -33,7 +33,7 @@ tasks.withType<Test>().configureEach {
 	useJUnitPlatform()
 
 	val propertiesMap = localProps.entries.map {
-		println("Test env ${it.key} ${it.value}")
+//		println("Test env ${it.key} ${it.value}")
 		it.key as String to it.value as String
 	}.toTypedArray()
 

@@ -9,6 +9,8 @@ import io.github.typesafegithub.workflows.actions.docker.LoginActionV3
 import io.github.typesafegithub.workflows.actions.docker.SetupBuildxActionV3
 import io.github.typesafegithub.workflows.actions.gradle.ActionsSetupGradleV3
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
+import io.github.typesafegithub.workflows.domain.actions.Action
+import io.github.typesafegithub.workflows.domain.actions.RegularAction
 import io.github.typesafegithub.workflows.domain.triggers.Push
 import io.github.typesafegithub.workflows.dsl.expressions.Contexts
 import io.github.typesafegithub.workflows.dsl.expressions.expr
@@ -19,6 +21,17 @@ val ACT by Contexts.env
 
 val DOCKER_HUB_USERNAME = "vars.DOCKER_HUB_USERNAME"
 val DOCKER_HUB_TOKEN by Contexts.secrets
+
+val KEYSTORE_BASE64_SECRET by Contexts.secrets
+//val KEYSTORE_PASSWORD by Contexts.secrets
+//val KEY_ALIAS by Contexts.secrets
+//val KEY_PASSWORD by Contexts.secrets
+
+val KEYSTORE_BASE64_FILE = "TTD-App-Keystore.base64.txt"
+val KEYSTORE_FILE = "TTD-App-Keystore.jks"
+
+val GOOGLE_LOGIN_JSON_NAME by Contexts.secrets
+val GOOGLE_LOGIN_JSON_BASE64 by Contexts.secrets
 
 workflow(
     name = "Server build workflow",
@@ -44,6 +57,8 @@ workflow(
             action = SetupBuildxActionV3()
         )
 
+        uses(name = "Setup Android SDK", action = SetupAndroidSDKV3())
+
         uses(
             name = "Setup Gradle",
             action = ActionsSetupGradleV3()
@@ -52,6 +67,17 @@ workflow(
         uses(
             name = "Checkout",
             action = CheckoutV4()
+        )
+
+        run(
+            name = "Write Keystore on disk",
+            command = "echo ${expr { KEYSTORE_BASE64_SECRET }} > $KEYSTORE_BASE64_FILE " +
+                    "| base64 -di $KEYSTORE_BASE64_FILE > $KEYSTORE_FILE"
+        )
+
+        run(
+            name = "Write Google login JSON to disk",
+            command = "echo ${expr { GOOGLE_LOGIN_JSON_BASE64 }} | base64 -di > composeApp/src/androidMain/${expr { GOOGLE_LOGIN_JSON_NAME }}"
         )
 
 //		run(name ="Change permission for Act execution", command = "chmod +x -R *", condition = expr { ACT })
@@ -76,4 +102,12 @@ workflow(
 
 //		run(name = "Generate image", command = "./gradlew server:publishImage")
     }
+}
+
+class SetupAndroidSDKV3 : RegularAction<Action.Outputs>("android-actions", "setup-android", "v3") {
+
+    override fun toYamlArguments(): LinkedHashMap<String, String> =
+        linkedMapOf()
+
+    override fun buildOutputObject(stepId: String) = Outputs(stepId)
 }
