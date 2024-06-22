@@ -54,7 +54,12 @@ abstract class SessionManager(
         sessionFlow = sessionDatastore.data.map {
             val sessionEncrypted = it[SESSION_KEY]
             if (sessionEncrypted != null) {
-                decryptTokens(sessionEncrypted)
+                try {
+                    decryptTokens(sessionEncrypted)
+                } catch (ex: Exception) {
+                    logger.e(ex) { "Error while decrypt session, logout executed" }
+                    null
+                }
             } else {
                 null
             }
@@ -125,11 +130,15 @@ abstract class SessionManager(
                 }
                 callService(googleLoginResult.value)
             }.onSuccess { tokenPair ->
-                sessionDatastore.edit {
-                    it[SESSION_KEY] = encryptTokens(tokenPair)
-                }
+                try {
+                    sessionDatastore.edit {
+                        it[SESSION_KEY] = encryptTokens(tokenPair)
+                    }
 
-                installBearer()
+                    installBearer()
+                } catch (ex: Exception) {
+                    logger.e(ex) { "Error while login" }
+                }
             }
         } else {
             //TODO Error on login
