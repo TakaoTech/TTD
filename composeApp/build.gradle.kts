@@ -77,8 +77,6 @@ kotlin {
 
 			implementation(libs.androidx.browser)
 
-			implementation("com.auth0.android:jwtdecode:2.0.2")
-
 		}
 		val commonMain by getting {
 			kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
@@ -173,6 +171,7 @@ android {
 		}
 	}
 	compileOptions {
+		isCoreLibraryDesugaringEnabled = true
 		sourceCompatibility = JavaVersion.VERSION_1_8
 		targetCompatibility = JavaVersion.VERSION_1_8
 	}
@@ -188,6 +187,7 @@ android {
 }
 
 dependencies {
+	coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 	ksp(libs.koin.compilerksp)
 	ksp(libs.ktorfit.ksp)
 //	with(libs.ktorfit.ksp.get()) {
@@ -239,7 +239,11 @@ buildkonfig {
 			getEnvProperty("AUTH_GOOGLE_CLIENT_ID_ANDROID_WEB")
 		)
 
-		//TODO env this prop
+		buildConfigField(
+			FieldSpec.Type.STRING,
+			"SESSION_KEY_ALIAS",
+			getEnvProperty("SESSION_KEY_ALIAS")
+		)
 
 		buildConfigField(
 			FieldSpec.Type.BOOLEAN,
