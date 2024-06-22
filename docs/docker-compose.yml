@@ -60,17 +60,27 @@ services:
     ports:
       - 8002:8080
     environment:
+      #DB Credentials
       DB_URL: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       DB_DRIVER: "org.postgresql.Driver"
       DB_USER: supabase_admin
       DB_PASSWORD: ${POSTGRES_PASSWORD}
+
+      #Google Login
+      JWT_GOOGLE_ISSUER: https://accounts.google.com
+      JWT_GOOGLE_AUDIENCE:
+
+      #TakaoJWT
+      JWT_TAKAO_SECRET:
+      JWT_TAKAO_ISSUER: http://0.0.0.0:8080/
+      JWT_TAKAO_AUDIENCE: http://0.0.0.0:8080/audience
+      JWT_TAKAO_REALM:
+      JWT_TAKAO_ACCESS_LIFETIME:
+      JWT_TAKAO_REFRESH_LIFETIME:
+      JWT_TAKAO_VERSION:
+
       SERVER_GITHUB_TOKEN: <Github Token>
 
-      auth.digest.alg: SHA-256
-      auth.digest: TTDTest
-      auth.password: Test123!
-      auth.username: test123
-      auth.session.realm: TTD Realm Test
-      auth.session.name: takao-session
+
 volumes:
   db-config:

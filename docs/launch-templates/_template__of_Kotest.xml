@@ -16,8 +16,8 @@
             <env name="DB_USER" value=""/>
             <env name="DB_PASSWORD" value=""/>
             <env name="SERVER_GITHUB_TOKEN" value=""/>
-            <env name="jwt.google.issuer" value=""/>
-            <env name="jwt.google.audience" value=""/>
+            <env name="JWT_GOOGLE_ISSUER" value=""/>
+            <env name="JWT_GOOGLE_AUDIENCE" value=""/>
         </envs>
         <method v="2">
             <option name="Make" enabled="true"/>

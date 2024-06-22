@@ -23,17 +23,17 @@ fun getBaseTestKoin() = listOf(
         ),
         credentialConfig = CredentialConfig(
             googleJwtConfig = GoogleJwtConfig(
-                issuer = System.getenv("jwt.google.issuer"),
-                audience = System.getenv("jwt.google.audience")
+                issuer = System.getenv("JWT_GOOGLE_ISSUER"),
+                audience = System.getenv("JWT_GOOGLE_AUDIENCE")
             ),
             takaoJwtConfig = TakaoJwtConfig(
-                version = System.getenv("jwt.takao.version").toInt(),
-                secret = System.getenv("jwt.takao.secret"),
-                issuer = System.getenv("jwt.takao.issuer"),
-                audience = System.getenv("jwt.takao.audience"),
-                realm = System.getenv("jwt.takao.realm"),
-                accessLifetime = System.getenv("jwt.takao.access.lifetime"),
-                refreshLifetime = System.getenv("jwt.takao.refresh.lifetime")
+                version = System.getenv("JWT_TAKAO_VERSION").toInt(),
+                secret = System.getenv("JWT_TAKAO_SECRET"),
+                issuer = System.getenv("JWT_TAKAO_ISSUER"),
+                audience = System.getenv("JWT_TAKAO_AUDIENCE"),
+                realm = System.getenv("JWT_TAKAO_REALM"),
+                accessLifetime = System.getenv("JWT_TAKAO_ACCESS_LIFETIME"),
+                refreshLifetime = System.getenv("JWT_TAKAO_REFRESH_LIFETIME")
             )
         )
     ), defaultModule
