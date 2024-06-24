@@ -12,7 +12,8 @@ plugins {
 	alias(libs.plugins.buildkonfig) apply false
 	alias(libs.plugins.kover) apply false
 	alias(libs.plugins.depscredit) apply false
-
+	alias(libs.plugins.gms) apply false
+	alias(libs.plugins.firebase.appdistribution) apply false
 }
 
 val projectPackage: String by rootProject.extra { "com.takaotech.dashboard" }

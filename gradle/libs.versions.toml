@@ -145,6 +145,8 @@ coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 
+firebase-bom = { module = "com.google.firebase:firebase-bom", version = "33.1.1" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
@@ -159,3 +161,5 @@ buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig"
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.7.6" }
 depscredit = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "depscredit" }
 cfu = {id = "org.jetbrains.kotlin.plugin.atomicfu", version = "2.0.0"}
+gms = { id = "com.google.gms.google-services", version = "4.4.2" }
+firebase-appdistribution = { id = "com.google.firebase.appdistribution", version = "5.0.0" }

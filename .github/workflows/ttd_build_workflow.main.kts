@@ -33,6 +33,9 @@ val KEYSTORE_FILE = "TTD-App-Keystore.jks"
 val GOOGLE_LOGIN_JSON_NAME by Contexts.secrets
 val GOOGLE_LOGIN_JSON_BASE64 by Contexts.secrets
 
+val FIREBASE_DISTRIBUTION_BASE64 by Contexts.secrets
+val FIREBASE_JSON_BASE64 by Contexts.secrets
+
 workflow(
     name = "Server build workflow",
     on = listOf(
@@ -80,6 +83,16 @@ workflow(
             command = "echo ${expr { GOOGLE_LOGIN_JSON_BASE64 }} | base64 -di > composeApp/src/androidMain/${expr { GOOGLE_LOGIN_JSON_NAME }}"
         )
 
+        run(
+            name = "Write Firebase App Distribution login JSON to disk",
+            command = "echo ${expr { FIREBASE_DISTRIBUTION_BASE64 }} | base64 -di > firebase-distribution.json"
+        )
+
+        run(
+            name = "Write Firebase app credential JSON to disk",
+            command = "echo ${expr { FIREBASE_JSON_BASE64 }} | base64 -di > composeApp/src/androidMain/google-services.json"
+        )
+
 //		run(name ="Change permission for Act execution", command = "chmod +x -R *", condition = expr { ACT })
 
         uses(
@@ -98,6 +111,11 @@ workflow(
                 push = true,
                 tags = listOf("samuele794/ttd:test"),
             )
+        )
+
+        run(
+            name = "Build Android App",
+            command = "./gradlew composeApp:bundleStaging composeApp:appDistributionUploadStaging"
         )
 
 //		run(name = "Generate image", command = "./gradlew server:publishImage")
