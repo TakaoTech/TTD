@@ -23,9 +23,11 @@ val DOCKER_HUB_USERNAME = "vars.DOCKER_HUB_USERNAME"
 val DOCKER_HUB_TOKEN by Contexts.secrets
 
 val KEYSTORE_BASE64_SECRET by Contexts.secrets
-//val KEYSTORE_PASSWORD by Contexts.secrets
-//val KEY_ALIAS by Contexts.secrets
-//val KEY_PASSWORD by Contexts.secrets
+val KEYSTORE_PASSWORD by Contexts.secrets
+val KEY_ALIAS by Contexts.secrets
+val KEY_PASSWORD by Contexts.secrets
+
+val keyStoreParams = listOf(KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD)
 
 val KEYSTORE_BASE64_FILE = "TTD-App-Keystore.base64.txt"
 val KEYSTORE_FILE = "TTD-App-Keystore.jks"
@@ -90,10 +92,13 @@ workflow(
 
         run(
             name = "Write Firebase app credential JSON to disk",
-            command = "echo ${expr { FIREBASE_JSON_BASE64 }} | base64 -di > composeApp/src/androidMain/google-services.json"
+            command = "echo ${expr { FIREBASE_JSON_BASE64 }} | base64 -di > composeApp/src/google-services.json"
         )
 
-//		run(name ="Change permission for Act execution", command = "chmod +x -R *", condition = expr { ACT })
+        run(
+            name = "Change permission for Act execution",
+            command = "chmod +x -R *",
+            condition = expr { "github.event.act" })
 
         uses(
             name = "Login to DockerHub",
@@ -115,10 +120,22 @@ workflow(
 
         run(
             name = "Build Android App",
-            command = "./gradlew composeApp:bundleStaging composeApp:appDistributionUploadStaging"
+            command = "./gradlew composeApp:assembleStaging composeApp:appDistributionUploadStaging" + appendSecretEnvParams(
+                keyStoreParams
+            )
         )
 
 //		run(name = "Generate image", command = "./gradlew server:publishImage")
+    }
+}
+
+fun appendSecretEnvParams(keyStoreParams: List<String>): String {
+    return buildString {
+        append(" ")
+        keyStoreParams.forEach {
+            append("-P${it.replace("secrets.", "")}=\"${expr { it }}\"")
+            append(" ")
+        }
     }
 }
 

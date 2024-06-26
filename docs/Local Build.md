@@ -39,5 +39,5 @@ ENDPOINT_URL=<app endpoint>
 ```
 
 ```
-act --secret-file .github/workflows/enviroments.secrets --var-file .github/workflows/environments.variables
+act --secret-file .github/workflows/enviroments.secrets --var-file .github/workflows/environments.variables -e .github/workflows/event.json
 ```

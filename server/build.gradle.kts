@@ -24,7 +24,7 @@ repositories {
 	maven { setUrl("https://jitpack.io") }
 }
 
-val localProps = Properties().apply {
+val testProps = Properties().apply {
 	load(FileInputStream(File(rootProject.rootDir, "test-server.properties")))
 }
 
@@ -32,7 +32,7 @@ val localProps = Properties().apply {
 tasks.withType<Test>().configureEach {
 	useJUnitPlatform()
 
-	val propertiesMap = localProps.entries.map {
+	val propertiesMap = testProps.entries.map {
 //		println("Test env ${it.key} ${it.value}")
 		it.key as String to it.value as String
 	}.toTypedArray()

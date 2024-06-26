@@ -178,9 +178,10 @@ android {
             applicationIdSuffix = ".staging"
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("config")
 
             firebaseAppDistribution {
-                artifactType = "AAB"
+                artifactType = "APK"
                 serviceCredentialsFile = "${project.rootDir}/firebase-distribution.json"
             }
         }
@@ -212,22 +213,6 @@ dependencies {
     ksp(libs.ktorfit.ksp)
 
 //    implementation(project.dependencies.platform(libs.firebase.bom))
-
-//	with(libs.ktorfit.ksp.get()) {
-//		add("kspCommonMainMetadata", this)
-//        add("kspJvm", this)
-//        add("kspJvmTest", this)
-//		add("kspAndroid", this)
-//		add("kspAndroidTest", this)
-//		add("kspIosX64", this)
-//		add("kspIosX64Test", this)
-//		add("kspIosArm64", this)
-//		add("kspIosArm64Test", this)
-//		add("kspIosSimulatorArm64", this)
-//		add("kspIosSimulatorArm64Test", this)
-//        add("kspJs", this)
-//        add("kspJsTest", this)
-//	}
 }
 
 // WORKAROUND: ADD this dependsOn("kspCommonMainKotlinMetadata") instead of above dependencies
@@ -277,17 +262,10 @@ buildkonfig {
 }
 
 fun getEnvProperty(envName: String): String {
-    return providers.environmentVariable(envName).orNull.let {
+    return project.findProperty(envName)?.toString().let {
         it ?: localProps?.getProperty(envName).orEmpty()
     }
 }
-
-
-//i18n4k {
-//	packageName = projectPackage
-//	inputDirectory = "src/commonMain/resources/i18n"
-//	sourceCodeLocales = listOf("en", "it")
-//}
 
 //compose.experimental {
 //    web.application {}
