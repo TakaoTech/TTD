@@ -7,4 +7,4 @@ FROM amazoncorretto:17.0.11
 EXPOSE 8080:8080
 RUN mkdir /app
 COPY --from=build /home/gradle/src/server/build/libs/*.jar /app/kotlin-italia-server.jar
-ENTRYPOINT ["java","z-jar","kotlin-italia-server.jar"]
+ENTRYPOINT ["java","-jar","kotlin-italia-server.jar"]
