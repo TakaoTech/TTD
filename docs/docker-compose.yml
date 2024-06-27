@@ -4,83 +4,64 @@
 #   Stop:           docker compose down
 #   Destroy:        docker compose -f docker-compose.yml -f ./dev/docker-compose.dev.yml down -v --remove-orphans
 
-name: Kotlin/Italia
+name: kotlin-italia
 version: "3.8"
-
 services:
   # Comment out everything below this point if you are using an external Postgres database
   db:
-    container_name: supabase-db
-    image: supabase/postgres:15.1.1.41
+    container_name: pg-database
+    image: postgres
     healthcheck:
       test: pg_isready -U postgres -h localhost
       interval: 5s
       timeout: 5s
       retries: 10
-    depends_on:
-      vector:
-        condition: service_healthy
-    command:
-      - postgres
-      - -c
-      - config_file=/etc/postgresql/postgresql.conf
-      - -c
-      - log_min_messages=fatal # prevents Realtime polling queries from appearing in logs
-    restart: unless-stopped
+    restart: always
     ports:
       # Pass down internal port because it's set dynamically by other services
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     environment:
-      POSTGRES_HOST: /var/run/postgresql
-      PGPORT: ${POSTGRES_PORT}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      PGPASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      PGDATABASE: ${POSTGRES_DB}
       POSTGRES_DB: ${POSTGRES_DB}
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXP: ${JWT_EXPIRY}
     volumes:
-      - ./volumes/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:Z
-      # Must be superuser to create event trigger
-      - ./volumes/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:Z
-      # Must be superuser to alter reserved role
-      - ./volumes/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:Z
-      # Initialize the database settings with JWT_SECRET and JWT_EXP
-      - ./volumes/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:Z
       # PGDATA directory is persisted between restarts
-      - ./volumes/db/data:/var/lib/postgresql/data:Z
-      # Changes required for Analytics support
-      - ./volumes/db/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql:Z
-      # Use named volume to persist pgsodium decryption key between restarts
-      - db-config:/etc/postgresql-custom
+      - ./volumes/db/data:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user-name@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: strong-password
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
   ttd:
-    image: samuele794/ttd:0.1.0-preview
+    image: samuele794/ttd:test
     restart: unless-stopped
     ports:
-      - 8002:8080
+      - "8002:8080"
     environment:
       #DB Credentials
       DB_URL: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-      DB_DRIVER: "org.postgresql.Driver"
-      DB_USER: supabase_admin
+      DB_DRIVER: org.postgresql.Driver
+      DB_USER: ${POSTGRES_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
-
       #Google Login
       JWT_GOOGLE_ISSUER: https://accounts.google.com
-      JWT_GOOGLE_AUDIENCE:
-
+      JWT_GOOGLE_AUDIENCE: ${JWT_GOOGLE_AUDIENCE}
       #TakaoJWT
-      JWT_TAKAO_SECRET:
+      JWT_TAKAO_SECRET: ${JWT_TAKAO_SECRET}
       JWT_TAKAO_ISSUER: http://0.0.0.0:8080/
       JWT_TAKAO_AUDIENCE: http://0.0.0.0:8080/audience
-      JWT_TAKAO_REALM:
-      JWT_TAKAO_ACCESS_LIFETIME:
-      JWT_TAKAO_REFRESH_LIFETIME:
-      JWT_TAKAO_VERSION:
-
-      SERVER_GITHUB_TOKEN: <Github Token>
-
-
+      JWT_TAKAO_REALM: ${JWT_TAKAO_REALM}
+      JWT_TAKAO_ACCESS_LIFETIME: ${JWT_TAKAO_ACCESS_LIFETIME}
+      JWT_TAKAO_REFRESH_LIFETIME: ${JWT_TAKAO_REFRESH_LIFETIME}
+      JWT_TAKAO_VERSION: ${JWT_TAKAO_VERSION}
+      SERVER_GITHUB_TOKEN: ${SERVER_GITHUB_TOKEN}
 volumes:
-  db-config:
+  db-config: null
+  pgadmin-data: null
+networks: { }
