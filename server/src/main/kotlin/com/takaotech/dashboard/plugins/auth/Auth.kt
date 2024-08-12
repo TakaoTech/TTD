@@ -2,10 +2,8 @@ package com.takaotech.dashboard.plugins.auth
 
 import com.takaotech.dashboard.configuration.CredentialConfig
 import com.takaotech.dashboard.route.administration.controller.SessionController
-import com.takaotech.dashboard.route.administration.controller.UserController
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import org.koin.ktor.ext.get
 import org.koin.ktor.ext.inject
 
@@ -28,7 +26,11 @@ fun Application.configureAuth(credentialConfig: CredentialConfig = get()) {
 
 	authentication {
 		// and then api key provider
-		configureGoogleJWT(credentialConfig)
+		configureGoogleJWT(
+			this@configureAuth.developmentMode,
+			this@configureAuth.log,
+			credentialConfig
+		)
 		configureTakaoJWT(
 			sessionController,
 			credentialConfig.takaoJwtConfig

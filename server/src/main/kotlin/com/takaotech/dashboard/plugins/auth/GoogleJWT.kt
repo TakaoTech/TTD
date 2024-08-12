@@ -7,6 +7,8 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.config.*
+import io.ktor.util.logging.*
+import org.slf4j.MarkerFactory
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
@@ -20,8 +22,11 @@ import java.util.concurrent.TimeUnit
  * from the top level [Authentication] plugin.
  */
 fun AuthenticationConfig.configureGoogleJWT(
+    developmentMode: Boolean,
+    logger: Logger,
     config: CredentialConfig,
 ) {
+    val googleJwtMarker = MarkerFactory.getMarker("GoogleJWTAuth")
 
     /**
      * Next, I use the [ApplicationConfig] to get the issuer and the audience values
@@ -60,7 +65,10 @@ fun AuthenticationConfig.configureGoogleJWT(
         }
         validate { jwtCredential ->
 
-            println("credentials: ${jwtCredential.payload.claims.values}")
+            if (developmentMode) {
+                logger.debug(googleJwtMarker, "credentials: ${jwtCredential.payload.claims.values}")
+                println()
+            }
 
             /**
              * With validate, I can access my request header. I pass
@@ -68,9 +76,11 @@ fun AuthenticationConfig.configureGoogleJWT(
              * If the x-nonce header value is empty, I return null, and the
              * validate function fails.
              */
-            val nonceFromHeader = this.request.headers["x-nonce"]
-            if (nonceFromHeader.isNullOrBlank())
+            val nonceFromHeader = request.headers["x-nonce"]
+            if (nonceFromHeader.isNullOrBlank()) {
+                logger.error("Nonce not found on header ")
                 return@validate null
+            }
 
             /**
              * Now that I know the nonce from the header isn't null,
@@ -78,10 +88,11 @@ fun AuthenticationConfig.configureGoogleJWT(
              * it matches what was passed in the header.
              */
             val nonceFromJWT = jwtCredential.payload.getClaim("nonce").asString()
-            println("nonce from validate: $nonceFromHeader ; $nonceFromJWT")
+            logger.debug(googleJwtMarker, "nonce from validate: $nonceFromHeader ; $nonceFromJWT")
 
-            if (nonceFromHeader != nonceFromJWT)
+            if (nonceFromHeader != nonceFromJWT) {
                 return@validate null
+            }
 
             /**
              * Finally, if validation is successful, I return the payload.
@@ -96,6 +107,7 @@ fun AuthenticationConfig.configureGoogleJWT(
          * [com.santansarah.utils.ErrorCode.INVALID_GOOGLE_CREDENTIALS].
          */
         challenge { defaultScheme, realm ->
+            logger.error(googleJwtMarker, "Error JWT Challenge for ${call.request.headers["x-nonce"]}")
             throw GoogleException()
         }
     }

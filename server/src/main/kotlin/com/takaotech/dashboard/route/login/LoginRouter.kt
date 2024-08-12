@@ -3,6 +3,7 @@ package com.takaotech.dashboard.route.login
 import com.takaotech.dashboard.model.session.RefreshTokenDao
 import com.takaotech.dashboard.route.administration.controller.SessionController
 import com.takaotech.dashboard.route.administration.controller.UserController
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -30,7 +31,7 @@ fun Application.sessionRoute() {
 
                     call.respond(token)
                 } else {
-                    //TODO Login Error
+                    call.respond(HttpStatusCode.BadRequest, "Missing Google payload for Login")
                 }
             }
 
@@ -42,8 +43,9 @@ fun Application.sessionRoute() {
 
                     val token = sessionController.generateTokenPairFromGoogle(newUser.payload)
 
-                    //TODO Im not sure i can do it
                     call.respond(token)
+                } else {
+                    call.respond(HttpStatusCode.BadRequest, "Missing Google payload for Signup")
                 }
 
 
