@@ -106,6 +106,7 @@ kotlin {
                 implementation(libs.ktor.client.serialization)
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.auth)
+                implementation(libs.ktor.client.okhttp)
 
                 implementation(libs.koin.core)
                 implementation(libs.koin.annotation)
@@ -257,6 +258,12 @@ buildkonfig {
             FieldSpec.Type.BOOLEAN,
             "debug",
             "true"
+        )
+
+        buildConfigField(
+            FieldSpec.Type.STRING,
+            "CERT_PIN1",
+            getEnvProperty("CERT_PIN1")
         )
     }
 }

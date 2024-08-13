@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import co.touchlab.kermit.Logger
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.isSuccess
+import com.github.kittinunf.result.onFailure
 import com.github.kittinunf.result.onSuccess
 import com.takaotech.dashboard.AppBuildKonfig
 import com.takaotech.dashboard.model.jwt.TakaoSession
@@ -139,6 +140,8 @@ abstract class SessionManager(
                 } catch (ex: Exception) {
                     logger.e(ex) { "Error while login" }
                 }
+            }.onFailure {
+                logger.e(it) { "Error while login on Takao BE" }
             }
         } else {
             //TODO Error on login
