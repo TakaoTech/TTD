@@ -10,7 +10,7 @@ interface AdminGHApi {
 
     @GET("$ADMIN_URL_PREFIX/github/refresh")
     suspend fun refreshRepositories(
-        @Query("mock") mock: Boolean = true,
+        @Query("mock") mock: Boolean = false,
     )
 
     @GET("$ADMIN_URL_PREFIX/github/refresh/status")
