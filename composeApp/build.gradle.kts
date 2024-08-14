@@ -1,6 +1,7 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
 import java.io.FileInputStream
+import java.net.URL
 import java.util.*
 
 val projectPackage: String by project
@@ -155,6 +156,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        manifestPlaceholders["useClearTraffic"] = URL(getEnvProperty("ENDPOINT_URL")).protocol != "https"
+
         proguardFiles(file(projectDir.absolutePath + "/src/androidMain/proguard-rules.pro"))
     }
 
@@ -234,7 +237,6 @@ dependencies {
 buildkonfig {
     packageName = projectPackage
     objectName = "AppBuildKonfig"
-//    // exposeObjectWithName = 'YourAwesomePublicConfig'
     defaultConfigs {
         buildConfigField(
             FieldSpec.Type.STRING,
