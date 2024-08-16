@@ -80,6 +80,7 @@ kotlin {
             implementation(libs.androidx.credentials.playservices)
 
             implementation(libs.androidx.browser)
+            implementation(libs.ktor.client.okhttp)
 
         }
         val commonMain by getting {
@@ -103,11 +104,10 @@ kotlin {
                 implementation(libs.kermit)
 
                 implementation(libs.ktorfit.lib)
-                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.client.contentnegotiation)
                 implementation(libs.ktor.client.serialization)
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.auth)
-                implementation(libs.ktor.client.okhttp)
 
                 implementation(libs.koin.core)
                 implementation(libs.koin.annotation)
