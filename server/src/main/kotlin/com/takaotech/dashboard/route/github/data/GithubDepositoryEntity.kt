@@ -29,6 +29,7 @@ class GithubDepositoryEntity(id: EntityID<Long>) : LongEntity(id) {
 	var licenseUrl by GithubDepositoryTable.licenseUrl
 
 	var updatedAt by GithubDepositoryTable.updatedAt
+	var refreshedAt by GithubDepositoryTable.refreshedAt
 
 }
 

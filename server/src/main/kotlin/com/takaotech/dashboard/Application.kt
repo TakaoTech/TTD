@@ -15,10 +15,15 @@ fun main() {
 fun Application.module() {
 	//https://ktor.io/docs/connection-pooling-caching.html#connection-settings-config
 	val dbConfiguration = DbConfiguration(
-		url = System.getenv("DB_URL"),
-		driver = System.getenv("DB_DRIVER"),
-		user = System.getenv("DB_USER"),
-		password = System.getenv("DB_PASSWORD")
+		sqlDbConfiguration = SqlDbConfiguration(
+			url = System.getenv("DB_URL"),
+			driver = System.getenv("DB_DRIVER"),
+			user = System.getenv("DB_USER"),
+			password = System.getenv("DB_PASSWORD")
+		),
+		redisConfiguration = RedisConfiguration(
+			url = System.getenv("REDIS_URL")
+		)
 	)
 
 	val githubConfiguration = GithubConfiguration(

@@ -27,9 +27,10 @@ import org.koin.core.annotation.Singleton
 
 @Singleton
 class HikariDatabase(
-    private val dbConfiguration: DbConfiguration,
-    private val logger: Logger
+    dbConfiguration: DbConfiguration,
+    private val logger: Logger,
 ) {
+    private val sqlDbConfiguration = dbConfiguration.sqlDbConfiguration
     lateinit var database: Database
     private lateinit var connection: HikariDataSource
 
@@ -50,10 +51,10 @@ class HikariDatabase(
 
     private fun hikari(): HikariDataSource {
         val config = HikariConfig().apply {
-            driverClassName = dbConfiguration.driver
-            jdbcUrl = dbConfiguration.url
-            username = dbConfiguration.user
-            password = dbConfiguration.password
+            driverClassName = sqlDbConfiguration.driver
+            jdbcUrl = sqlDbConfiguration.url
+            username = sqlDbConfiguration.user
+            password = sqlDbConfiguration.password
             maximumPoolSize = 3
             isAutoCommit = false
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"
@@ -82,7 +83,7 @@ class HikariDatabase(
     }
 
     suspend fun <T> dbExec(
-        statement: suspend Transaction.() -> T
+        statement: suspend Transaction.() -> T,
     ): T = withContext(Dispatchers.IO) {
         newSuspendedTransaction(statement = statement)
     }

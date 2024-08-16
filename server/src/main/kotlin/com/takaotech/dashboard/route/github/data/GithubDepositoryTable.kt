@@ -62,7 +62,15 @@ object GithubDepositoryTable : IdTable<Long>() {
 
 	val category: Column<MainCategory> = enumerationByName("category", 20)
 
+	/**
+	 *  GitHub repository is Updated at time.
+	 */
 	val updatedAt = timestamp("updatedAt")
+
+	/**
+	 * Last data refresh
+	 */
+	val refreshedAt = timestamp("refreshedAt")
 
 	/**
 	 * The Repository is Deprecated because it has been overtaken by another library

@@ -82,6 +82,7 @@ dependencies {
 	implementation(libs.exposed.datetime)
 	implementation(libs.db.h2)
 	implementation(libs.db.postgresql)
+	implementation(libs.db.redis)
 	implementation(libs.hikari)
 
 	implementation(libs.koin.ktor)

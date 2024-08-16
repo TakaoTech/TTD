@@ -21,6 +21,7 @@ class GithubController(
 	 */
 	suspend fun getStarsAndStore() = coroutineScope {
 //		val mapJobs = mutableListOf<Deferred<List<GHRepository>>>()
+		val refreshAt = githubDepositoryRepository.detachUpdateTimestamp()
 		val allStars = githubRepository.getAllStars()
 
 //			.let {
@@ -43,7 +44,7 @@ class GithubController(
 
 //		allStars = mapJobs.awaitAll().flatten()
 
-		githubDepositoryRepository.saveRepositoriesToDB(allStars)
+		githubDepositoryRepository.saveRepositoriesToDB(refreshAt, allStars)
 
 	}
 
