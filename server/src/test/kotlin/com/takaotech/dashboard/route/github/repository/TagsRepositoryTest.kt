@@ -4,7 +4,7 @@ import com.takaotech.dashboard.model.github.TagNewDao
 import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.utils.HikariDatabase
 import com.takaotech.dashboard.utils.dbTables
-import com.takaotech.dashboard.utils.getDbConfiguration
+import com.takaotech.dashboard.utils.getSqlDbConfiguration
 import io.kotest.core.spec.style.FunSpec
 import io.ktor.util.logging.*
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -19,7 +19,7 @@ class TagsRepositoryTest : FunSpec() {
 	init {
 		val logger = KtorSimpleLogger(this::class.jvmName)
 
-		val dbConfiguration = getDbConfiguration()
+		val dbConfiguration = getSqlDbConfiguration()
 		val database = HikariDatabase(
 			dbConfiguration,
 			logger

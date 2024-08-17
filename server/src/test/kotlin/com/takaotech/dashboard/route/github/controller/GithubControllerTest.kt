@@ -22,11 +22,17 @@ class GithubControllerTest : FunSpec({
 	var tagsRepository = mockk<TagsRepository>()
 	var controller = GithubController(githubRepository, depository, tagsRepository)
 
+	val refreshAt = Clock.System.now()
+
 	beforeEach {
 		githubRepository = mockk<GithubRepository>()
 		depository = mockk<DepositoryRepository>()
 		tagsRepository = mockk<TagsRepository>()
 		controller = GithubController(githubRepository, depository, tagsRepository)
+
+		coEvery {
+			depository.detachUpdateTimestamp()
+		} returns refreshAt
 	}
 
 	test("Insert new data, all data inserted") {
@@ -81,12 +87,12 @@ class GithubControllerTest : FunSpec({
 			depository.ghRepositoryExist(any())
 		} returns false
 
-		coJustRun { depository.saveRepositoriesToDB(any()) }
+		coJustRun { depository.saveRepositoriesToDB(refreshAt, any()) }
 
 		controller.getStarsAndStore()
 
 		coVerify {
-			depository.saveRepositoriesToDB(testList)
+			depository.saveRepositoriesToDB(refreshAt, testList)
 		}
 	}
 
@@ -142,12 +148,12 @@ class GithubControllerTest : FunSpec({
 //			depository.ghRepositoryExist(any())
 //		} returns true
 
-		coJustRun { depository.saveRepositoriesToDB(any()) }
+		coJustRun { depository.saveRepositoriesToDB(refreshAt, any()) }
 
 		controller.getStarsAndStore()
 
 		coVerify {
-			depository.saveRepositoriesToDB(any())
+			depository.saveRepositoriesToDB(refreshAt, any())
 		}
 	}
 
@@ -207,12 +213,12 @@ class GithubControllerTest : FunSpec({
 			depository.ghRepositoryExist(2)
 		} returns false
 
-		coJustRun { depository.saveRepositoriesToDB(any()) }
+		coJustRun { depository.saveRepositoriesToDB(refreshAt, any()) }
 
 		controller.getStarsAndStore()
 
 		coEvery {
-			depository.saveRepositoriesToDB(listOf(newObj))
+			depository.saveRepositoriesToDB(refreshAt, listOf(newObj))
 		}
 	}
 

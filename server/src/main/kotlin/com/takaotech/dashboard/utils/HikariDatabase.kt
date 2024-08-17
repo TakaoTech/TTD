@@ -1,6 +1,6 @@
 package com.takaotech.dashboard.utils
 
-import com.takaotech.dashboard.configuration.DbConfiguration
+import com.takaotech.dashboard.configuration.SqlDbConfiguration
 import com.takaotech.dashboard.model.role.TakaoRole
 import com.takaotech.dashboard.route.administration.data.UserRoleTable
 import com.takaotech.dashboard.route.administration.data.role.RoleEntity
@@ -27,10 +27,9 @@ import org.koin.core.annotation.Singleton
 
 @Singleton
 class HikariDatabase(
-    dbConfiguration: DbConfiguration,
+    private val dbConfiguration: SqlDbConfiguration,
     private val logger: Logger,
 ) {
-    private val sqlDbConfiguration = dbConfiguration.sqlDbConfiguration
     lateinit var database: Database
     private lateinit var connection: HikariDataSource
 
@@ -51,10 +50,10 @@ class HikariDatabase(
 
     private fun hikari(): HikariDataSource {
         val config = HikariConfig().apply {
-            driverClassName = sqlDbConfiguration.driver
-            jdbcUrl = sqlDbConfiguration.url
-            username = sqlDbConfiguration.user
-            password = sqlDbConfiguration.password
+            driverClassName = dbConfiguration.driver
+            jdbcUrl = dbConfiguration.url
+            username = dbConfiguration.user
+            password = dbConfiguration.password
             maximumPoolSize = 3
             isAutoCommit = false
             transactionIsolation = "TRANSACTION_REPEATABLE_READ"

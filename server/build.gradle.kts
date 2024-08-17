@@ -103,6 +103,8 @@ dependencies {
 	testImplementation(libs.kotest.koin)
 	testImplementation(libs.kotest.extension)
 	testImplementation(libs.kotest.ktor)
+	testImplementation(libs.kotest.testcontainer)
+	testImplementation(libs.kotest.testcontainer.redis)
 	testImplementation(libs.koin.test)
 	testImplementation(libs.koin.junit)
 	testImplementation(libs.mockk)

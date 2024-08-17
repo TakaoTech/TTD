@@ -1,7 +1,5 @@
 package com.takaotech.dashboard.di
 
-import com.takaotech.dashboard.configuration.CredentialConfig
-import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.configuration.GithubConfiguration
 import com.takaotech.dashboard.utils.GithubClientLoggerAdapter
 import io.ktor.util.logging.*
@@ -14,19 +12,14 @@ import org.koin.dsl.module
 
 fun getGeneralModule(
     log: Logger,
-    dbConfiguration: DbConfiguration,
-    githubConfiguration: GithubConfiguration,
-    credentialConfig: CredentialConfig,
 ): Module = module {
-    single { credentialConfig }
-    single { githubConfiguration }
-    single { dbConfiguration }
-
     single<Logger> {
         log
     }
 
     single {
+        val githubConfiguration = get<GithubConfiguration>()
+
         GitHubBuilder().apply {
             withConnector(
                 OkHttpGitHubConnector(

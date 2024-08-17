@@ -114,7 +114,8 @@ kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kote
 kotest-koin = { module = "io.kotest.extensions:kotest-extensions-koin", version = "1.3.0" }
 kotest-ktor = { module = "io.kotest.extensions:kotest-assertions-ktor", version = "2.0.0" }
 kotest-extension = { module = "io.kotest:kotest-extensions-jvm", version.ref = "kotest" }
-kotest-testcontainer = { module = "io.kotest.extensions:kotest-extensions-testcontainers", version.ref = "kotest" }
+kotest-testcontainer = { module = "io.kotest.extensions:kotest-extensions-testcontainers", version = "2.0.2" }
+kotest-testcontainer-redis = { module = "com.redis:testcontainers-redis", version = "2.2.2" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 koin-junit = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
