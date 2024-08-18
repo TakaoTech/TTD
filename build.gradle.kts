@@ -16,4 +16,16 @@ plugins {
 	alias(libs.plugins.firebase.appdistribution) apply false
 }
 
+subprojects {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint") // Version should be inherited from parent
+
+    // Optionally configure plugin
+    configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+        version.set("1.3.1")
+        android.set(true)
+        outputToConsole.set(true)
+        ignoreFailures.set(true)
+    }
+}
+
 val projectPackage: String by rootProject.extra { "com.takaotech.dashboard" }
