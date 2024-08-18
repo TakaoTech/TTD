@@ -14,6 +14,7 @@ plugins {
 	alias(libs.plugins.depscredit) apply false
 	alias(libs.plugins.gms) apply false
 	alias(libs.plugins.firebase.appdistribution) apply false
+	alias(libs.plugins.ktlint) apply false
 }
 
 subprojects {
