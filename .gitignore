@@ -18,5 +18,5 @@ captures
 
 /composeApp/src/androidMain/client_secret_*.apps.googleusercontent.com.json
 TTD-App-Keystore*
-firebase-distribution.json
+*firebase-distribution.json
 *google-services.json

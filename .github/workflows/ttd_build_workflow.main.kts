@@ -39,7 +39,7 @@ val FIREBASE_DISTRIBUTION_BASE64 by Contexts.secrets
 val FIREBASE_JSON_BASE64 by Contexts.secrets
 
 workflow(
-    name = "Server build workflow",
+    name = "Build workflow",
     on = listOf(
         Push(
             branches = listOf("test")
@@ -49,7 +49,7 @@ workflow(
     consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled
 ) {
     job(
-        id = "build_server",
+        id = "build",
         runsOn = UbuntuLatest,
     ) {
         uses(
