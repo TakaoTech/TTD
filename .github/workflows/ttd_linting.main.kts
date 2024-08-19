@@ -4,6 +4,7 @@
 
 import io.github.typesafegithub.workflows.actions.actions.CheckoutV4
 import io.github.typesafegithub.workflows.actions.actions.SetupJavaV4
+import io.github.typesafegithub.workflows.actions.gradle.ActionsSetupGradleV3
 import io.github.typesafegithub.workflows.actions.stefanzweifel.GitAutoCommitActionV5
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.PullRequest
@@ -13,7 +14,7 @@ import io.github.typesafegithub.workflows.dsl.expressions.expr
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 
-val ENDPOINT_URL by Contexts.env
+val ACT by Contexts.env
 
 workflow(
     name = "Lint Check",
@@ -39,16 +40,24 @@ workflow(
         )
 
         uses(
+            name = "Setup Gradle",
+            action = ActionsSetupGradleV3()
+        )
+
+        uses(
             name = "Checkout",
             action = CheckoutV4()
         )
 
         run(
+            name = "Change permission for Act execution",
+            command = "chmod +x -R *",
+            condition = expr { "github.event.act" }
+        )
+
+        run(
             name = "Lint Fix",
-            command = "./gradlew ktlintFormat",
-            env = mapOf(
-                "ENDPOINT_URL" to expr { ENDPOINT_URL }
-            )
+            command = "./gradlew ktlintFormat"
         )
 
         uses(
