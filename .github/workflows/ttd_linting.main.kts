@@ -8,8 +8,11 @@ import io.github.typesafegithub.workflows.actions.stefanzweifel.GitAutoCommitAct
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.PullRequest
 import io.github.typesafegithub.workflows.domain.triggers.Push
+import io.github.typesafegithub.workflows.dsl.expressions.Contexts
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
+
+val ENDPOINT_URL by Contexts.env
 
 workflow(
     name = "Lint Check",
@@ -41,7 +44,10 @@ workflow(
 
         run(
             name = "Lint Fix",
-            command = "./gradlew ktlintFormat"
+            command = "./gradlew ktlintFormat",
+            env = mapOf(
+                "ENDPOINT_URL" to ENDPOINT_URL
+            )
         )
 
         uses(

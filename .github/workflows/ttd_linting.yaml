@@ -24,6 +24,8 @@ jobs:
         uses: 'actions/checkout@v4'
       - id: 'step-2'
         name: 'Lint Fix'
+        env:
+          ENDPOINT_URL: '$ENDPOINT_URL'
         run: './gradlew ktlintFormat'
       - id: 'step-3'
         name: 'Commit format'
