@@ -9,6 +9,7 @@ import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.PullRequest
 import io.github.typesafegithub.workflows.domain.triggers.Push
 import io.github.typesafegithub.workflows.dsl.expressions.Contexts
+import io.github.typesafegithub.workflows.dsl.expressions.expr
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 
@@ -46,7 +47,7 @@ workflow(
             name = "Lint Fix",
             command = "./gradlew ktlintFormat",
             env = mapOf(
-                "ENDPOINT_URL" to ENDPOINT_URL
+                "ENDPOINT_URL" to expr { ENDPOINT_URL }
             )
         )
 
