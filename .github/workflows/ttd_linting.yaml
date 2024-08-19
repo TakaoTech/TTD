@@ -23,11 +23,15 @@ jobs:
         name: 'Checkout'
         uses: 'actions/checkout@v4'
       - id: 'step-2'
+        name: 'Change permission for Act execution'
+        run: 'chmod +x -R *'
+        if: '${{ github.event.act }}'
+      - id: 'step-3'
         name: 'Lint Fix'
         env:
           ENDPOINT_URL: '${{ ENDPOINT_URL }}'
         run: './gradlew ktlintFormat'
-      - id: 'step-3'
+      - id: 'step-4'
         name: 'Commit format'
         uses: 'stefanzweifel/git-auto-commit-action@v5'
         with:
