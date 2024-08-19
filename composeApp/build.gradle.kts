@@ -271,9 +271,25 @@ buildkonfig {
 }
 
 fun getEnvProperty(envName: String): String {
-    return project.findProperty(envName)?.toString().let {
-        it ?: localProps?.getProperty(envName).orEmpty()
+    project.findProperty(envName)?.toString().also {
+        if (it != null) {
+            return it
+        }
     }
+
+    System.getenv(envName)?.also {
+        if (it != null) {
+            return it
+        }
+    }
+
+    localProps?.getProperty(envName).also {
+        if (it != null) {
+            return it
+        }
+    }
+
+    throw GradleException("Missing environment variable $envName")
 }
 
 //compose.experimental {
