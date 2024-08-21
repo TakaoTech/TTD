@@ -31,6 +31,8 @@ jobs:
         if: '${{ github.event.act }}'
       - id: 'step-4'
         name: 'Lint Fix'
+        env:
+          ENDPOINT_URL: '${{ vars.ENDPOINT_URL }}'
         run: './gradlew ktlintFormat'
       - id: 'step-5'
         name: 'Commit format'

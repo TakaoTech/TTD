@@ -1,6 +1,6 @@
 #!/usr/bin/env kotlin
 
-@file:DependsOn("io.github.typesafegithub:github-workflows-kt:2.1.0")
+@file:DependsOn("io.github.typesafegithub:github-workflows-kt:2.3.0")
 
 import io.github.typesafegithub.workflows.actions.actions.CheckoutV4
 import io.github.typesafegithub.workflows.actions.actions.SetupJavaV4
@@ -57,7 +57,10 @@ workflow(
 
         run(
             name = "Lint Fix",
-            command = "./gradlew ktlintFormat"
+            command = "./gradlew ktlintFormat",
+            env = mapOf(
+                "ENDPOINT_URL" to expr { "vars.ENDPOINT_URL" }
+            )
         )
 
         uses(

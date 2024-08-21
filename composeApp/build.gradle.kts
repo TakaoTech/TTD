@@ -271,13 +271,13 @@ buildkonfig {
 }
 
 fun getEnvProperty(envName: String): String {
-    project.findProperty(envName)?.toString().also {
+    (project.findProperty(envName) as? String).also {
         if (it != null) {
             return it
         }
     }
 
-    System.getenv(envName)?.also {
+    System.getenv(envName).also {
         if (it != null) {
             return it
         }
