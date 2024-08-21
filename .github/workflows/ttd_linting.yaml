@@ -30,11 +30,14 @@ jobs:
         run: 'chmod +x -R *'
         if: '${{ github.event.act }}'
       - id: 'step-4'
+        name: 'Lint Echo'
+        run: 'echo ${{ vars.ENDPOINT_URL }}'
+      - id: 'step-5'
         name: 'Lint Fix'
         env:
           ENDPOINT_URL: '${{ vars.ENDPOINT_URL }}'
         run: './gradlew ktlintFormat'
-      - id: 'step-5'
+      - id: 'step-6'
         name: 'Commit format'
         uses: 'stefanzweifel/git-auto-commit-action@v5'
         with:

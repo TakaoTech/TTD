@@ -56,6 +56,11 @@ workflow(
         )
 
         run(
+            name = "Lint Echo",
+            command = "echo ${expr { "vars.ENDPOINT_URL" }}",
+        )
+
+        run(
             name = "Lint Fix",
             command = "./gradlew ktlintFormat",
             env = mapOf(
