@@ -1,15 +1,16 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
-import java.io.FileInputStream
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.net.URL
-import java.util.*
 
 val projectPackage: String by project
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.compose.jetbrains)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktorfit)
     alias(libs.plugins.buildkonfig)
@@ -18,14 +19,6 @@ plugins {
     alias(libs.plugins.cfu)
     alias(libs.plugins.gms)
     alias(libs.plugins.firebase.appdistribution)
-}
-
-val localProps: Properties? = try {
-    Properties().apply {
-        load(FileInputStream(File(rootProject.rootDir, "local.properties")))
-    }
-} catch (ex: Exception) {
-    null
 }
 
 kotlin {
@@ -41,29 +34,29 @@ kotlin {
 //    }
 
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
-            }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_1_8
         }
     }
 
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
     compilerOptions {
-        if (extra["development"].toString().toBoolean()) {
+        if (getEnvProperty("development", rootProject).toBoolean()) {
             freeCompilerArgs.add("-Xdebug")
         }
     }
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
+//    listOf(
+//        iosX64(),
+//        iosArm64(),
+//        iosSimulatorArm64()
+//    ).forEach { iosTarget ->
+//        iosTarget.binaries.framework {
+//            baseName = "ComposeApp"
+//            isStatic = true
+//        }
+//    }
 
     sourceSets {
 
@@ -156,17 +149,17 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        manifestPlaceholders["useClearTraffic"] = URL(getEnvProperty("ENDPOINT_URL")).protocol != "https"
+        manifestPlaceholders["useClearTraffic"] = URL(getEnvProperty("ENDPOINT_URL", rootProject)).protocol != "https"
 
         proguardFiles(file(projectDir.absolutePath + "/src/androidMain/proguard-rules.pro"))
     }
 
     signingConfigs {
         create("config") {
-            keyAlias = getEnvProperty("KEY_ALIAS")
-            keyPassword = getEnvProperty("KEY_PASSWORD")
+            keyAlias = getEnvProperty("KEY_ALIAS", rootProject)
+            keyPassword = getEnvProperty("KEY_PASSWORD", rootProject)
             storeFile = file(rootDir.absolutePath + "/TTD-App-Keystore.jks")
-            storePassword = getEnvProperty("KEYSTORE_PASSWORD")
+            storePassword = getEnvProperty("KEYSTORE_PASSWORD", rootProject)
         }
     }
     packaging {
@@ -203,9 +196,6 @@ android {
         buildConfig = true
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.2"
-    }
     dependencies {
 //		debugImplementation(libs.compose.ui.tooling)
     }
@@ -214,7 +204,6 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
     ksp(libs.koin.compilerksp)
-    ksp(libs.ktorfit.ksp)
 
 //    implementation(project.dependencies.platform(libs.firebase.bom))
 }
@@ -241,19 +230,19 @@ buildkonfig {
         buildConfigField(
             FieldSpec.Type.STRING,
             "baseUrl",
-            getEnvProperty("ENDPOINT_URL")
+            getEnvProperty("ENDPOINT_URL", rootProject)
         )
 
         buildConfigField(
             FieldSpec.Type.STRING,
             "googleWebAuth",
-            getEnvProperty("AUTH_GOOGLE_CLIENT_ID_ANDROID_WEB")
+            getEnvProperty("AUTH_GOOGLE_CLIENT_ID_ANDROID_WEB", rootProject)
         )
 
         buildConfigField(
             FieldSpec.Type.STRING,
             "SESSION_KEY_ALIAS",
-            getEnvProperty("SESSION_KEY_ALIAS")
+            getEnvProperty("SESSION_KEY_ALIAS", rootProject)
         )
 
         buildConfigField(
@@ -265,31 +254,9 @@ buildkonfig {
         buildConfigField(
             FieldSpec.Type.STRING,
             "CERT_PIN1",
-            getEnvProperty("CERT_PIN1")
+            getEnvProperty("CERT_PIN1", rootProject)
         )
     }
-}
-
-fun getEnvProperty(envName: String): String {
-    (project.findProperty(envName) as? String).also {
-        if (it != null) {
-            return it
-        }
-    }
-
-    System.getenv(envName).also {
-        if (it != null) {
-            return it
-        }
-    }
-
-    localProps?.getProperty(envName).also {
-        if (it != null) {
-            return it
-        }
-    }
-
-    throw GradleException("Missing environment variable $envName")
 }
 
 //compose.experimental {

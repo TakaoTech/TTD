@@ -12,13 +12,15 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.*
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
@@ -30,7 +32,6 @@ import com.takaotech.dashboard.ui.utils.NetworkResult
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import ttd.composeapp.generated.resources.Res
 import ttd.composeapp.generated.resources.homepage_ghrepository_more_tags_label
@@ -38,7 +39,7 @@ import ttd.composeapp.generated.resources.homepage_ghrepository_tags_label
 import ttd.composeapp.generated.resources.homepage_title_label
 
 
-@OptIn(ExperimentalResourceApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePageScreen(
 	tags: List<TagDao>,
@@ -68,9 +69,10 @@ fun HomePageScreen(
 			)
 		}
 	) {
-		Box(
-			modifier = Modifier
-				.nestedScroll(pullToRefreshState.nestedScrollConnection)
+		PullToRefreshBox(
+			state = pullToRefreshState,
+			isRefreshing = isRefreshing,
+			onRefresh = onRefresh
 		) {
 			LazyColumn(
 				modifier = Modifier
@@ -157,31 +159,10 @@ fun HomePageScreen(
 					}
 				}
 			}
-
-			if (pullToRefreshState.isRefreshing) {
-				LaunchedEffect(true) {
-					onRefresh()
-				}
-			}
-
-			LaunchedEffect(isRefreshing) {
-				if (isRefreshing) {
-					pullToRefreshState.startRefresh()
-				} else {
-					pullToRefreshState.endRefresh()
-				}
-			}
-
-			PullToRefreshContainer(
-				state = pullToRefreshState,
-				modifier = Modifier
-					.align(Alignment.TopCenter),
-			)
 		}
 	}
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ExpandedTopBar() {
 	Box(
@@ -202,7 +183,7 @@ private fun ExpandedTopBar() {
 	}
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CollapsedTopBar(
 	modifier: Modifier = Modifier,

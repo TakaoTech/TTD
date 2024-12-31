@@ -16,7 +16,16 @@ group = projectPackage
 version = "0.1.0-preview"
 application {
 	mainClass.set("com.takaotech.dashboard.ApplicationKt")
-	applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${extra["development"] ?: "false"}")
+	applicationDefaultJvmArgs = listOf(
+		"-Dio.ktor.development=${
+			runCatching {
+				getEnvProperty(
+					"development",
+					rootProject
+				)
+			}.getOrNull() ?: "false"
+		}"
+	)
 }
 
 repositories {
@@ -42,7 +51,7 @@ tasks.withType<Test>().configureEach {
 
 kotlin {
 	compilerOptions {
-		if (extra["development"].toString().toBoolean()) {
+		if (getEnvProperty("development", rootProject).toBoolean()) {
 			freeCompilerArgs.add("-Xdebug")
 		}
 	}
@@ -116,20 +125,18 @@ ktor {
 	}
 }
 
-koverReport {
-	filters {
-		excludes {
-			//TODO Not Work this exclusion
-			classes("com.takaotech.dashboard.route.github.repository.GithubClientImpl")
-			packages("org.koin.ksp.generated", "com.takaotech.dashboard.di")
+kover {
+	reports {
+		filters {
+			excludes {
+				//TODO Not Work this exclusion
+				classes("com.takaotech.dashboard.route.github.repository.GithubClientImpl")
+				packages("org.koin.ksp.generated", "com.takaotech.dashboard.di")
+			}
 		}
-	}
 
-	verify {
-		// verification rules for all reports
-	}
-
-	defaults {
-
+		verify {
+			// verification rules for all reports
+		}
 	}
 }

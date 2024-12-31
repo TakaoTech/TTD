@@ -20,3 +20,4 @@ captures
 TTD-App-Keystore*
 *firebase-distribution.json
 *google-services.json
+.kotlin

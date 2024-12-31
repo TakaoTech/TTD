@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
 	alias(libs.plugins.kotlinMultiplatform)
 	alias(libs.plugins.androidLibrary)
@@ -9,10 +11,8 @@ plugins {
 kotlin {
 
 	androidTarget {
-		compilations.all {
-			kotlinOptions {
-				jvmTarget = "1.8"
-			}
+		compilerOptions {
+			jvmTarget = JvmTarget.JVM_1_8
 		}
 	}
 
@@ -54,23 +54,23 @@ tasks.withType<Test>().configureEach {
 }
 
 
-dependencies {
-	with(libs.ktorfit.ksp.get()) {
-		add("kspCommonMainMetadata", this)
-		add("kspJvm", this)
-		add("kspJvmTest", this)
-		add("kspAndroid", this)
-		add("kspAndroidTest", this)
-		add("kspIosX64", this)
-		add("kspIosX64Test", this)
-		add("kspIosArm64", this)
-		add("kspIosArm64Test", this)
-		add("kspIosSimulatorArm64", this)
-		add("kspIosSimulatorArm64Test", this)
-//        add("kspJs", this)
-//        add("kspJsTest", this)
-	}
-}
+//dependencies {
+//	with(libs.ktorfit.ksp.get()) {
+//		add("kspCommonMainMetadata", this)
+//		add("kspJvm", this)
+//		add("kspJvmTest", this)
+//		add("kspAndroid", this)
+//		add("kspAndroidTest", this)
+////		add("kspIosX64", this)
+////		add("kspIosX64Test", this)
+////		add("kspIosArm64", this)
+////		add("kspIosArm64Test", this)
+////		add("kspIosSimulatorArm64", this)
+////		add("kspIosSimulatorArm64Test", this)
+////        add("kspJs", this)
+////        add("kspJsTest", this)
+//	}
+//}
 
 android {
 	namespace = "com.takaotech.dashboard.shared"
