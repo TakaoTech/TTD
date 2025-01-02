@@ -27,6 +27,8 @@ kotlin {
 			// put your Multiplatform dependencies here
 			implementation(libs.kotlin.datetime)
 			implementation(libs.ktorfit.lib)
+			implementation(project.dependencies.platform(libs.koin.bom))
+			implementation(project.dependencies.platform(libs.koin.annotation.bom))
 			implementation(libs.koin.core)
 			implementation(libs.serialization)
 			api(libs.kotlin.result)

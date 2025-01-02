@@ -102,6 +102,8 @@ kotlin {
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.auth)
 
+                implementation(project.dependencies.platform(libs.koin.bom))
+                implementation(project.dependencies.platform(libs.koin.annotation.bom))
                 implementation(libs.koin.core)
                 implementation(libs.koin.annotation)
 

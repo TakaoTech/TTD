@@ -1,5 +1,5 @@
 [versions]
-agp = "8.7.0"
+agp = "8.7.3"
 android-compileSdk = "34"
 android-minSdk = "24"
 android-targetSdk = "34"
@@ -26,10 +26,8 @@ postgresql = "42.7.3"
 serialization = "1.5.1"
 ksp = "2.1.0-1.0.29"
 
-ktor = "2.3.8"
+ktor = "3.0.3"
 logback = "1.4.14"
-koin = "3.5.3"
-koin-ksp = "1.3.0"
 prometeus = "1.6.3"
 exposed = "0.45.0"
 ktorfit = "2.2.0"
@@ -71,13 +69,13 @@ ktor-server-host-common = { module = "io.ktor:ktor-server-host-common-jvm", vers
 ktor-server-resources = { module = "io.ktor:ktor-server-resources", version.ref = "ktor" }
 ktor-server-openapi = { module = "io.ktor:ktor-server-openapi", version.ref = "ktor" }
 ktor-server-swagger = { module = "io.ktor:ktor-server-swagger-jvm", version.ref = "ktor" }
-ktor-server-call-logging = { module = "io.ktor:ktor-server-call-logging-jvm", version.ref = "ktor" }
+ktor-server-call-logging = { module = "io.ktor:ktor-server-call-logging", version.ref = "ktor" }
 ktor-server-call-id = { module = "io.ktor:ktor-server-call-id-jvm", version.ref = "ktor" }
 ktor-server-metrics = { module = "io.ktor:ktor-server-metrics-jvm", version.ref = "ktor" }
 ktor-server-metrics-micrometer = { module = "io.ktor:ktor-server-metrics-micrometer-jvm", version.ref = "ktor" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation-jvm", version.ref = "ktor" }
 ktor-server-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json-jvm", version.ref = "ktor" }
-ktor-server-tomcat = { module = "io.ktor:ktor-server-tomcat-jvm", version.ref = "ktor" }
+ktor-server-tomcat = { module = "io.ktor:ktor-server-tomcat-jakarta", version.ref = "ktor" }
 ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
 ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktor" }
 ktor-server-sessions = { module = "io.ktor:ktor-server-sessions", version.ref = "ktor" }
@@ -91,12 +89,14 @@ exposed-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", v
 
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "prometeus" }
 
-koin-compilerksp = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koin-ksp" }
-koin-annotation = { module = "io.insert-koin:koin-annotations", version.ref = "koin-ksp" }
-koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
-koin-logger = { module = "io.insert-koin:koin-logger-slf4j", version.ref = "koin" }
-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
-koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-bom = { module = "io.insert-koin:koin-bom", version = "4.0.1" }
+koin-annotation-bom = { module = "io.insert-koin:koin-annotations-bom", version = "1.4.0" }
+koin-compilerksp = { module = "io.insert-koin:koin-ksp-compiler", version = "1.4.0" }
+koin-annotation = { module = "io.insert-koin:koin-annotations" }
+koin-ktor = { module = "io.insert-koin:koin-ktor" }
+koin-logger = { module = "io.insert-koin:koin-logger-slf4j" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-android = { module = "io.insert-koin:koin-android" }
 
 github-api = { module = "org.kohsuke:github-api", version = "1.319" }
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }
@@ -111,15 +111,15 @@ hikari = { module = "com.zaxxer:HikariCP", version = "5.1.0" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
+ktor-server-tests = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
 kotest-runner = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotest-koin = { module = "io.kotest.extensions:kotest-extensions-koin", version = "1.3.0" }
 kotest-ktor = { module = "io.kotest.extensions:kotest-assertions-ktor", version = "2.0.0" }
 kotest-extension = { module = "io.kotest:kotest-extensions-jvm", version.ref = "kotest" }
 kotest-testcontainer = { module = "io.kotest.extensions:kotest-extensions-testcontainers", version = "2.0.2" }
 kotest-testcontainer-redis = { module = "com.redis:testcontainers-redis", version = "2.2.2" }
-koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
-koin-junit = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
+koin-test = { module = "io.insert-koin:koin-test" }
+koin-junit = { module = "io.insert-koin:koin-test-junit5" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }

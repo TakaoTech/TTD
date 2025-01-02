@@ -25,3 +25,5 @@ fun getEnvProperty(envName: String, project: Project): String {
 
     throw GradleException("Missing environment variable $envName")
 }
+
+fun getLocalEnvs(project: Project): Properties = project.extra.get("localProps") as Properties

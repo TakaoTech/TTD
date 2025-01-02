@@ -37,6 +37,20 @@ val testProps = Properties().apply {
 	load(FileInputStream(File(rootProject.rootDir, "test-server.properties")))
 }
 
+tasks.named<JavaExec>("run") {
+	environment(
+		getLocalEnvs(rootProject).map {
+			it.key as String to it.value as String
+		}.toMap()
+	)
+
+//	doFirst {
+//		println("Environment Variables:")
+//		environment.forEach { (key, value) ->
+//			println("$key=$value")
+//		}
+//	}
+}
 
 tasks.withType<Test>().configureEach {
 	useJUnitPlatform()
@@ -94,6 +108,8 @@ dependencies {
 	implementation(libs.db.redis)
 	implementation(libs.hikari)
 
+	implementation(platform(libs.koin.bom))
+	implementation(platform(libs.koin.annotation.bom))
 	implementation(libs.koin.ktor)
 	implementation(libs.koin.logger)
 	implementation(libs.koin.annotation)

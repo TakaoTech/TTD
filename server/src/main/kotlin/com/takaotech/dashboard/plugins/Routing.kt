@@ -17,7 +17,7 @@ fun Application.configureRouting() {
         route("/admin") {
             authenticate("tjwt") {
                 withAnyRole(TakaoRole.ADMINISTRATOR) {
-                    adminGithubRouter()
+                    adminGithubRouter(this@configureRouting)
                     adminTagsRoute()
                 }
             }
