@@ -5,6 +5,9 @@ import com.takaotech.dashboard.model.role.TakaoRole
 import com.takaotech.dashboard.route.administration.data.user.UserEntity
 import com.takaotech.dashboard.route.administration.repository.UserRepository
 import com.takaotech.dashboard.utils.sha256
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.jsonPrimitive
 import org.koin.core.annotation.Factory
 
 @Factory
@@ -46,6 +49,22 @@ class UserController(
                 }
             }else{
                 //TODO Email not verified
+                throw Exception()
+            }
+        }
+    }
+
+    suspend fun signUpByGoogle(json: JsonObject) {
+        if (json["verified_email"]!!.jsonPrimitive.boolean) {
+            val email = json["email"]?.jsonPrimitive?.content ?: throw Exception()
+
+            if (getUserByGoogle(email) == null) {
+                val name = json["name"]!!.jsonPrimitive.content
+                val picture = json["picture"]!!.jsonPrimitive.content
+
+                userRepository.createUser(email, name, picture)
+            } else {
+                //TODO User Exist, use signin flow
                 throw Exception()
             }
         }

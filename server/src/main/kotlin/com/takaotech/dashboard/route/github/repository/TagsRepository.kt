@@ -6,9 +6,9 @@ import com.takaotech.dashboard.model.github.TagNewDao
 import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.route.github.repository.utils.convertToTagDao
 import com.takaotech.dashboard.utils.HikariDatabase
-import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Singleton
 
-@Factory
+@Singleton
 class TagsRepository(private val database: HikariDatabase) {
 
 	suspend fun addTag(tag: TagNewDao) {

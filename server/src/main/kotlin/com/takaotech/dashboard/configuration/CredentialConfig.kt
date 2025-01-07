@@ -1,8 +1,15 @@
 package com.takaotech.dashboard.configuration
 
 data class CredentialConfig(
+    val googleOauth2Config: GoogleOauth2Config,
 	val googleJwtConfig: GoogleJwtConfig,
     val takaoJwtConfig: TakaoJwtConfig
+)
+
+data class GoogleOauth2Config(
+    val redirectEndpoint: String,
+    val clientId: String,
+    val clientSecret: String,
 )
 
 data class GoogleJwtConfig(

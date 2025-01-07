@@ -1,44 +1,45 @@
 package com.takaotech.dashboard.plugins.auth
 
 import com.takaotech.dashboard.configuration.CredentialConfig
+import com.takaotech.dashboard.di.HTTP_JSON_CLIENT
 import com.takaotech.dashboard.route.administration.controller.SessionController
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import org.koin.core.qualifier.named
 import org.koin.ktor.ext.get
 import org.koin.ktor.ext.inject
 
 fun Application.configureAuth(credentialConfig: CredentialConfig = get()) {
-	//https://gist.github.com/nomisRev/a42110d095e3fd2c82d8137c995569b1
-	//https://github.com/desmondtzq/ktor-auth-firebase/tree/master/library
+    //https://gist.github.com/nomisRev/a42110d095e3fd2c82d8137c995569b1
+    //https://github.com/desmondtzq/ktor-auth-firebase/tree/master/library
 
-	//https://ktor.io/docs/server-oauth.html#flow
+    //https://ktor.io/docs/server-oauth.html#flow
 
+    val sessionController by inject<SessionController>()
 
+    authentication {
+        // and then api key provider
+        configureGoogleJWT(
+            this@configureAuth.developmentMode,
+            this@configureAuth.log,
+            credentialConfig
+        )
+        configureTakaoJWT(
+            sessionController,
+            credentialConfig.takaoJwtConfig
+        )
 
-//	val applicationHttpClient = HttpClient {
-//		install(ContentNegotiation) {
-//			json()
-//		}
-//	}
+        if (this@configureAuth.developmentMode) {
+            configureGoogleOAuth(
+                this@configureAuth.log,
+                credentialConfig,
+                this@configureAuth.get(named(HTTP_JSON_CLIENT))
+            )
+        }
+    }
 
-//	val redirects = mutableMapOf<String, String>()
-	val sessionController by inject<SessionController>()
-
-	authentication {
-		// and then api key provider
-		configureGoogleJWT(
-			this@configureAuth.developmentMode,
-			this@configureAuth.log,
-			credentialConfig
-		)
-		configureTakaoJWT(
-			sessionController,
-			credentialConfig.takaoJwtConfig
-		)
-	}
-
-	//https://github.com/santansarah/ktor-city-api/blob/google-one-tap/src/main/kotlin/com/santansarah/plugins/JWT.kt
-	//https://www.youtube.com/watch?v=Q7PgQdXfETU
+    //https://github.com/santansarah/ktor-city-api/blob/google-one-tap/src/main/kotlin/com/santansarah/plugins/JWT.kt
+    //https://www.youtube.com/watch?v=Q7PgQdXfETU
 //	authentication {
 //		oauth("auth-oauth-google") {
 //			urlProvider = { "http://localhost:8080/callback" }

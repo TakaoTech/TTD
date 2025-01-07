@@ -15,6 +15,9 @@ import com.takaotech.dashboard.route.administration.repository.SessionRepository
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.jsonPrimitive
 import org.koin.core.annotation.Single
 import java.util.*
 import kotlin.time.Duration
@@ -30,6 +33,17 @@ class SessionController(
     suspend fun generateTokenPairFromGoogle(googlePayload: Payload): TokenPairDao {
         if (googlePayload.getClaim("email_verified").asBoolean() == true) {
             val user = googlePayload.getEmail()?.let { userController.getUserByGoogle(it) }
+                ?: throw Exception("User not found for generate tokens")
+            return generateTokenPairFromUser(user)
+        } else {
+            //TODO Email not verified
+            throw Exception()
+        }
+    }
+
+    suspend fun generateTokenPairFromGoogle(json: JsonObject): TokenPairDao {
+        if (json["verified_email"]!!.jsonPrimitive.boolean) {
+            val user = json["email"]?.jsonPrimitive?.content?.let { userController.getUserByGoogle(it) }
                 ?: throw Exception("User not found for generate tokens")
             return generateTokenPairFromUser(user)
         } else {

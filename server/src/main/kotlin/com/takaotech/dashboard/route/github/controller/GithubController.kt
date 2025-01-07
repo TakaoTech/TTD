@@ -7,9 +7,9 @@ import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
 import com.takaotech.dashboard.route.github.repository.TagsRepository
 import kotlinx.coroutines.coroutineScope
-import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Singleton
 
-@Factory
+@Singleton
 class GithubController(
 	private val githubRepository: GithubRepository,
 	private val githubDepositoryRepository: DepositoryRepository,

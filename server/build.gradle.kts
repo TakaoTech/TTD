@@ -65,6 +65,7 @@ tasks.withType<Test>().configureEach {
 
 kotlin {
 	compilerOptions {
+		println("Development mode : ${getEnvProperty("development", rootProject).toBoolean()}")
 		if (getEnvProperty("development", rootProject).toBoolean()) {
 			freeCompilerArgs.add("-Xdebug")
 		}
@@ -94,7 +95,7 @@ dependencies {
 	implementation(libs.ktor.server.cors)
 
 	implementation(libs.ktor.client)
-	implementation(libs.ktor.client.cio)
+	implementation(libs.ktor.client.java)
 	implementation(libs.ktor.client.contentnegotiation)
 	testImplementation(libs.ktor.client.test)
 

@@ -4,10 +4,12 @@ info:
   description: "Application API"
   version: "1.0.0"
 servers:
-  - url: "http://127.0.0.1:8080"
+  - url: "http://localhost:8080"
 paths:
   /admin/github:
     get:
+      security:
+        - tjwt: [ ]
       tags:
         - GitHub Repository Admin
       summary: Get GitHub Repositories
@@ -30,6 +32,8 @@ paths:
                   $ref: '#/components/schemas/GHRepositoryDao'
   /admin/github/refresh:
     get:
+      security:
+        - tjwt: [ ]
       tags:
         - GitHub Repository Admin
       summary: Refresh GitHub Repositories
@@ -47,6 +51,8 @@ paths:
           description: Unauthorized request
   /admin/github/refresh/cancel:
     get:
+      security:
+        - tjwt: [ ]
       tags:
         - GitHub Repository Admin
       summary: Refresh GitHub Repositories
@@ -58,6 +64,8 @@ paths:
           description: Unauthorized request
   /admin/github/refresh/status:
     get:
+      security:
+        - tjwt: [ ]
       tags:
         - GitHub Repository Admin
       summary: Refresh GitHub Repositories
@@ -69,6 +77,8 @@ paths:
           description: Unauthorized request
   /admin/github/{id}:
     get:
+      security:
+        - tjwt: [ ]
       tags:
         - GitHub Repository Admin
       summary: Get GitHub Repository by ID
@@ -92,6 +102,8 @@ paths:
           description: Repository not found
   /admin/github/{id}/updateTags:
     post:
+      security:
+        - tjwt: [ ]
       tags:
         - GitHub Repository Admin
       summary: Update GitHub Repository Category
@@ -119,6 +131,8 @@ paths:
           description: Invalid category provided
   /admin/github/{id}/updateCategory:
     post:
+      security:
+        - tjwt: [ ]
       tags:
         - GitHub Repository Admin
       summary: Update GitHub Repository Category
@@ -146,6 +160,8 @@ paths:
           description: Invalid category provided
   /admin/github/tags:
     get:
+      security:
+        - tjwt: [ ]
       tags:
         - Tags
       summary: Get Tags
@@ -160,6 +176,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/TagDao'
     put:
+      security:
+        - tjwt: [ ]
       tags:
         - Tags
       summary: Add Tag
@@ -176,6 +194,8 @@ paths:
         '400':
           description: Bad request
     post:
+      security:
+        - tjwt: [ ]
       tags:
         - Tags
       summary: Update Tag
@@ -192,6 +212,8 @@ paths:
         '400':
           description: Bad request
   /admin/github/tags/{id}:
+    security:
+      - tjwt: [ ]
     get:
       tags:
         - Tags
@@ -314,6 +336,16 @@ paths:
                 items:
                   $ref: '#/components/schemas/TagDao'
 components:
+  securitySchemes:
+    tjwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    googleOAuth2:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://localhost:8080/google/login
   schemas:
     GHRepositoryDao:
       type: object
@@ -455,3 +487,5 @@ components:
         totalPage:
           type: integer
           description: The total number of pages
+security:
+  - bearerAuth: [ ]

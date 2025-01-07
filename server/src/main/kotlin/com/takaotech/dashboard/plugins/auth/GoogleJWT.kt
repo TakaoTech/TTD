@@ -66,7 +66,7 @@ fun AuthenticationConfig.configureGoogleJWT(
         validate { jwtCredential ->
 
             if (developmentMode) {
-                logger.debug(googleJwtMarker, "credentials: ${jwtCredential.payload.claims.values}")
+                logger.debug(googleJwtMarker, "credentials: {}", jwtCredential.payload.claims.values)
                 println()
             }
 

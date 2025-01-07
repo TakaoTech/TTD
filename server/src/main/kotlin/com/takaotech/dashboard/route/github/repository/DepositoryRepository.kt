@@ -19,9 +19,9 @@ import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.EmptySizedIterable
 import org.jetbrains.exposed.sql.SizedCollection
-import org.koin.core.annotation.Factory
+import org.koin.core.annotation.Singleton
 
-@Factory
+@Singleton
 class DepositoryRepository(
     private val database: HikariDatabase,
     private val redis: RedisDatabase,

@@ -89,11 +89,11 @@ exposed-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", v
 
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "prometeus" }
 
-koin-bom = { module = "io.insert-koin:koin-bom", version = "4.0.1" }
-koin-annotation-bom = { module = "io.insert-koin:koin-annotations-bom", version = "1.4.0" }
-koin-compilerksp = { module = "io.insert-koin:koin-ksp-compiler", version = "1.4.0" }
+koin-bom = { module = "io.insert-koin:koin-bom", version = "4.1.0-Beta3" }
+koin-annotation-bom = { module = "io.insert-koin:koin-annotations-bom", version = "2.0.0-Beta3" }
+koin-compilerksp = { module = "io.insert-koin:koin-ksp-compiler", version = "2.0.0-Beta3" }
 koin-annotation = { module = "io.insert-koin:koin-annotations" }
-koin-ktor = { module = "io.insert-koin:koin-ktor" }
+koin-ktor = { module = "io.insert-koin:koin-ktor3", version = "4.1.0-Beta3" }
 koin-logger = { module = "io.insert-koin:koin-logger-slf4j" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = { module = "io.insert-koin:koin-android" }
@@ -129,7 +129,7 @@ ktor-client = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-test = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 ktor-client-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
-ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-java = { module = "io.ktor:ktor-client-java", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-contentnegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }

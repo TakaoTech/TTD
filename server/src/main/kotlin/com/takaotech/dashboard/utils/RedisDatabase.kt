@@ -1,5 +1,6 @@
 package com.takaotech.dashboard.utils
 
+import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.configuration.RedisConfiguration
 import io.github.crackthecodeabhi.kreds.commands.StringCommands
 import io.github.crackthecodeabhi.kreds.connection.Endpoint
@@ -12,8 +13,9 @@ import org.koin.core.annotation.Singleton
 
 @Singleton
 class RedisDatabase(
-    private val redisConfiguration: RedisConfiguration,
+    dbConfiguration: DbConfiguration
 ) {
+    private val redisConfiguration: RedisConfiguration = dbConfiguration.redisConfiguration
     private lateinit var mClient: KredsClient
 
     fun connect() {
