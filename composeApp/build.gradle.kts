@@ -1,7 +1,9 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
 import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
+import org.apache.http.client.utils.URIBuilder
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.net.URI
 import java.net.URL
 
 val projectPackage: String by project
@@ -229,10 +231,23 @@ buildkonfig {
     packageName = projectPackage
     objectName = "AppBuildKonfig"
     defaultConfigs {
+        val endpointUrl = getEnvProperty("ENDPOINT_URL", rootProject)
         buildConfigField(
             FieldSpec.Type.STRING,
             "baseUrl",
-            getEnvProperty("ENDPOINT_URL", rootProject)
+            if (getEnvProperty("USE_LOCAL_ENDPOINT", rootProject).toBoolean()) {
+                URIBuilder().apply {
+                    val mEndpointUrl = URI(endpointUrl)
+                    port = mEndpointUrl.port
+                    scheme = mEndpointUrl.scheme
+                    host = getLocalIPv4().first().also {
+                        println("Local Address ${it}")
+                    }
+                    path = "/"
+                }.toString()
+            } else {
+                endpointUrl
+            }
         )
 
         buildConfigField(

@@ -27,12 +27,6 @@ application {
 		}"
 	)
 }
-
-repositories {
-	mavenCentral()
-	maven { setUrl("https://jitpack.io") }
-}
-
 val testProps = Properties().apply {
 	load(FileInputStream(File(rootProject.rootDir, "test-server.properties")))
 }
