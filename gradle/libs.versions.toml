@@ -1,8 +1,8 @@
 [versions]
 agp = "8.7.3"
-android-compileSdk = "34"
+android-compileSdk = "35"
 android-minSdk = "24"
-android-targetSdk = "34"
+android-targetSdk = "35"
 
 browser = "1.8.0"
 buildkonfig = "0.15.1"
@@ -53,9 +53,9 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = 
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
 
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences-core", version = "1.1.1" }
-androidx-credentials = { module = "androidx.credentials:credentials", version = "1.2.2" }
-androidx-credentials-googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version = "1.1.0" }
-androidx-credentials-playservices = { module = "androidx.credentials:credentials-play-services-auth", version = "1.2.2" }
+androidx-credentials = { module = "androidx.credentials:credentials", version = "1.3.0" }
+androidx-credentials-googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version = "1.1.1" }
+androidx-credentials-playservices = { module = "androidx.credentials:credentials-play-services-auth", version = "1.3.0" }
 
 
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }

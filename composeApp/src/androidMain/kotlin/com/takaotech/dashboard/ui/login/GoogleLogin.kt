@@ -1,11 +1,13 @@
 package com.takaotech.dashboard.ui.login
 
 import android.content.Context
-import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import androidx.credentials.exceptions.NoCredentialException
+import co.touchlab.kermit.Logger
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.onFailure
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -16,6 +18,7 @@ import java.util.*
 
 class GoogleLoginImpl(
     private val context: Context,
+    private val logger: Logger
 ) : GoogleLogin {
 
     override suspend fun startLogin(): Result<Pair<Nonce, GoogleToken>, Exception> {
@@ -49,8 +52,17 @@ class GoogleLoginImpl(
 
             handleSignIn(result, hashedNonce)
         }.onFailure {
-            //TODO Log with correct logger
-            Log.e("Err", "bruh", it)
+            when (it) {
+                is GetCredentialCancellationException -> {
+
+                }
+
+                is NoCredentialException -> {
+
+                }
+            }
+            logger.withTag("GoogleLogin")
+                .e("Bruh error get Google credential", it)
         }
     }
 

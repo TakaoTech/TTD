@@ -7,9 +7,7 @@ import androidx.datastore.preferences.core.edit
 import co.touchlab.kermit.Logger
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.isSuccess
-import com.github.kittinunf.result.onFailure
-import com.github.kittinunf.result.onSuccess
-import com.takaotech.dashboard.AppBuildKonfig
+import com.github.kittinunf.result.map
 import com.takaotech.dashboard.model.jwt.TakaoSession
 import com.takaotech.dashboard.model.session.RefreshTokenDao
 import com.takaotech.dashboard.model.session.TokenPairDao
@@ -25,11 +23,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.serialization.json.Json
-import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
-@OptIn(ExperimentalEncodingApi::class)
 abstract class SessionManager(
     private val json: Json,
     protected val logger: Logger,
@@ -49,7 +44,6 @@ abstract class SessionManager(
     private lateinit var authKtor: HttpClient
 
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun init() {
         sessionDatastore = initSessionDatastore()
         sessionFlow = sessionDatastore.data.map {
@@ -122,29 +116,20 @@ abstract class SessionManager(
         }
     }
 
-    private suspend inline fun internalGoogleLogin(crossinline callService: suspend (googleTokenPair: Pair<Nonce, GoogleToken>) -> TokenPairDao?) {
+    private suspend inline fun internalGoogleLogin(crossinline callService: suspend (googleTokenPair: Pair<Nonce, GoogleToken>) -> TokenPairDao?): Result<Unit, Exception> {
         val googleLoginResult = googleLogin.startLogin()
-        if (googleLoginResult.isSuccess()) {
+        return if (googleLoginResult.isSuccess()) {
             Result.of<TokenPairDao, Exception> {
-                if (AppBuildKonfig.debug) {
-                    delay(1.seconds)
-                }
                 callService(googleLoginResult.value)
-            }.onSuccess { tokenPair ->
-                try {
-                    sessionDatastore.edit {
-                        it[SESSION_KEY] = encryptTokens(tokenPair)
-                    }
-
-                    installBearer()
-                } catch (ex: Exception) {
-                    logger.e(ex) { "Error while login" }
+            }.map { tokenPair ->
+                sessionDatastore.edit {
+                    it[SESSION_KEY] = encryptTokens(tokenPair)
                 }
-            }.onFailure {
-                logger.e(it) { "Error while login on Takao BE" }
+
+                installBearer()
             }
         } else {
-            //TODO Error on login
+            Result.failure(Exception("Error while login"))
         }
     }
 
@@ -163,58 +148,54 @@ abstract class SessionManager(
     }
 
     private fun uninstallBearer() {
-        try {
-            authKtor.plugin(Auth).providers.let {
-                it.remove(
-                    it.filterIsInstance<BearerAuthProvider>().first()
-                )
-            }
-        } catch (ex: Exception) {
-            logger.e(ex) { "Unsuccessful uninstallBearer, Auth module not found" }
-        }
+        authKtor.authProvider<BearerAuthProvider>()?.clearToken()
     }
 
     private fun installBearer() {
-        authKtor.plugin(Auth).providers.add(
-            BearerAuthProvider(
-                refreshTokens = {
-                    val mOldToken = oldTokens ?: return@BearerAuthProvider null
-                    //TODO Manage Error 500, execute logout
-                    // Error getRepositories
-                    // io.ktor.client.call.NoTransformationFoundException: Expected response body of the type 'class com.takaotech.dashboard.model.session.TokenPairDao (Kotlin reflection is not available)' but was 'class
-                    // io.ktor.utils.io.ByteBufferChannel (Kotlin reflection is not available)'
-                    // In response from `http://<IP>/session/refresh`
-                    // Response status `500 `
-                    // Response header `ContentType: null`
-                    // Request header `Accept: application/json`
-                    try {
-                        withContext(coroutineScope.coroutineContext) {
-                            authApi.refresh(RefreshTokenDao(mOldToken.refreshToken),
-                                ext = {
-                                    timeout {
-                                        requestTimeoutMillis = 1.minutes.inWholeMilliseconds
-                                        connectTimeoutMillis = 1.minutes.inWholeMilliseconds
+        authKtor.config {
+            Auth {
+                bearer {
+                    refreshTokens {
+                        val mOldToken = oldTokens ?: return@refreshTokens null
+                        //TODO Manage Error 500, execute logout
+                        // Error getRepositories
+                        // io.ktor.client.call.NoTransformationFoundException: Expected response body of the type 'class com.takaotech.dashboard.model.session.TokenPairDao (Kotlin reflection is not available)' but was 'class
+                        // io.ktor.utils.io.ByteBufferChannel (Kotlin reflection is not available)'
+                        // In response from `http://<IP>/session/refresh`
+                        // Response status `500 `
+                        // Response header `ContentType: null`
+                        // Request header `Accept: application/json`
+                        try {
+                            withContext(coroutineScope.coroutineContext) {
+                                authApi.refresh(
+                                    RefreshTokenDao(mOldToken.refreshToken!!),
+                                    ext = {
+                                        timeout {
+                                            requestTimeoutMillis = 1.minutes.inWholeMilliseconds
+                                            connectTimeoutMillis = 1.minutes.inWholeMilliseconds
+                                        }
                                     }
+                                ).let {
+                                    BearerTokens(it.accessToken, it.refreshToken)
                                 }
-                            ).let {
-                                BearerTokens(it.accessToken, it.refreshToken)
                             }
+                        } catch (ex: Exception) {
+                            null
                         }
-                    } catch (ex: Exception) {
-                        null
                     }
-                },
-                loadTokens = {
-                    val pair = sessionFlow.value
-                    if (pair != null) {
-                        BearerTokens(pair.accessToken, pair.refreshToken)
-                    } else {
-                        null
+
+                    loadTokens {
+                        val pair = sessionFlow.value
+                        if (pair != null) {
+                            BearerTokens(pair.accessToken, pair.refreshToken)
+                        } else {
+                            null
+                        }
                     }
-                },
-                realm = "TTD"
-            )
-        )
+                    realm = "TTD"
+                }
+            }
+        }
     }
 }
 

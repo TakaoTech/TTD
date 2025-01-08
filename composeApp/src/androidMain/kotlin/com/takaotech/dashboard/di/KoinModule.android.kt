@@ -22,7 +22,7 @@ actual fun KoinApplication.platformModules() {
     modules(
         defaultModule,
         module {
-            single { GoogleLoginImpl(get()) } bind (GoogleLogin::class)
+            single { GoogleLoginImpl(get(), get()) } bind (GoogleLogin::class)
             single {
                 SessionManagerImpl(
                     json = get(),

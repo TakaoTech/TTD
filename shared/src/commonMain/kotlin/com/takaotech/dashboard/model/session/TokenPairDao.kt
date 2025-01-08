@@ -31,5 +31,5 @@ data class TokenPairDao(
 @Serializable
 data class RefreshTokenDao(
     @SerialName("refreshToken")
-    val refreshToken: RefreshToken
+    val refreshToken: String
 )
