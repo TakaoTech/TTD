@@ -60,11 +60,10 @@ fun AuthenticationConfig.configureGoogleJWT(
          * contains the Google issuer URL and my Web client id.
          */
         verifier(jwkProvider) {
-//            withIssuer(jwtIssuer)
-//            withAudience(jwtAudience)
+            withIssuer(jwtIssuer)
+            withAudience(jwtAudience)
         }
         validate { jwtCredential ->
-
             if (developmentMode) {
                 logger.debug(googleJwtMarker, "credentials: {}", jwtCredential.payload.claims.values)
                 println()

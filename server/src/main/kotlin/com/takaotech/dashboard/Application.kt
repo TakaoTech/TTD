@@ -3,7 +3,6 @@ package com.takaotech.dashboard
 import com.takaotech.dashboard.configuration.*
 import com.takaotech.dashboard.plugins.*
 import com.takaotech.dashboard.plugins.auth.configureAuth
-import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.tomcat.jakarta.*
@@ -33,12 +32,7 @@ fun Application.module() {
 
     val credentialConfig = CredentialConfig(
         googleOauth2Config = GoogleOauth2Config(
-            redirectEndpoint = buildUrl {
-                protocol = URLProtocol.byName[System.getenv("SERVER_PROTOCOL")]!!
-                host = engine.environment.config.host
-                port = engine.environment.config.port
-                path("/google/callback")
-            }.toString(),
+            redirectEndpoint = System.getenv("OAUTH_GOOGLE_REDIRECT"),
             clientId = System.getenv("OAUTH_GOOGLE_CLIENT_ID"),
             clientSecret = System.getenv("OAUTH_GOOGLE_CLIENT_SECRET"),
         ),

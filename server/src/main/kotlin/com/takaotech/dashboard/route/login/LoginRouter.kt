@@ -33,9 +33,7 @@ fun Application.sessionRoute() {
         //https://github.com/Slenkis/ktor-full-jwt
         authenticate("google") {
             get<SessionRoute.Login> {
-                val userPrincipal = call.principal<JWTPrincipal>()
-                val userPayload = userPrincipal?.payload
-
+                val userPayload = call.principal<JWTPrincipal>()?.payload
                 if (userPayload != null) {
                     val token = sessionController.generateTokenPairFromGoogle(userPayload)
 
@@ -48,12 +46,12 @@ fun Application.sessionRoute() {
             get<SessionRoute.Signup> {
                 val userController = call.scope.get<UserController>()
 
-                val newUser = call.principal<JWTPrincipal>()
+                val newUser = call.principal<JWTPrincipal>()?.payload
 
                 if (newUser != null) {
-                    userController.signUpByGoogle(newUser.payload)
+                    userController.signUpByGoogle(newUser)
 
-                    val token = sessionController.generateTokenPairFromGoogle(newUser.payload)
+                    val token = sessionController.generateTokenPairFromGoogle(newUser)
 
                     call.respond(token)
                 } else {

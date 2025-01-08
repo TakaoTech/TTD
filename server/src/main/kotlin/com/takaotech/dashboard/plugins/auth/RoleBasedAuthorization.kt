@@ -16,7 +16,7 @@ enum class AuthType {
 
 class AuthConfig {
     var roles: Set<TakaoRole> = emptySet()
-    lateinit var getRoles: suspend (user: Principal) -> Set<TakaoRole>
+    lateinit var getRoles: suspend (user: TakaoJWTPrincipal) -> Set<TakaoRole>
     lateinit var type: AuthType
 }
 
@@ -101,7 +101,7 @@ private fun Route.authorizedRoute(
         roles = requiredRoles
         type = authType
         getRoles = {
-            (it as TakaoJWTPrincipal).roles
+            it.roles
         }
     }
     authorizedRoute.build()
