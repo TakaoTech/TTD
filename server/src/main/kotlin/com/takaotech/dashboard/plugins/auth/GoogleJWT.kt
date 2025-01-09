@@ -61,7 +61,7 @@ fun AuthenticationConfig.configureGoogleJWT(
          */
         verifier(jwkProvider) {
             withIssuer(jwtIssuer)
-            withAudience(jwtAudience)
+            withAnyOfAudience(*jwtAudience)
         }
         validate { jwtCredential ->
             if (developmentMode) {

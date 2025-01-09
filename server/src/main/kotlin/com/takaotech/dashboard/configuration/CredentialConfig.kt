@@ -14,8 +14,26 @@ data class GoogleOauth2Config(
 
 data class GoogleJwtConfig(
     val issuer: String,
-    val audience: String,
-)
+    val audience: Array<String>,
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as GoogleJwtConfig
+
+        if (issuer != other.issuer) return false
+        if (!audience.contentEquals(other.audience)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = issuer.hashCode()
+        result = 31 * result + audience.contentHashCode()
+        return result
+    }
+}
 
 data class TakaoJwtConfig(
     val version: Int,

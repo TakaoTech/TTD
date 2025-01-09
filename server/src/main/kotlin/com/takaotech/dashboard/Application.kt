@@ -38,7 +38,7 @@ fun Application.module() {
         ),
         googleJwtConfig = GoogleJwtConfig(
             issuer = System.getenv("JWT_GOOGLE_ISSUER"),
-            audience = System.getenv("JWT_GOOGLE_AUDIENCE")
+            audience = System.getenv("JWT_GOOGLE_AUDIENCE").split(",").toTypedArray()
         ),
         takaoJwtConfig = TakaoJwtConfig(
             version = System.getenv("JWT_TAKAO_VERSION").toInt(),

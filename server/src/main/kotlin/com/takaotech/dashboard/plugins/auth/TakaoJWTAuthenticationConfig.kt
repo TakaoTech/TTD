@@ -29,7 +29,7 @@ fun AuthenticationConfig.configureTakaoJWT(
         }
 
         challenge { defaultScheme, realm ->
-            call.respond(HttpStatusCode.Unauthorized, "TakaoJWT Token is not valid or has expired")
+            call.respond(HttpStatusCode.Unauthorized)
         }
     }
 }

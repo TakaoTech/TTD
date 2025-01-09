@@ -126,7 +126,7 @@ abstract class SessionManager(
                     it[SESSION_KEY] = encryptTokens(tokenPair)
                 }
 
-                installBearer()
+                Unit
             }
         } else {
             Result.failure(Exception("Error while login"))
@@ -144,57 +144,48 @@ abstract class SessionManager(
 
     fun bindKtor(baseKtor: HttpClient) {
         authKtor = baseKtor
-        installBearer()
     }
 
     private fun uninstallBearer() {
         authKtor.authProvider<BearerAuthProvider>()?.clearToken()
     }
 
-    private fun installBearer() {
-        authKtor.config {
-            Auth {
-                bearer {
-                    refreshTokens {
-                        val mOldToken = oldTokens ?: return@refreshTokens null
-                        //TODO Manage Error 500, execute logout
-                        // Error getRepositories
-                        // io.ktor.client.call.NoTransformationFoundException: Expected response body of the type 'class com.takaotech.dashboard.model.session.TokenPairDao (Kotlin reflection is not available)' but was 'class
-                        // io.ktor.utils.io.ByteBufferChannel (Kotlin reflection is not available)'
-                        // In response from `http://<IP>/session/refresh`
-                        // Response status `500 `
-                        // Response header `ContentType: null`
-                        // Request header `Accept: application/json`
-                        try {
-                            withContext(coroutineScope.coroutineContext) {
-                                authApi.refresh(
-                                    RefreshTokenDao(mOldToken.refreshToken!!),
-                                    ext = {
-                                        timeout {
-                                            requestTimeoutMillis = 1.minutes.inWholeMilliseconds
-                                            connectTimeoutMillis = 1.minutes.inWholeMilliseconds
-                                        }
-                                    }
-                                ).let {
-                                    BearerTokens(it.accessToken, it.refreshToken)
-                                }
-                            }
-                        } catch (ex: Exception) {
-                            null
+    suspend fun getRefreshToken(oldTokens: BearerTokens?): BearerTokens? {
+        val mOldToken = oldTokens ?: return null
+        //TODO Manage Error 500, execute logout
+        // Error getRepositories
+        // io.ktor.client.call.NoTransformationFoundException: Expected response body of the type 'class com.takaotech.dashboard.model.session.TokenPairDao (Kotlin reflection is not available)' but was 'class
+        // io.ktor.utils.io.ByteBufferChannel (Kotlin reflection is not available)'
+        // In response from `http://<IP>/session/refresh`
+        // Response status `500 `
+        // Response header `ContentType: null`
+        // Request header `Accept: application/json`
+        return try {
+            withContext(coroutineScope.coroutineContext) {
+                authApi.refresh(
+                    RefreshTokenDao(mOldToken.refreshToken!!),
+                    ext = {
+                        timeout {
+                            requestTimeoutMillis = 1.minutes.inWholeMilliseconds
+                            connectTimeoutMillis = 1.minutes.inWholeMilliseconds
                         }
                     }
-
-                    loadTokens {
-                        val pair = sessionFlow.value
-                        if (pair != null) {
-                            BearerTokens(pair.accessToken, pair.refreshToken)
-                        } else {
-                            null
-                        }
-                    }
-                    realm = "TTD"
+                ).let {
+                    BearerTokens(it.accessToken, it.refreshToken)
                 }
             }
+        } catch (ex: Exception) {
+            logout()
+            null
+        }
+    }
+
+    suspend fun loadToken(): BearerTokens? {
+        val pair = sessionFlow.value
+        return if (pair != null) {
+            BearerTokens(pair.accessToken, pair.refreshToken)
+        } else {
+            null
         }
     }
 }
