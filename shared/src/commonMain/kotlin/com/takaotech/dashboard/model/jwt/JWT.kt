@@ -191,7 +191,7 @@ class JWT(token: String) {
     private fun base64Decode(string: String): String {
         val decoded: String
         try {
-            val bytes: ByteArray = Base64.decode(string)
+            val bytes: ByteArray = Base64.withPadding(Base64.PaddingOption.PRESENT_OPTIONAL).decode(string)
             decoded = bytes.decodeToString()
         } catch (e: IllegalArgumentException) {
             throw DecodeException("Received bytes didn't correspond to a valid Base64 encoded string.", e)
