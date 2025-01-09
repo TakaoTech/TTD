@@ -7,14 +7,14 @@ android-targetSdk = "35"
 browser = "1.8.0"
 buildkonfig = "0.15.1"
 
-androidx-activityCompose = "1.8.2"
-androidx-appcompat = "1.6.1"
-androidx-constraintlayout = "2.1.4"
-androidx-core-ktx = "1.12.0"
-androidx-espresso-core = "3.5.1"
-androidx-material = "1.11.0"
+androidx-activityCompose = "1.9.3"
+androidx-appcompat = "1.7.0"
+androidx-constraintlayout = "2.2.0"
+androidx-core-ktx = "1.15.0"
+androidx-espresso-core = "3.6.1"
+androidx-material = "1.12.0"
 androidx-test-junit = "1.1.5"
-compose = "1.7.3"
+compose = "1.7.6"
 compose-plugin = "1.7.3"
 junit = "4.13.2"
 kermit = "2.0.3"
@@ -32,10 +32,10 @@ prometeus = "1.6.3"
 exposed = "0.45.0"
 ktorfit = "2.2.0"
 okhttp = "4.12.0"
-voyager = "1.0.0"
+voyager = "1.1.0-beta03"
 
 depscredit = "11.1.0"
-haze = "0.6.2"
+haze = "1.1.1"
 coil = "3.0.0-alpha06"
 
 ktlint-gradle = "12.1.1"
@@ -105,7 +105,7 @@ okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor" }
 
 db-h2 = { module = "com.h2database:h2", version = "2.2.224" }
 db-postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
-db-redis = { module = "io.github.crackthecodeabhi:kreds", version = "0.9.1" }
+db-redis = { module = "eu.vendeli:re.this", version = "0.2.0" }
 hikari = { module = "com.zaxxer:HikariCP", version = "5.1.0" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

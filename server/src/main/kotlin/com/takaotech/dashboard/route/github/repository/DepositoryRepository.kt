@@ -12,6 +12,8 @@ import com.takaotech.dashboard.route.github.repository.utils.convertToGHReposito
 import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryMini
 import com.takaotech.dashboard.utils.HikariDatabase
 import com.takaotech.dashboard.utils.RedisDatabase
+import eu.vendeli.rethis.commands.get
+import eu.vendeli.rethis.commands.set
 import io.ktor.util.logging.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -113,14 +115,14 @@ class DepositoryRepository(
     suspend fun detachUpdateTimestamp(): Instant {
         val timeStamp = Clock.System.now()
 
-        redis.dbExec {
+        redis.client.transaction {
             set(LAST_GH_REFRESH_KEY, timeStamp.toString())
         }
         return timeStamp
     }
 
     suspend fun getUpdateTimestamp(): Instant? {
-        return redis.sClient()
+        return redis.client
             .get(LAST_GH_REFRESH_KEY)?.let {
                 Instant.parse(it)
             }

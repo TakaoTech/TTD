@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,113 +15,116 @@ import app.cash.paging.LoadStateLoading
 import app.cash.paging.LoadStateNotLoading
 import app.cash.paging.compose.collectAsLazyPagingItems
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.koin.koinScreenModel
 import com.takaotech.dashboard.ui.github.GHRepositoryCard
 import org.koin.core.parameter.parametersOf
 
 data class GHHomepageListPage(private val tagId: Int? = null) : Screen {
 
-	@Composable
-	override fun Content() {
-		val viewModel = getScreenModel<GHHomepageListPageViewModel> {
-			parametersOf(tagId)
-		}
+    @Composable
+    override fun Content() {
+        val viewModel = koinScreenModel<GHHomepageListPageViewModel> {
+            parametersOf(tagId)
+        }
 
-		val repoList = viewModel.repositoryList.collectAsLazyPagingItems()
-		Scaffold {
-			LazyColumn(
-				modifier = Modifier.fillMaxSize()
-					.padding(it),
-				contentPadding = PaddingValues(16.dp),
-				verticalArrangement = Arrangement.spacedBy(8.dp)
-			) {
-				items(repoList.itemCount) {
-					val item = repoList[it]
-					item?.let {
-						GHRepositoryCard(
-							fullName = item.fullName,
-							tags = item.tags,
-							languages = item.languages,
-							modifier = Modifier.fillMaxSize(),
-							onTagClicked = {
+        val repoList = viewModel.repositoryList.collectAsLazyPagingItems()
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentPadding = with(WindowInsets.systemBars.asPaddingValues()) {
+                PaddingValues(
+                    top = calculateTopPadding(),
+                    bottom = calculateBottomPadding(),
+                    start = 16.dp,
+                    end = 16.dp
+                )
+            },
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(repoList.itemCount) {
+                val item = repoList[it]
+                item?.let {
+                    GHRepositoryCard(
+                        fullName = item.fullName,
+                        tags = item.tags,
+                        languages = item.languages,
+                        modifier = Modifier.fillMaxSize(),
+                        onTagClicked = {
 
-							},
-							onCardClicked = {
+                        },
+                        onCardClicked = {
 
-							}
-						)
-					}
-				}
+                        }
+                    )
+                }
+            }
 
-				repoList.loadState.apply {
-					when {
-						refresh is LoadStateNotLoading && repoList.itemCount < 1 -> {
-							item(key = "LoadStateNotLoading") {
-								Box(
-									modifier = Modifier.fillMaxWidth(),
-									contentAlignment = Alignment.Center
-								) {
-									Text(
-										text = "No Items",
-										modifier = Modifier.align(Alignment.Center),
-										textAlign = TextAlign.Center
-									)
-								}
-							}
-						}
+            repoList.loadState.apply {
+                when {
+                    refresh is LoadStateNotLoading && repoList.itemCount < 1 -> {
+                        item(key = "LoadStateNotLoading") {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "No Items",
+                                    modifier = Modifier.align(Alignment.Center),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
 
-						refresh is LoadStateLoading -> {
-							item(key = "LoadStateLoading-refresh") {
-								Box(
-									modifier = Modifier.fillMaxSize(),
-									contentAlignment = Alignment.Center
-								) {
-									CircularProgressIndicator(
-										Modifier.align(Alignment.Center),
-										color = MaterialTheme.colorScheme.primary,
-									)
-								}
-							}
-						}
+                    refresh is LoadStateLoading -> {
+                        item(key = "LoadStateLoading-refresh") {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    Modifier.align(Alignment.Center),
+                                    color = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                        }
+                    }
 
-						append is LoadStateLoading -> {
-							item(key = "LoadStateLoading-append") {
-								Row {
-									CircularProgressIndicator(
-										color = MaterialTheme.colorScheme.primary,
-										modifier = Modifier.fillMaxSize()
-											.padding(16.dp)
-											.wrapContentWidth(Alignment.CenterHorizontally)
-									)
-								}
-							}
-						}
+                    append is LoadStateLoading -> {
+                        item(key = "LoadStateLoading-append") {
+                            Row {
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.fillMaxSize()
+                                        .padding(16.dp)
+                                        .wrapContentWidth(Alignment.CenterHorizontally)
+                                )
+                            }
+                        }
+                    }
 
-						refresh is LoadStateError -> {
-							item(key = "LoadStateError-refresh") {
-								//TODO
+                    refresh is LoadStateError -> {
+                        item(key = "LoadStateError-refresh") {
+                            //TODO
 //							ErrorView(
 //								message = "No Internet Connection",
 //								onClickRetry = { data.retry() },
 //								modifier = Modifier.fillParentMaxSize()
 //							)
-							}
-						}
+                        }
+                    }
 
-						append is LoadStateError -> {
-							item(key = "LoadStateError-append") {
-								//TODO
+                    append is LoadStateError -> {
+                        item(key = "LoadStateError-append") {
+                            //TODO
 //							ErrorItem(
 //								message = "No Internet Connection",
 //								onClickRetry = { data.retry() },
 //							)
-							}
-						}
-					}
-				}
-			}
-		}
-
-
-	}
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

@@ -37,8 +37,9 @@ object MainNavigator : Screen, KoinComponent {
 
         TabNavigator(HomePageTab) {
             Scaffold(
+                modifier = Modifier,
                 content = {
-                    Box(Modifier.padding(it)) {
+                    Box(modifier = Modifier.padding(bottom = it.calculateBottomPadding())) {
                         CurrentScreen()
                     }
                 },

@@ -2,13 +2,8 @@ package com.takaotech.dashboard.utils
 
 import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.configuration.RedisConfiguration
-import io.github.crackthecodeabhi.kreds.commands.StringCommands
-import io.github.crackthecodeabhi.kreds.connection.Endpoint
-import io.github.crackthecodeabhi.kreds.connection.KredsClient
-import io.github.crackthecodeabhi.kreds.connection.newClient
-import io.github.crackthecodeabhi.kreds.pipeline.Transaction
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import eu.vendeli.rethis.ReThis
+import eu.vendeli.rethis.types.core.Url
 import org.koin.core.annotation.Singleton
 
 @Singleton
@@ -16,20 +11,11 @@ class RedisDatabase(
     dbConfiguration: DbConfiguration
 ) {
     private val redisConfiguration: RedisConfiguration = dbConfiguration.redisConfiguration
-    private lateinit var mClient: KredsClient
+    lateinit var client: ReThis
+        private set
 
     fun connect() {
-        mClient = newClient(Endpoint.from(redisConfiguration.url))
-    }
-
-    fun sClient(): StringCommands = mClient
-
-    suspend fun dbExec(
-        statement: suspend Transaction.() -> Unit,
-    ) = withContext(Dispatchers.IO) {
-        mClient.transaction().apply {
-            statement(this)
-        }.exec()
+        client = ReThis(Url(redisConfiguration.url))
     }
 
 }
