@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getNavigatorScreenModel
+import cafe.adriel.voyager.koin.koinNavigatorScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.takaotech.dashboard.model.github.MainCategory
@@ -28,7 +28,7 @@ class GHRepositoryScreen : Screen, KoinComponent {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val viewModel = navigator.getNavigatorScreenModel<GHRepositoryListViewModel>()
+        val viewModel = navigator.koinNavigatorScreenModel<GHRepositoryListViewModel>()
         val uriHandler = LocalTTDUriHandler.current
         val uiState by viewModel.uiState.collectAsState()
 
@@ -107,12 +107,13 @@ internal fun GHRepositoryScreen(
                 var showCancelMenu by remember { mutableStateOf(false) }
 
                 Text(
-                    modifier = Modifier.minimumInteractiveComponentSize()
+                    modifier = Modifier
+                        .minimumInteractiveComponentSize()
                         .pointerInput(Unit) {
                             detectTapGestures(
                                 onLongPress = {
                                     // Azione da eseguire al long press
-                                    showCancelMenu= true
+                                    showCancelMenu = true
                                 }
                             )
                         },

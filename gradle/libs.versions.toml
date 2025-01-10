@@ -60,8 +60,7 @@ androidx-credentials-playservices = { module = "androidx.credentials:credentials
 
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kotlin-result = { module = "com.github.kittinunf.result:result", version = "5.5.0" }
-kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.0-RC.2" }
-kotlin-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version = "0.24.0" }
+kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.1" }
 kotlin-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version = "0.27.0" }
 
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
@@ -90,16 +89,16 @@ exposed-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", v
 
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "prometeus" }
 
-koin-bom = { module = "io.insert-koin:koin-bom", version = "4.1.0-Beta3" }
+koin-bom = { module = "io.insert-koin:koin-bom", version = "4.1.0-Beta4" }
 koin-annotation-bom = { module = "io.insert-koin:koin-annotations-bom", version = "2.0.0-Beta3" }
 koin-compilerksp = { module = "io.insert-koin:koin-ksp-compiler", version = "2.0.0-Beta3" }
 koin-annotation = { module = "io.insert-koin:koin-annotations" }
-koin-ktor = { module = "io.insert-koin:koin-ktor3", version = "4.1.0-Beta3" }
+koin-ktor = { module = "io.insert-koin:koin-ktor3" }
 koin-logger = { module = "io.insert-koin:koin-logger-slf4j" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = { module = "io.insert-koin:koin-android" }
 
-github-api = { module = "org.kohsuke:github-api", version = "1.319" }
+github-api = { module = "org.kohsuke:github-api", version = "1.326" }
 okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp" }
 okhttp-client = { module = "com.squareup.okhttp3:okhttp" }
 okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor" }
@@ -124,7 +123,6 @@ koin-junit = { module = "io.insert-koin:koin-test-junit5" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
-ktorfit-ksp = { module = "de.jensklingenberg.ktorfit:ktorfit-ksp", version.ref = "ktorfit" }
 serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 ktor-client = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-test = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }

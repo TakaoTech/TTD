@@ -16,13 +16,18 @@ import app.cash.paging.LoadStateNotLoading
 import app.cash.paging.compose.collectAsLazyPagingItems
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.koinScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.takaotech.dashboard.ui.github.GHRepositoryCard
+import com.takaotech.dashboard.ui.github.detail.GHRepositoryDetail
 import org.koin.core.parameter.parametersOf
 
 data class GHHomepageListPage(private val tagId: Int? = null) : Screen {
 
     @Composable
     override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+
         val viewModel = koinScreenModel<GHHomepageListPageViewModel> {
             parametersOf(tagId)
         }
@@ -53,7 +58,7 @@ data class GHHomepageListPage(private val tagId: Int? = null) : Screen {
 
                         },
                         onCardClicked = {
-
+                            navigator.push(GHRepositoryDetail(it.id))
                         }
                     )
                 }
@@ -95,7 +100,8 @@ data class GHHomepageListPage(private val tagId: Int? = null) : Screen {
                             Row {
                                 CircularProgressIndicator(
                                     color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.fillMaxSize()
+                                    modifier = Modifier
+                                        .fillMaxSize()
                                         .padding(16.dp)
                                         .wrapContentWidth(Alignment.CenterHorizontally)
                                 )
