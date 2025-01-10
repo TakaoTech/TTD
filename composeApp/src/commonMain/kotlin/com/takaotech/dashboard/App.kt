@@ -15,30 +15,28 @@ import com.takaotech.dashboard.ui.theme.AppTheme
 
 @Composable
 fun App() {
-	AppTheme {
-		//TODO Support back gesture https://github.com/adrielcafe/voyager/issues/223
-		//TODO Supporto RTL Slide Transition
-		Navigator(MainNavigator) {
-			val layoutDirection = LocalLayoutDirection.current
-			if (layoutDirection == LayoutDirection.Ltr) {
-			} else {
+    AppTheme {
+        // TODO Support back gesture https://github.com/adrielcafe/voyager/issues/223
+        // TODO Supporto RTL Slide Transition
+        Navigator(MainNavigator) {
+            val layoutDirection = LocalLayoutDirection.current
+            if (layoutDirection == LayoutDirection.Ltr) {
+            } else {
+            }
 
-			}
-
-			SlideTransition(navigator = it)
-		}
-	}
+            SlideTransition(navigator = it)
+        }
+    }
 }
-
 
 @Composable
 fun RowScope.TabNavigationItem(tab: Tab) {
-	val tabNavigator = LocalTabNavigator.current
+    val tabNavigator = LocalTabNavigator.current
 
-	NavigationBarItem(
-		selected = tabNavigator.current == tab,
-		onClick = { tabNavigator.current = tab },
-		icon = { Icon(painter = tab.options.icon!!, contentDescription = tab.options.title) },
-		label = { Text(tab.options.title) }
-	)
+    NavigationBarItem(
+        selected = tabNavigator.current == tab,
+        onClick = { tabNavigator.current = tab },
+        icon = { Icon(painter = tab.options.icon!!, contentDescription = tab.options.title) },
+        label = { Text(tab.options.title) },
+    )
 }

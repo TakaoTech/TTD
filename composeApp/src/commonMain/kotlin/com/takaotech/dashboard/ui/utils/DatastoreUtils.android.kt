@@ -17,7 +17,8 @@ fun getSessionDatastore(producePath: () -> String): DataStore<Preferences> =
         if (::sessionDatastore.isInitialized) {
             sessionDatastore
         } else {
-            PreferenceDataStoreFactory.createWithPath(produceFile = { producePath().toPath() })
+            PreferenceDataStoreFactory
+                .createWithPath(produceFile = { producePath().toPath() })
                 .also { sessionDatastore = it }
         }
     }

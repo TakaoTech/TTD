@@ -30,7 +30,6 @@ class DepositoryRepository(
     private val logger: Logger,
     private val colorController: GithubColorController,
 ) {
-
     /**
      * Procedura di salvataggio repository GH in DB
      *
@@ -46,13 +45,18 @@ class DepositoryRepository(
      *
      * @param repositoryList
      */
-    suspend fun saveRepositoriesToDB(refreshAt: Instant, repositoryList: List<GHRepositoryDao>) {
-        val ghUsers = repositoryList.map {
-            it.user
-        }.toSet()
-            .map {
-                updateOrCreateGHUser(it)
-            }
+    suspend fun saveRepositoriesToDB(
+        refreshAt: Instant,
+        repositoryList: List<GHRepositoryDao>,
+    ) {
+        val ghUsers =
+            repositoryList
+                .map {
+                    it.user
+                }.toSet()
+                .map {
+                    updateOrCreateGHUser(it)
+                }
 
         repositoryList.forEach {
             updateOrCreateGHRepository(it, refreshAt, ghUsers)
@@ -67,9 +71,10 @@ class DepositoryRepository(
                 url = user.url
             }
 
-            val userEntity = GithubUserEntity.findById(user.id)?.apply(updateLambda)
-                ?: GithubUserEntity.new(user.id, updateLambda)
-            //apply new or update to db
+            val userEntity =
+                GithubUserEntity.findById(user.id)?.apply(updateLambda)
+                    ?: GithubUserEntity.new(user.id, updateLambda)
+            // apply new or update to db
             commit()
 
             return@dbExec userEntity
@@ -94,11 +99,12 @@ class DepositoryRepository(
                 languages = repository.languages
 
                 if (isNotCreated) {
-                    category = if (repository.languages.find { it.name == "Kotlin" } != null) {
-                        MainCategory.KOTLIN
-                    } else {
-                        MainCategory.NONE
-                    }
+                    category =
+                        if (repository.languages.find { it.name == "Kotlin" } != null) {
+                            MainCategory.KOTLIN
+                        } else {
+                            MainCategory.NONE
+                        }
                 }
 
                 license = repository.license
@@ -121,60 +127,64 @@ class DepositoryRepository(
         return timeStamp
     }
 
-    suspend fun getUpdateTimestamp(): Instant? {
-        return redis.client
-            .get(LAST_GH_REFRESH_KEY)?.let {
+    suspend fun getUpdateTimestamp(): Instant? =
+        redis.client
+            .get(LAST_GH_REFRESH_KEY)
+            ?.let {
                 Instant.parse(it)
             }
-    }
 
     @Throws(ExposedSQLException::class)
-    suspend fun setTagsAtRepository(repositoryId: Long, tags: List<TagsEntity>): Result<Unit, Throwable> {
-        return Result.of<Unit, Throwable> {
-            database.dbExec {
-                GithubDepositoryEntity.findById(repositoryId)?.let {
-                    it.tags = SizedCollection(tags)
+    suspend fun setTagsAtRepository(
+        repositoryId: Long,
+        tags: List<TagsEntity>,
+    ): Result<Unit, Throwable> =
+        Result
+            .of<Unit, Throwable> {
+                database.dbExec {
+                    GithubDepositoryEntity.findById(repositoryId)?.let {
+                        it.tags = SizedCollection(tags)
+                    }
                 }
+            }.onFailure {
+                logger.error("Failed to set tags at repository $repositoryId", it)
             }
-        }.onFailure {
-            logger.error("Failed to set tags at repository $repositoryId", it)
-        }
-    }
 
-    suspend fun getGHRepository(
-        category: MainCategory? = null,
-    ): List<GHRepositoryDao> {
-        return database.dbExec {
-            GithubDepositoryEntity.all().let {
-                if (category != null) {
-                    it.filter { it.category == category }
-                } else {
-                    it
-                }
-            }.toList()
-        }.map {
-            it.convertToGHRepository(database, colorController)
-        }
-    }
+    suspend fun getGHRepository(category: MainCategory? = null): List<GHRepositoryDao> =
+        database
+            .dbExec {
+                GithubDepositoryEntity
+                    .all()
+                    .let {
+                        if (category != null) {
+                            it.filter { it.category == category }
+                        } else {
+                            it
+                        }
+                    }.toList()
+            }.map {
+                it.convertToGHRepository(database, colorController)
+            }
 
-    suspend fun getGHRepositoryById(id: Long): GHRepositoryDao? {
-        return database.dbExec {
-            GithubDepositoryEntity.findById(id)
+    suspend fun getGHRepositoryById(id: Long): GHRepositoryDao? =
+        database.dbExec {
+            GithubDepositoryEntity
+                .findById(id)
                 ?.convertToGHRepository(database, colorController)
         }
-    }
 
     /**
      * Check if a repository exists in db
      */
-    suspend fun ghRepositoryExist(id: Long): Boolean {
-        return database.dbExec {
+    suspend fun ghRepositoryExist(id: Long): Boolean =
+        database.dbExec {
             GithubDepositoryEntity.findById(id) != null
         }
-    }
 
-
-    suspend fun updateGhRepositoryMainCategory(id: Long, mainCategory: MainCategory) {
+    suspend fun updateGhRepositoryMainCategory(
+        id: Long,
+        mainCategory: MainCategory,
+    ) {
         database.dbExec {
             GithubDepositoryEntity.findById(id)?.category = mainCategory
         }
@@ -185,24 +195,25 @@ class DepositoryRepository(
         page: Int,
         size: Int,
     ): TakaoPaging<GHRepositoryMiniDao> {
-        //https://proandroiddev.com/pagination-sorting-and-custom-plugins-in-ktor-a2575e2da83a
+        // https://proandroiddev.com/pagination-sorting-and-custom-plugins-in-ktor-a2575e2da83a
         val limit: Int = size
         val pageSize: Int = size
         val skip: Int = (page - 1) * pageSize
 
         return database.dbExec {
-            GithubDepositoryMiniEntity.find {
-                GithubDepositoryTable.category eq mainCategory
-            }.run {
-                val totalPages = (count() / pageSize)
-                totalPages to limit(offset = skip.toLong(), n = limit)
-            }.run {
-                TakaoPaging(
-                    data = second.map { it.convertToGHRepositoryMini(database, colorController) },
-                    page = page,
-                    totalPage = first
-                )
-            }
+            GithubDepositoryMiniEntity
+                .find {
+                    GithubDepositoryTable.category eq mainCategory
+                }.run {
+                    val totalPages = (count() / pageSize)
+                    totalPages to limit(offset = skip.toLong(), n = limit)
+                }.run {
+                    TakaoPaging(
+                        data = second.map { it.convertToGHRepositoryMini(database, colorController) },
+                        page = page,
+                        totalPage = first,
+                    )
+                }
         }
     }
 
@@ -217,26 +228,25 @@ class DepositoryRepository(
         val skip: Int = (page - 1) * pageSize
 
         return database.dbExec {
-            //Here we can skip filtering KOTLIN
-            (TagsEntityFollowRepo.findById(tagId)
-                ?.repositories ?: EmptySizedIterable())
-                .run {
+            // Here we can skip filtering KOTLIN
+            (
+                    TagsEntityFollowRepo
+                        .findById(tagId)
+                        ?.repositories ?: EmptySizedIterable()
+                    ).run {
                     val totalPages = (count() / pageSize)
                     totalPages to limit(offset = skip.toLong(), n = limit)
                 }.run {
                     TakaoPaging(
                         data = second.map { it.convertToGHRepositoryMini(database, colorController) },
                         page = page,
-                        totalPage = first
+                        totalPage = first,
                     )
                 }
         }
     }
 
-
     companion object {
         private const val LAST_GH_REFRESH_KEY = "LAST_GH_REFRESH"
     }
-
-
 }

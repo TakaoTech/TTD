@@ -18,12 +18,12 @@ import kotlin.time.Duration.Companion.seconds
 
 @Factory
 class GHRepositoryListViewModel(
-    private val adminGhRepository: AdminGHRepository
+    private val adminGhRepository: AdminGHRepository,
 ) : ScreenModel {
     private val mUiState = MutableStateFlow(GHRepositoryListUiState())
     val uiState = mUiState.asStateFlow()
 
-    //TODO Channel for send show snackbar refresh
+    // TODO Channel for send show snackbar refresh
 
     private val mSnackbarChannel = Channel<GHRepositoryListUiState.SnackbarType>()
     val snackbarChannel = mSnackbarChannel.receiveAsFlow()
@@ -34,7 +34,6 @@ class GHRepositoryListViewModel(
 
     private var mTickerRefresh: Flow<Long>? = null
 
-
     init {
         getRepositoryList()
         startCheckRepositoryRefresh()
@@ -44,11 +43,12 @@ class GHRepositoryListViewModel(
         screenModelScope.launch {
             mUiState.update {
                 it.copy(
-                    mainCategoryUi = with(it.mainCategoryUi) {
-                        copy(
-                            selectedCategory = mainCategory
-                        )
-                    }
+                    mainCategoryUi =
+                        with(it.mainCategoryUi) {
+                            copy(
+                                selectedCategory = mainCategory,
+                            )
+                        },
                 )
             }
 
@@ -56,22 +56,25 @@ class GHRepositoryListViewModel(
         }
     }
 
-    fun updateGHRepositoryCategory(id: Long, newCategory: MainCategory) {
+    fun updateGHRepositoryCategory(
+        id: Long,
+        newCategory: MainCategory,
+    ) {
         screenModelScope.launch(Dispatchers.IO) {
             adminGhRepository.updateCategoryRepository(id, newCategory)
         }
     }
 
-    fun getAssignedTags(repositoryId: Long): List<TagDao> {
-        return (uiState.value.ghRepositoryListState as GHRepositoryListUiState.GhRepositoryListState.Success)
+    fun getAssignedTags(repositoryId: Long): List<TagDao> =
+        (uiState.value.ghRepositoryListState as GHRepositoryListUiState.GhRepositoryListState.Success)
             .ghRepositoryData
             .find { it.id == repositoryId }
             ?.tags ?: listOf()
-    }
 
     fun refreshGHRepository(repositoryId: Long) {
         screenModelScope.launch {
-            adminGhRepository.getRepositoryById(repositoryId)
+            adminGhRepository
+                .getRepositoryById(repositoryId)
                 .onSuccess { repositoryUpdated ->
                     mUiState.update {
                         with(it.ghRepositoryListState as GHRepositoryListUiState.GhRepositoryListState.Success) {
@@ -86,27 +89,27 @@ class GHRepositoryListViewModel(
                             GHRepositoryListUiState.GhRepositoryListState.Success(it)
                         }.let { ghListState ->
                             it.copy(
-                                ghRepositoryListState = ghListState
+                                ghRepositoryListState = ghListState,
                             )
                         }
                     }
 
                     mSnackbarChannel.send(GHRepositoryListUiState.SnackbarType.TAG_UPDATE)
                 }.onFailure {
-                    //TODO Show error snackbar
+                    // TODO Show error snackbar
                 }
         }
     }
 
     fun pullGHRepositories() {
         screenModelScope.launch {
-            adminGhRepository.refreshRepositories()
+            adminGhRepository
+                .refreshRepositories()
                 .onSuccess {
                     startCheckRepositoryRefresh()
                 }
         }
     }
-
 
     private fun getRepositoryList() {
         screenModelScope.launch(Dispatchers.IO) {
@@ -124,7 +127,6 @@ class GHRepositoryListViewModel(
                     it.copy(ghRepositoryListState = GHRepositoryListUiState.GhRepositoryListState.Error)
                 }
             }
-
         }
     }
 
@@ -141,24 +143,26 @@ class GHRepositoryListViewModel(
 
     private fun startLoopCheck() {
         tickerCoroutineScope.launch {
-            mTickerRefresh = tickerCounterFlow(10.seconds)
-                .onCompletion {
-                    if (it is CancellationException) {
-                        mTickerRefresh = null
-                    } else {
-                        val statusResult = adminGhRepository.getStatusOfRefreshRepositories()
-                        statusResult.onSuccess {
-                            if (it != null && it) {
-                                startLoopCheck()
-                            }else{
-                                mCounterForRefresh.emit(null)
-                            }
-                        }.onFailure {
-                            //TODO need understand for restart another time
-                            // remember, call refresh with active refresh respond HttpStatusCode.Conflict
+            mTickerRefresh =
+                tickerCounterFlow(10.seconds)
+                    .onCompletion {
+                        if (it is CancellationException) {
+                            mTickerRefresh = null
+                        } else {
+                            val statusResult = adminGhRepository.getStatusOfRefreshRepositories()
+                            statusResult
+                                .onSuccess {
+                                    if (it != null && it) {
+                                        startLoopCheck()
+                                    } else {
+                                        mCounterForRefresh.emit(null)
+                                    }
+                                }.onFailure {
+                                    // TODO need understand for restart another time
+                                    // remember, call refresh with active refresh respond HttpStatusCode.Conflict
+                                }
                         }
                     }
-                }
             mTickerRefresh!!.collect {
                 mCounterForRefresh.emit(it)
             }
@@ -173,29 +177,32 @@ class GHRepositoryListViewModel(
 data class GHRepositoryListUiState(
     val mainCategoryUi: MainCategoryUi = MainCategoryUi(),
     val ghRepositoryListState: GhRepositoryListState = GhRepositoryListState.Loading,
-    val mainCategorySelected: MainCategory? = null
+    val mainCategorySelected: MainCategory? = null,
 ) {
     enum class SnackbarType {
-        TAG_UPDATE
+        TAG_UPDATE,
     }
 
     data class MainCategoryUi(
-        val categoryList: List<MainCategory?> = MainCategory.entries
-            .toMutableList().let {
-                it as MutableList<MainCategory?>
-            }.let {
-                it.add(0, null)
-                it
-            },
-        val selectedCategory: MainCategory? = null
+        val categoryList: List<MainCategory?> =
+            MainCategory.entries
+                .toMutableList()
+                .let {
+                    it as MutableList<MainCategory?>
+                }.let {
+                    it.add(0, null)
+                    it
+                },
+        val selectedCategory: MainCategory? = null,
     )
 
     sealed interface GhRepositoryListState {
         data class Success(
-            val ghRepositoryData: List<GHRepositoryDao> = listOf()
+            val ghRepositoryData: List<GHRepositoryDao> = listOf(),
         ) : GhRepositoryListState
 
         data object Error : GhRepositoryListState
+
         data object Loading : GhRepositoryListState
     }
 }

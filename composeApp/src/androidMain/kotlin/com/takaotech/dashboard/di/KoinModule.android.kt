@@ -29,47 +29,50 @@ actual fun KoinApplication.platformModules() {
                     logger = get(),
                     googleLogin = get(),
                     authApi = get(),
-                    context = get()
+                    context = get(),
                 ).apply {
                     init()
                 }
             } bind SessionManager::class withOptions {
                 createdAtStart()
             }
-
         },
         *appModules(),
     )
 }
 
-internal actual fun getBaseKtor(kermitLogger: Logger) = HttpClient(OkHttp) {
-    engine {
+internal actual fun getBaseKtor(kermitLogger: Logger) =
+    HttpClient(OkHttp) {
+        engine {
 //        https {
 //            trustManager = SslSettings.getTrustManager()
 //        }
 
-        preconfigured = SslSettings.getOkHttpClient()
+            preconfigured = SslSettings.getOkHttpClient()
+        }
+
+        configureCommonHttp(kermitLogger)
     }
 
-    configureCommonHttp(kermitLogger)
-}
-
-//https://medium.com/@MrHardikTrivedi/public-key-pinning-using-ktor-for-android-and-ios-kmm-61066cb34321
+// https://medium.com/@MrHardikTrivedi/public-key-pinning-using-ktor-for-android-and-ios-kmm-61066cb34321
 
 object SslSettings {
-    private val pin = arrayOf(
-        AppBuildKonfig.CERT_PIN1
-    )
+    private val pin =
+        arrayOf(
+            AppBuildKonfig.CERT_PIN1,
+        )
 
     internal fun getOkHttpClient(): OkHttpClient {
-        val certificatePinner = CertificatePinner.Builder()
-            .add(pattern = Url(AppBuildKonfig.baseUrl).host, pins = pin)
-            .build()
-        return OkHttpClient.Builder()
+        val certificatePinner =
+            CertificatePinner
+                .Builder()
+                .add(pattern = Url(AppBuildKonfig.baseUrl).host, pins = pin)
+                .build()
+        return OkHttpClient
+            .Builder()
             .certificatePinner(certificatePinner)
             .build()
     }
-
 
 //    fun getKeyStore(): KeyStore {
 //        val keyStoreFile = FileInputStream("keystore.jks")

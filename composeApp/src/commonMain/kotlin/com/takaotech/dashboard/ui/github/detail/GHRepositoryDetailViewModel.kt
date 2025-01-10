@@ -14,39 +14,40 @@ import org.koin.core.annotation.InjectedParam
 
 @Factory
 class GHRepositoryDetailViewModel(
-	@InjectedParam private val repositoryId: Long,
-	private val ghRepository: GHRepository
+    @InjectedParam private val repositoryId: Long,
+    private val ghRepository: GHRepository,
 ) : ScreenModel {
-	private val mUiState = MutableStateFlow(GHRepositoryDetailUi())
-	val uiState = mUiState.asStateFlow()
+    private val mUiState = MutableStateFlow(GHRepositoryDetailUi())
+    val uiState = mUiState.asStateFlow()
 
-	init {
-		getRepository()
-	}
+    init {
+        getRepository()
+    }
 
-	private fun getRepository() {
-		screenModelScope.launch {
-			val repositoryResult = ghRepository.getRepository(repositoryId)
-			mUiState.update {
-				if (repositoryResult.isSuccess()) {
-					it.copy(repositoryUiState = GHRepositoryDetailUi.GHRepositoryDetailUiState.Success(repositoryResult.get()))
-				} else {
-					it.copy(repositoryUiState = GHRepositoryDetailUi.GHRepositoryDetailUiState.Error)
-				}
-			}
-		}
-	}
+    private fun getRepository() {
+        screenModelScope.launch {
+            val repositoryResult = ghRepository.getRepository(repositoryId)
+            mUiState.update {
+                if (repositoryResult.isSuccess()) {
+                    it.copy(repositoryUiState = GHRepositoryDetailUi.GHRepositoryDetailUiState.Success(repositoryResult.get()))
+                } else {
+                    it.copy(repositoryUiState = GHRepositoryDetailUi.GHRepositoryDetailUiState.Error)
+                }
+            }
+        }
+    }
 }
 
 data class GHRepositoryDetailUi(
-	val repositoryUiState: GHRepositoryDetailUiState = GHRepositoryDetailUiState.Loading
+    val repositoryUiState: GHRepositoryDetailUiState = GHRepositoryDetailUiState.Loading,
 ) {
+    sealed interface GHRepositoryDetailUiState {
+        data object Loading : GHRepositoryDetailUiState
 
-	sealed interface GHRepositoryDetailUiState {
-		data object Loading : GHRepositoryDetailUiState
-		data object Error : GHRepositoryDetailUiState
+        data object Error : GHRepositoryDetailUiState
 
-		class Success(val repository: GHRepositoryDao) : GHRepositoryDetailUiState
-
-	}
+        class Success(
+            val repository: GHRepositoryDao,
+        ) : GHRepositoryDetailUiState
+    }
 }

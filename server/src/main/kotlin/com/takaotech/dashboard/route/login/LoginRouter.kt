@@ -28,9 +28,9 @@ import org.koin.ktor.plugin.scope
 fun Application.sessionRoute() {
     val sessionController by inject<SessionController>()
     routing {
-        //https://ktor.io/docs/server-jwt.html#realm
-        //https://codersee.com/ktor-app-with-jwt-refresh-token-flow/
-        //https://github.com/Slenkis/ktor-full-jwt
+        // https://ktor.io/docs/server-jwt.html#realm
+        // https://codersee.com/ktor-app-with-jwt-refresh-token-flow/
+        // https://github.com/Slenkis/ktor-full-jwt
         authenticate("google") {
             get<SessionRoute.Login> {
                 val userPayload = call.principal<JWTPrincipal>()?.payload
@@ -57,8 +57,6 @@ fun Application.sessionRoute() {
                 } else {
                     call.respond(HttpStatusCode.BadRequest, "Missing Google payload for Signup")
                 }
-
-
             }
         }
 
@@ -66,15 +64,15 @@ fun Application.sessionRoute() {
             val refreshToken = call.receive<RefreshTokenDao>().refreshToken
 
             call.respond(sessionController.refreshToken(refreshToken))
-
         }
 
         route("/google") {
-            val applicationHttpClient = HttpClient {
-                install(ContentNegotiation) {
-                    json()
+            val applicationHttpClient =
+                HttpClient {
+                    install(ContentNegotiation) {
+                        json()
+                    }
                 }
-            }
 
             authenticate("oauth-google") {
                 get("/login") {
@@ -89,28 +87,28 @@ fun Application.sessionRoute() {
                         principal.state?.let { state ->
                             val token = principal.accessToken
 
-                            val userInfo = applicationHttpClient.get("https://www.googleapis.com/oauth2/v2/userinfo") {
-                                headers {
-                                    bearerAuth(token)
+                            val userInfo =
+                                applicationHttpClient
+                                    .get("https://www.googleapis.com/oauth2/v2/userinfo") {
+                                        headers {
+                                            bearerAuth(token)
+                                        }
+                                    }.body<JsonElement>()
+
+                            Result
+                                .of<Unit, Exception> {
+                                    userController.signUpByGoogle(userInfo.jsonObject)
+                                }.onSuccess {
+                                    val data = sessionController.generateTokenPairFromGoogle(userInfo.jsonObject)
+                                    call.respond(data)
+                                }.onFailure {
+                                    val data = sessionController.generateTokenPairFromGoogle(userInfo.jsonObject)
+                                    call.respond(data)
                                 }
-                            }.body<JsonElement>()
-
-                            Result.of<Unit, Exception> {
-                                userController.signUpByGoogle(userInfo.jsonObject)
-                            }.onSuccess {
-                                val data = sessionController.generateTokenPairFromGoogle(userInfo.jsonObject)
-                                call.respond(data)
-                            }.onFailure {
-                                val data = sessionController.generateTokenPairFromGoogle(userInfo.jsonObject)
-                                call.respond(data)
-                            }
-
                         }
                     }
-
                 }
             }
         }
     }
 }
-

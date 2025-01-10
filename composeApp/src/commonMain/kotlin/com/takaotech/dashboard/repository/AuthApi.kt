@@ -9,18 +9,18 @@ interface AuthApi {
     @GET("session/login")
     suspend fun login(
         @Header("x-nonce") hashedNonce: String,
-        @ReqBuilder ext: HttpRequestBuilder.() -> Unit
+        @ReqBuilder ext: HttpRequestBuilder.() -> Unit,
     ): TokenPairDao
 
     @GET("session/signup")
     suspend fun signup(
         @Header("x-nonce") hashedNonce: String,
-        @ReqBuilder ext: HttpRequestBuilder.() -> Unit
+        @ReqBuilder ext: HttpRequestBuilder.() -> Unit,
     ): TokenPairDao
 
     @POST("session/refresh")
     suspend fun refresh(
         @Body refreshToken: RefreshTokenDao,
-        @ReqBuilder ext: HttpRequestBuilder.() -> Unit
+        @ReqBuilder ext: HttpRequestBuilder.() -> Unit,
     ): TokenPairDao
 }

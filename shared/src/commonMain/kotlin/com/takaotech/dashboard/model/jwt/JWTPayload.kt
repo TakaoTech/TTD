@@ -10,7 +10,6 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 
-
 @Serializable(with = JWTPayloadSerializer::class)
 class JWTPayload(
     @SerialName("iss")
@@ -30,9 +29,8 @@ class JWTPayload(
     val jti: String? = null,
     @SerialName("aud")
     val aud: List<String>,
-    val tree: Map<String, Claim>
+    val tree: Map<String, Claim>,
 ) {
-
     fun claimForName(name: String): Claim? {
         val claim = tree[name] ?: return null
         return claim
@@ -43,45 +41,52 @@ object InstantSecondsSerializer : KSerializer<Instant> {
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("Instant", PrimitiveKind.LONG)
 
-    override fun serialize(encoder: Encoder, value: Instant) {
+    override fun serialize(
+        encoder: Encoder,
+        value: Instant,
+    ) {
         encoder.encodeLong(value.epochSeconds)
     }
 
-    override fun deserialize(decoder: Decoder): Instant {
-        return Instant.fromEpochSeconds(decoder.decodeLong())
-    }
+    override fun deserialize(decoder: Decoder): Instant = Instant.fromEpochSeconds(decoder.decodeLong())
 }
 
 object JWTPayloadSerializer : KSerializer<JWTPayload> {
-    override val descriptor: SerialDescriptor = buildClassSerialDescriptor("JWT") {
-        element<String>("iss", isOptional = true)
-        element<String>("sub", isOptional = true)
-        element<Long>("exp", isOptional = true)
-        element<Long>("nbf", isOptional = true)
-        element<Long>("iat", isOptional = true)
-        element<String>("jti", isOptional = true)
-        element<List<String>>("aud", isOptional = true)
-    }
+    override val descriptor: SerialDescriptor =
+        buildClassSerialDescriptor("JWT") {
+            element<String>("iss", isOptional = true)
+            element<String>("sub", isOptional = true)
+            element<Long>("exp", isOptional = true)
+            element<Long>("nbf", isOptional = true)
+            element<Long>("iat", isOptional = true)
+            element<String>("jti", isOptional = true)
+            element<List<String>>("aud", isOptional = true)
+        }
 
-    override fun serialize(encoder: Encoder, value: JWTPayload) {
+    override fun serialize(
+        encoder: Encoder,
+        value: JWTPayload,
+    ) {
         val jsonEncoder =
             encoder as? JsonEncoder ?: throw SerializationException("This class can be saved only by Json")
 
-        val jsonMap = mutableMapOf(
-            "iss" to JsonPrimitive(value.iss),
-            "sub" to JsonPrimitive(value.sub),
-            "exp" to JsonPrimitive(value.exp?.epochSeconds),
-            "nbf" to JsonPrimitive(value.nbf?.epochSeconds),
-            "iat" to JsonPrimitive(value.iat?.epochSeconds),
-            "jti" to JsonPrimitive(value.jti),
-            "aud" to Json.encodeToJsonElement(value.aud),
-        ).also { jsonMap ->
-            value.tree.mapValues {
-                Json.encodeToJsonElement(it.value.value)
-            }.let {
-                jsonMap.putAll(it)
+        val jsonMap =
+            mutableMapOf(
+                "iss" to JsonPrimitive(value.iss),
+                "sub" to JsonPrimitive(value.sub),
+                "exp" to JsonPrimitive(value.exp?.epochSeconds),
+                "nbf" to JsonPrimitive(value.nbf?.epochSeconds),
+                "iat" to JsonPrimitive(value.iat?.epochSeconds),
+                "jti" to JsonPrimitive(value.jti),
+                "aud" to Json.encodeToJsonElement(value.aud),
+            ).also { jsonMap ->
+                value.tree
+                    .mapValues {
+                        Json.encodeToJsonElement(it.value.value)
+                    }.let {
+                        jsonMap.putAll(it)
+                    }
             }
-        }
 
         jsonEncoder.encodeJsonElement(JsonObject(jsonMap))
     }
@@ -101,8 +106,6 @@ object JWTPayloadSerializer : KSerializer<JWTPayload> {
         val jti = jsonObject["jti"]?.jsonPrimitive?.contentOrNull
         val aud = getStringOrArray(jsonObject, "aud")
 
-
-
         return JWTPayload(
             iss = iss,
             sub = sub,
@@ -111,13 +114,17 @@ object JWTPayloadSerializer : KSerializer<JWTPayload> {
             iat = iat,
             jti = jti,
             aud = aud,
-            tree = jsonObject.mapValues {
-                Claim(it.value)
-            }
+            tree =
+                jsonObject.mapValues {
+                    Claim(it.value)
+                },
         )
     }
 
-    private fun getStringOrArray(obj: JsonObject, claimName: String): List<String> {
+    private fun getStringOrArray(
+        obj: JsonObject,
+        claimName: String,
+    ): List<String> {
         var list: MutableList<String?> = mutableListOf()
         if (obj.containsKey(claimName)) {
             val arrElement = obj[claimName]

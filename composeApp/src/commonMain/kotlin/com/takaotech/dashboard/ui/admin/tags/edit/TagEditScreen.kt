@@ -12,38 +12,38 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.takaotech.dashboard.ui.admin.tags.list.TagListViewModel
 import org.koin.core.parameter.parametersOf
 
-
 data class TagEditScreen(
-	private val tagId: Int? = null,
-	private val editMode: Boolean
+    private val tagId: Int? = null,
+    private val editMode: Boolean,
 ) : Screen {
-	@Composable
-	override fun Content() {
-		val navigator = LocalNavigator.currentOrThrow
-		val tagListViewModel = navigator.getNavigatorScreenModel<TagListViewModel>()
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        val tagListViewModel = navigator.getNavigatorScreenModel<TagListViewModel>()
 
-		val viewModel = getScreenModel<TagEditViewModel>(
-			parameters = { parametersOf(tagId, editMode) }
-		)
+        val viewModel =
+            getScreenModel<TagEditViewModel>(
+                parameters = { parametersOf(tagId, editMode) },
+            )
 
-		LaunchedEffect(Unit) {
-			viewModel.exitChannel.collect {
-				tagListViewModel.refreshTagList()
-				navigator.pop()
-			}
-		}
+        LaunchedEffect(Unit) {
+            viewModel.exitChannel.collect {
+                tagListViewModel.refreshTagList()
+                navigator.pop()
+            }
+        }
 
-		val uiState by viewModel.uiState.collectAsState()
+        val uiState by viewModel.uiState.collectAsState()
 
-		TagEdit(
-			titleTag = uiState.name,
-			descriptionTag = uiState.description,
-			colorTag = uiState.color,
-			onTitleTagChanged = viewModel::onTitleChange,
-			onDescriptionTagChanged = viewModel::onDescriptionChange,
-			onColorTagChanged = viewModel::onColorChange
-		) {
-			viewModel.saveTag()
-		}
-	}
+        TagEdit(
+            titleTag = uiState.name,
+            descriptionTag = uiState.description,
+            colorTag = uiState.color,
+            onTitleTagChanged = viewModel::onTitleChange,
+            onDescriptionTagChanged = viewModel::onDescriptionChange,
+            onColorTagChanged = viewModel::onColorChange,
+        ) {
+            viewModel.saveTag()
+        }
+    }
 }

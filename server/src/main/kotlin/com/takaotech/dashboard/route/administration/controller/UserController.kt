@@ -12,30 +12,24 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class UserController(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
+    suspend fun getUserByGoogle(id: String): UserEntity? = userRepository.getUser(id.sha256())
 
-    suspend fun getUserByGoogle(id: String): UserEntity? {
-        return userRepository.getUser(id.sha256())
-    }
+    suspend fun getUserById(id: String): UserEntity? = userRepository.getUser(id)
 
-    suspend fun getUserById(id: String): UserEntity? {
-        return userRepository.getUser(id)
-    }
-
-    suspend fun getUserRolesById(id: String): Set<TakaoRole>? {
-        return userRepository.getUserRolesById(id)?.map { it.id.value }?.toSet()
-    }
+    suspend fun getUserRolesById(id: String): Set<TakaoRole>? =
+        userRepository.getUserRolesById(id)?.map { it.id.value }?.toSet()
 
     suspend fun signUpByGoogle(payload: Payload) {
-        //sub
-        //email
-        //email_verified
-        //name (as display name)
-        //picture
+        // sub
+        // email
+        // email_verified
+        // name (as display name)
+        // picture
         with(payload) {
             if (getClaim("email_verified").asBoolean() == true) {
-                //Email not found
+                // Email not found
                 val email = getEmail() ?: throw Exception()
 
                 if (getUserByGoogle(email) == null) {
@@ -43,12 +37,12 @@ class UserController(
                     val picture = getClaim("picture").asString()
 
                     userRepository.createUser(email, name, picture)
-                }else{
-                    //TODO User Exist, use signin flow
+                } else {
+                    // TODO User Exist, use signin flow
                     throw Exception()
                 }
-            }else{
-                //TODO Email not verified
+            } else {
+                // TODO Email not verified
                 throw Exception()
             }
         }
@@ -64,7 +58,7 @@ class UserController(
 
                 userRepository.createUser(email, name, picture)
             } else {
-                //TODO User Exist, use signin flow
+                // TODO User Exist, use signin flow
                 throw Exception()
             }
         }

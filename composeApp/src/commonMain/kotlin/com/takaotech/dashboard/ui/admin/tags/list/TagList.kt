@@ -12,32 +12,31 @@ import com.takaotech.dashboard.ui.platform.components.TagChip
 
 @Composable
 fun TagList(
-	tagListUi: TagListUiState.TagListUi,
-	onTagClicked: (tagId: Int) -> Unit
+    tagListUi: TagListUiState.TagListUi,
+    onTagClicked: (tagId: Int) -> Unit,
 ) {
-	when (tagListUi) {
-		TagListUiState.TagListUi.Error -> {
-			//TODO()
-		}
+    when (tagListUi) {
+        TagListUiState.TagListUi.Error -> {
+            // TODO()
+        }
 
-		TagListUiState.TagListUi.Loading -> {
-			LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-		}
+        TagListUiState.TagListUi.Loading -> {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        }
 
-		is TagListUiState.TagListUi.Success -> {
-			LazyColumn(
-				contentPadding = PaddingValues(16.dp)
-			) {
-				items(tagListUi.tagList) {
-					TagChip(
-						text = it.name,
-						color = it.color
-					) {
-						onTagClicked(it.id)
-					}
-				}
-			}
-		}
-	}
+        is TagListUiState.TagListUi.Success -> {
+            LazyColumn(
+                contentPadding = PaddingValues(16.dp),
+            ) {
+                items(tagListUi.tagList) {
+                    TagChip(
+                        text = it.name,
+                        color = it.color,
+                    ) {
+                        onTagClicked(it.id)
+                    }
+                }
+            }
+        }
+    }
 }
-

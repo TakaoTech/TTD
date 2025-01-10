@@ -10,7 +10,6 @@ import org.koin.core.annotation.Factory
 class LoginViewModel(
     private val sessionManager: SessionManager,
 ) : ScreenModel {
-
     val takaoSession: StateFlow<TakaoSession?> = sessionManager.takaoSession
 
     fun startGoogleLogin() {
@@ -24,5 +23,4 @@ class LoginViewModel(
     fun logout() {
         sessionManager.logout()
     }
-
 }

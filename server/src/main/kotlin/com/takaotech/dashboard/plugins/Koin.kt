@@ -20,7 +20,7 @@ fun Application.configureKoin(
         modules(
             defaultModule,
             getConfigurationModule(dbConfiguration, githubConfiguration, credentialConfig),
-            getGeneralModule(log)
+            getGeneralModule(log),
         )
     }
 }

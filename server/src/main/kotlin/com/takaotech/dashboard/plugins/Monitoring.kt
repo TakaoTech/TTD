@@ -16,36 +16,37 @@ import org.slf4j.event.Level
 import java.util.concurrent.TimeUnit
 
 fun Application.configureMonitoring() {
-	install(CallLogging) {
-		level = Level.INFO
-		filter { call -> call.request.path().startsWith("/") }
-		callIdMdc("call-id")
-	}
-	install(CallId) {
-		header(HttpHeaders.XRequestId)
-		verify { callId: String ->
-			callId.isNotEmpty()
-		}
-	}
-	if (!developmentMode) {
-		install(DropwizardMetrics) {
-			Slf4jReporter.forRegistry(registry)
-				.outputTo(this@configureMonitoring.log)
-				.convertRatesTo(TimeUnit.SECONDS)
-				.convertDurationsTo(TimeUnit.MILLISECONDS)
-				.build()
-				.start(10, TimeUnit.SECONDS)
-		}
-	}
-	val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
+    install(CallLogging) {
+        level = Level.INFO
+        filter { call -> call.request.path().startsWith("/") }
+        callIdMdc("call-id")
+    }
+    install(CallId) {
+        header(HttpHeaders.XRequestId)
+        verify { callId: String ->
+            callId.isNotEmpty()
+        }
+    }
+    if (!developmentMode) {
+        install(DropwizardMetrics) {
+            Slf4jReporter
+                .forRegistry(registry)
+                .outputTo(this@configureMonitoring.log)
+                .convertRatesTo(TimeUnit.SECONDS)
+                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .build()
+                .start(10, TimeUnit.SECONDS)
+        }
+    }
+    val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 
-	install(MicrometerMetrics) {
-		registry = appMicrometerRegistry
-		// ...
-	}
-	routing {
-		get("/metrics-micrometer") {
-			call.respond(appMicrometerRegistry.scrape())
-		}
-	}
+    install(MicrometerMetrics) {
+        registry = appMicrometerRegistry
+        // ...
+    }
+    routing {
+        get("/metrics-micrometer") {
+            call.respond(appMicrometerRegistry.scrape())
+        }
+    }
 }

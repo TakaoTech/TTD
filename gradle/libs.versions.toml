@@ -38,7 +38,7 @@ depscredit = "11.1.0"
 haze = "1.1.1"
 coil = "3.0.0-alpha06"
 
-ktlint-gradle = "12.1.1"
+ktlint-gradle = "12.1.2"
 
 [libraries]
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }

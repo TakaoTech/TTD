@@ -9,12 +9,11 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class GHTagsUseCase(
-	private val ghRepositorySource: GHTagsSource,
+    private val ghRepositorySource: GHTagsSource,
 ) {
-	fun getGhTags(): Flow<PagingData<TagDao>> {
-		return Pager(
-			config = PagingConfig(pageSize = 10),
-			pagingSourceFactory = { ghRepositorySource }
-		).flow
-	}
+    fun getGhTags(): Flow<PagingData<TagDao>> =
+        Pager(
+            config = PagingConfig(pageSize = 10),
+            pagingSourceFactory = { ghRepositorySource },
+        ).flow
 }

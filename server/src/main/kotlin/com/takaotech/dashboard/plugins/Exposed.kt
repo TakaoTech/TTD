@@ -6,11 +6,10 @@ import io.ktor.server.application.*
 import org.koin.ktor.ext.get
 
 fun Application.initExposed() {
-	val database = get<HikariDatabase>()
+    val database = get<HikariDatabase>()
 
-	database.connect()
+    database.connect()
 
-	val redisDatabase = get<RedisDatabase>()
-	redisDatabase.connect()
-
+    val redisDatabase = get<RedisDatabase>()
+    redisDatabase.connect()
 }

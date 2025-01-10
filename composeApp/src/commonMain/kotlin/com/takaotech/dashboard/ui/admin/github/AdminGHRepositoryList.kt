@@ -27,131 +27,123 @@ import ttd.composeapp.generated.resources.ghrepository_tags_label
 
 @Composable
 fun AdminGHRepositoryList(
-	ghRepositoryState: GHRepositoryListUiState.GhRepositoryListState,
-	modifier: Modifier = Modifier,
-	onCardClicked: (url: String) -> Unit,
-	onTagEditClicked: (repoId: Long) -> Unit,
-	onCategoryChangeClicked: (repoId: Long, newCategory: MainCategory) -> Unit
+    ghRepositoryState: GHRepositoryListUiState.GhRepositoryListState,
+    modifier: Modifier = Modifier,
+    onCardClicked: (url: String) -> Unit,
+    onTagEditClicked: (repoId: Long) -> Unit,
+    onCategoryChangeClicked: (repoId: Long, newCategory: MainCategory) -> Unit,
 ) {
-	when (ghRepositoryState) {
-		GHRepositoryListUiState.GhRepositoryListState.Error -> {
-			//TODO
-		}
+    when (ghRepositoryState) {
+        GHRepositoryListUiState.GhRepositoryListState.Error -> {
+            // TODO
+        }
 
-		GHRepositoryListUiState.GhRepositoryListState.Loading -> {
-			LinearProgressIndicator(
-				modifier = Modifier.fillMaxWidth()
-			)
-		}
+        GHRepositoryListUiState.GhRepositoryListState.Loading -> {
+            LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
 
-		is GHRepositoryListUiState.GhRepositoryListState.Success -> {
-			val repoList = ghRepositoryState.ghRepositoryData
-			LazyColumn(modifier = modifier) {
-				items(key = { it.id }, items = repoList) {
-					var openBottomSheet by rememberSaveable { mutableStateOf(false) }
+        is GHRepositoryListUiState.GhRepositoryListState.Success -> {
+            val repoList = ghRepositoryState.ghRepositoryData
+            LazyColumn(modifier = modifier) {
+                items(key = { it.id }, items = repoList) {
+                    var openBottomSheet by rememberSaveable { mutableStateOf(false) }
 
-					if (openBottomSheet) {
-						MainCategoryBottomSheet(
-							categoryList = MainCategory.entries,
-							onDismissRequest = {
-								openBottomSheet = false
-							},
-							onCategoryClicked = { newCategory ->
-								//not null because parameter entries not have nulls
-								onCategoryChangeClicked(it.id, newCategory!!)
-							}
-						)
-					}
+                    if (openBottomSheet) {
+                        MainCategoryBottomSheet(
+                            categoryList = MainCategory.entries,
+                            onDismissRequest = {
+                                openBottomSheet = false
+                            },
+                            onCategoryClicked = { newCategory ->
+                                // not null because parameter entries not have nulls
+                                onCategoryChangeClicked(it.id, newCategory!!)
+                            },
+                        )
+                    }
 
-
-
-					AdminGHRepositoryCard(
-						modifier = Modifier.padding(8.dp),
-						fullName = it.fullName,
-						tags = it.tags,
-						mainCategory = it.mainCategory,
-						onMainCategoryClicked = {
-							openBottomSheet = true
-						},
-						onTagEditClicked = {
-							onTagEditClicked(it.id)
-						},
-						onCardClicked = {
-							onCardClicked(it.url)
-						}
-					)
-				}
-			}
-		}
-	}
-
-
+                    AdminGHRepositoryCard(
+                        modifier = Modifier.padding(8.dp),
+                        fullName = it.fullName,
+                        tags = it.tags,
+                        mainCategory = it.mainCategory,
+                        onMainCategoryClicked = {
+                            openBottomSheet = true
+                        },
+                        onTagEditClicked = {
+                            onTagEditClicked(it.id)
+                        },
+                        onCardClicked = {
+                            onCardClicked(it.url)
+                        },
+                    )
+                }
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 internal fun AdminGHRepositoryCard(
-	fullName: String,
-	mainCategory: MainCategory,
-	tags: List<TagDao>,
-	onMainCategoryClicked: () -> Unit,
-	onTagEditClicked: () -> Unit,
-	modifier: Modifier = Modifier,
-	onCardClicked: () -> Unit
+    fullName: String,
+    mainCategory: MainCategory,
+    tags: List<TagDao>,
+    onMainCategoryClicked: () -> Unit,
+    onTagEditClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+    onCardClicked: () -> Unit,
 ) {
-	ElevatedCard(modifier = modifier, onClick = onCardClicked) {
-		Column(modifier = Modifier.padding(16.dp)) {
-			Row(verticalAlignment = Alignment.CenterVertically) {
-				Text(
-					modifier = Modifier.weight(1f),
-					text = fullName
-				)
-				AssistChip(
-					onClick = {
-						onMainCategoryClicked()
-					},
-					label = {
-						Text(mainCategory.name)
-					}
-				)
+    ElevatedCard(modifier = modifier, onClick = onCardClicked) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = fullName,
+                )
+                AssistChip(
+                    onClick = {
+                        onMainCategoryClicked()
+                    },
+                    label = {
+                        Text(mainCategory.name)
+                    },
+                )
+            }
 
-			}
+            Text(stringResource(Res.string.ghrepository_tags_label))
+            Row {
+                if (tags.isEmpty()) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(Res.string.ghrepository_no_tags),
+                    )
+                } else {
+                    LazyRow(
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        items(tags) {
+                            AssistChip(
+                                colors = it.color?.toColor().assistChipColors(),
+                                onClick = {},
+                                label = {
+                                    Text(it.name)
+                                },
+                            )
+                        }
+                    }
+                }
 
-			Text(stringResource(Res.string.ghrepository_tags_label))
-			Row {
-				if (tags.isEmpty()) {
-					Text(
-						modifier = Modifier.weight(1f),
-						text = stringResource(Res.string.ghrepository_no_tags)
-					)
-				} else {
-					LazyRow(
-						modifier = Modifier.weight(1f),
-						horizontalArrangement = Arrangement.spacedBy(4.dp)
-					) {
-						items(tags) {
-							AssistChip(
-								colors = it.color?.toColor().assistChipColors(),
-								onClick = {},
-								label = {
-									Text(it.name)
-								}
-							)
-						}
-					}
-				}
-
-
-
-				IconButton(
-					onClick = onTagEditClicked
-				) {
-					//TODO contentDesc
-					Icon(Icons.Filled.Edit, "Edit tags")
-				}
-			}
-			//TODO Chart as Github
-		}
-	}
+                IconButton(
+                    onClick = onTagEditClicked,
+                ) {
+                    // TODO contentDesc
+                    Icon(Icons.Filled.Edit, "Edit tags")
+                }
+            }
+            // TODO Chart as Github
+        }
+    }
 }
-

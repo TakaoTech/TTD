@@ -11,20 +11,20 @@ import com.takaotech.dashboard.ui.platform.AndroidUriHandler
 import com.takaotech.dashboard.ui.platform.LocalTTDUriHandler
 
 class MainActivity : ComponentActivity() {
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		enableEdgeToEdge()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
-		setContent {
-			CompositionLocalProvider(LocalTTDUriHandler provides AndroidUriHandler(this)) {
-				App()
-			}
-		}
-	}
+        setContent {
+            CompositionLocalProvider(LocalTTDUriHandler provides AndroidUriHandler(this)) {
+                App()
+            }
+        }
+    }
 }
 
 @Preview
 @Composable
 fun AppAndroidPreview() {
-	App()
+    App()
 }

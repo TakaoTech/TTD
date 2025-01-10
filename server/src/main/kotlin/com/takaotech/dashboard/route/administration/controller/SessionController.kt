@@ -26,28 +26,30 @@ import kotlin.time.Duration
 class SessionController(
     private val sessionRepository: SessionRepository,
     private val userController: UserController,
-    credentialConfig: CredentialConfig
+    credentialConfig: CredentialConfig,
 ) {
     private val takaoJwtConfig = credentialConfig.takaoJwtConfig
 
     suspend fun generateTokenPairFromGoogle(googlePayload: Payload): TokenPairDao {
         if (googlePayload.getClaim("email_verified").asBoolean() == true) {
-            val user = googlePayload.getEmail()?.let { userController.getUserByGoogle(it) }
-                ?: throw Exception("User not found for generate tokens")
+            val user =
+                googlePayload.getEmail()?.let { userController.getUserByGoogle(it) }
+                    ?: throw Exception("User not found for generate tokens")
             return generateTokenPairFromUser(user)
         } else {
-            //TODO Email not verified
+            // TODO Email not verified
             throw Exception()
         }
     }
 
     suspend fun generateTokenPairFromGoogle(json: JsonObject): TokenPairDao {
         if (json["verified_email"]!!.jsonPrimitive.boolean) {
-            val user = json["email"]?.jsonPrimitive?.content?.let { userController.getUserByGoogle(it) }
-                ?: throw Exception("User not found for generate tokens")
+            val user =
+                json["email"]?.jsonPrimitive?.content?.let { userController.getUserByGoogle(it) }
+                    ?: throw Exception("User not found for generate tokens")
             return generateTokenPairFromUser(user)
         } else {
-            //TODO Email not verified
+            // TODO Email not verified
             throw Exception()
         }
     }
@@ -55,20 +57,22 @@ class SessionController(
     private suspend fun generateTokenPairFromUser(
         user: UserEntity,
         oldToken: String? = null,
-        update: Boolean = false
+        update: Boolean = false,
     ): TokenPairDao {
         with(takaoJwtConfig) {
-            val accessToken = JWT.create()
-                .withAudience(audience)
-                .withIssuer(issuer)
-                .withClaim(TAKAO_JWT_VERSION, version)
-                .withClaim(TAKAO_JWT_USER, user.id.value)
-                .withClaim(
-                    TAKAO_JWT_PERMISSION,
-                    user.roles.toList().map { it.id.value.name }
-                )
-                .withExpiresAt((Clock.System.now() + Duration.parse(takaoJwtConfig.accessLifetime)).toJavaInstant())
-                .sign(Algorithm.HMAC512(secret))
+            val accessToken =
+                JWT
+                    .create()
+                    .withAudience(audience)
+                    .withIssuer(issuer)
+                    .withClaim(TAKAO_JWT_VERSION, version)
+                    .withClaim(TAKAO_JWT_USER, user.id.value)
+                    .withClaim(
+                        TAKAO_JWT_PERMISSION,
+                        user.roles.toList().map { it.id.value.name },
+                    )
+                    .withExpiresAt((Clock.System.now() + Duration.parse(takaoJwtConfig.accessLifetime)).toJavaInstant())
+                    .sign(Algorithm.HMAC512(secret))
 
             val refreshToken = generateRefreshToken()
             if (update) {
@@ -80,50 +84,44 @@ class SessionController(
 
             return TokenPairDao(
                 accessToken = accessToken,
-                refreshToken = refreshToken
+                refreshToken = refreshToken,
             )
         }
     }
 
-    fun checkJwtIsValid(tokenExpire: Instant): Boolean {
-        return tokenExpire > Clock.System.now()
-    }
+    fun checkJwtIsValid(tokenExpire: Instant): Boolean = tokenExpire > Clock.System.now()
 
-    suspend fun refreshToken(
-        oldToken: String
-    ): TokenPairDao {
+    suspend fun refreshToken(oldToken: String): TokenPairDao {
         val isValid = sessionRepository.checkTokenIsValid(oldToken)
         if (isValid) {
-            val user = sessionRepository.getUserIdByToken(oldToken)?.let {
-                userController.getUserById(it)
-            } ?: throw Exception("User not found for refresh tokens")
+            val user =
+                sessionRepository.getUserIdByToken(oldToken)?.let {
+                    userController.getUserById(it)
+                } ?: throw Exception("User not found for refresh tokens")
 
             return generateTokenPairFromUser(user = user, oldToken = oldToken, update = true)
         } else {
-            //TODO Token Not valid or exired
+            // TODO Token Not valid or exired
             throw Exception()
         }
     }
 
-    fun verifyToken(): JWTVerifier {
-        return with(takaoJwtConfig) {
-            JWT.require(Algorithm.HMAC512(takaoJwtConfig.secret))
+    fun verifyToken(): JWTVerifier =
+        with(takaoJwtConfig) {
+            JWT
+                .require(Algorithm.HMAC512(takaoJwtConfig.secret))
                 .withAudience(takaoJwtConfig.audience)
                 .withIssuer(takaoJwtConfig.issuer)
                 .withClaim(
-                    TAKAO_JWT_VERSION
+                    TAKAO_JWT_VERSION,
                 ) { claim, jwt ->
                     claim.asInt() == version
-                }
-                .withClaim(TAKAO_JWT_USER) { claim, _ ->
+                }.withClaim(TAKAO_JWT_USER) { claim, _ ->
                     claim.asString() != null
-                }
-                .withClaim(TAKAO_JWT_PERMISSION) { claim, _ ->
+                }.withClaim(TAKAO_JWT_PERMISSION) { claim, _ ->
                     claim.asList(TakaoRole::class.java).isNotEmpty()
-                }
-                .build()
+                }.build()
         }
-    }
 
     private fun generateRefreshToken() = UUID.randomUUID().toString()
 }

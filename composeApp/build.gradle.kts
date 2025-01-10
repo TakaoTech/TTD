@@ -76,7 +76,6 @@ kotlin {
 
             implementation(libs.androidx.browser)
             implementation(libs.ktor.client.okhttp)
-
         }
         val commonMain by getting {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
@@ -89,7 +88,7 @@ kotlin {
                 implementation(compose.components.uiToolingPreview)
                 implementation(compose.materialIconsExtended)
                 implementation(compose.components.resources)
-                //https://github.com/DevSrSouza/compose-icons
+                // https://github.com/DevSrSouza/compose-icons
                 implementation(projects.shared)
 
                 implementation(libs.androidx.datastore.preferences)
@@ -130,17 +129,18 @@ kotlin {
 
                 implementation("app.cash.paging:paging-compose-common:3.3.0-alpha02-0.5.1")
                 implementation("io.github.ehsannarmani:compose-charts:0.1.0")
-                //implementation("app.cash.paging:paging-testing:3.3.0-alpha02-0.5.1")
-
+                // implementation("app.cash.paging:paging-testing:3.3.0-alpha02-0.5.1")
             }
-
         }
     }
 }
 
 android {
     namespace = projectPackage
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk =
+        libs.versions.android.compileSdk
+            .get()
+            .toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
@@ -148,8 +148,14 @@ android {
 
     defaultConfig {
         applicationId = projectPackage
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.android.targetSdk
+                .get()
+                .toInt()
         versionCode = 1
         versionName = "1.0"
 
@@ -201,7 +207,7 @@ android {
         compose = true
     }
     dependencies {
-//		debugImplementation(libs.compose.ui.tooling)
+// 		debugImplementation(libs.compose.ui.tooling)
     }
 }
 
@@ -213,19 +219,19 @@ dependencies {
 }
 
 // WORKAROUND: ADD this dependsOn("kspCommonMainKotlinMetadata") instead of above dependencies
-//tasks.withType<KotlinCompile<*>>().configureEach {
-//	if (name != "kspCommonMainKotlinMetadata") {
-//		dependsOn("kspCommonMainKotlinMetadata")
-//	}
-//}
-//afterEvaluate {
-//	tasks.filter {
-//		it.name.contains("SourcesJar", true)
-//	}?.forEach {
-//		println("SourceJarTask====>${it.name}")
-//		it.dependsOn("kspCommonMainKotlinMetadata")
-//	}
-//}
+// tasks.withType<KotlinCompile<*>>().configureEach {
+// 	if (name != "kspCommonMainKotlinMetadata") {
+// 		dependsOn("kspCommonMainKotlinMetadata")
+// 	}
+// }
+// afterEvaluate {
+// 	tasks.filter {
+// 		it.name.contains("SourcesJar", true)
+// 	}?.forEach {
+// 		println("SourceJarTask====>${it.name}")
+// 		it.dependsOn("kspCommonMainKotlinMetadata")
+// 	}
+// }
 
 buildkonfig {
     packageName = projectPackage
@@ -236,46 +242,48 @@ buildkonfig {
             FieldSpec.Type.STRING,
             "baseUrl",
             if (getEnvProperty("USE_LOCAL_ENDPOINT", rootProject).toBoolean()) {
-                URIBuilder().apply {
-                    val mEndpointUrl = URI(endpointUrl)
-                    port = mEndpointUrl.port
-                    scheme = mEndpointUrl.scheme
-                    host = getLocalIPv4().first().also {
-                        println("Local Address ${it}")
-                    }
-                    path = "/"
-                }.toString()
+                URIBuilder()
+                    .apply {
+                        val mEndpointUrl = URI(endpointUrl)
+                        port = mEndpointUrl.port
+                        scheme = mEndpointUrl.scheme
+                        host =
+                            getLocalIPv4().first().also {
+                                println("Local Address $it")
+                            }
+                        path = "/"
+                    }.toString()
             } else {
                 endpointUrl
-            }
+            },
         )
 
         buildConfigField(
             FieldSpec.Type.STRING,
             "googleWebAuth",
-            getEnvProperty("AUTH_GOOGLE_CLIENT_ID_ANDROID_WEB", rootProject)
+            getEnvProperty("AUTH_GOOGLE_CLIENT_ID_ANDROID_WEB", rootProject),
         )
 
         buildConfigField(
             FieldSpec.Type.STRING,
             "SESSION_KEY_ALIAS",
-            getEnvProperty("SESSION_KEY_ALIAS", rootProject)
+            getEnvProperty("SESSION_KEY_ALIAS", rootProject),
         )
 
         buildConfigField(
             FieldSpec.Type.BOOLEAN,
             "debug",
-            "true"
+            "true",
         )
 
         buildConfigField(
             FieldSpec.Type.STRING,
             "CERT_PIN1",
-            getEnvProperty("CERT_PIN1", rootProject)
+            getEnvProperty("CERT_PIN1", rootProject),
         )
     }
 }
 
-//compose.experimental {
+// compose.experimental {
 //    web.application {}
-//}
+// }

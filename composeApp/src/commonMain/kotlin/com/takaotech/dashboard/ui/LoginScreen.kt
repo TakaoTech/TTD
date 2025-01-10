@@ -26,8 +26,7 @@ import ttd.composeapp.generated.resources.*
 
 @OptIn(ExperimentalResourceApi::class)
 object LoginScreen : Tab, KoinComponent {
-//object LoginScreen : Screen {
-
+// object LoginScreen : Screen {
 
     override val options: TabOptions
         @Composable
@@ -39,7 +38,7 @@ object LoginScreen : Tab, KoinComponent {
                 TabOptions(
                     index = 4u,
                     title = title,
-                    icon = icon
+                    icon = icon,
                 )
             }
         }
@@ -67,14 +66,12 @@ object LoginScreen : Tab, KoinComponent {
                     viewModel.startGoogleSignup()
                 },
                 onAppleLoginClicked = {
-
                 },
                 onAppleSignupClicked = {
-
                 },
                 onLoginSwitch = {
                     isLogin = !isLogin
-                }
+                },
             )
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -82,7 +79,7 @@ object LoginScreen : Tab, KoinComponent {
                     modifier = Modifier.align(Alignment.Center),
                     onClick = {
                         viewModel.logout()
-                    }
+                    },
                 ) {
                     Text(stringResource(Res.string.logout))
                 }
@@ -101,13 +98,13 @@ internal fun LoginScreenUi(
     onAppleLoginClicked: () -> Unit,
     onAppleSignupClicked: () -> Unit,
     onCreditClicked: () -> Unit,
-    onLoginSwitch: () -> Unit
+    onLoginSwitch: () -> Unit,
 ) {
     Box(modifier = modifier) {
         Column(
             modifier = Modifier.align(Alignment.Center),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (isLogin) {
                 SignInButton(
@@ -115,8 +112,7 @@ internal fun LoginScreenUi(
                     text = stringResource(Res.string.login_with_google),
                     icon = painterResource(Res.drawable.ic_google_logo),
                     isLoading = false,
-
-                    )
+                )
 //            Button(
 //                onClick = onAppleLoginClicked, //Login with Twitch,
 //                content = {
@@ -128,8 +124,7 @@ internal fun LoginScreenUi(
                     onClick = onGoogleSignupClicked,
                     text = stringResource(Res.string.signup_with_google),
                     icon = painterResource(Res.drawable.ic_google_logo),
-                    isLoading = false
-
+                    isLoading = false,
                 )
             }
 
@@ -139,15 +134,15 @@ internal fun LoginScreenUi(
                 } else {
                     Text(stringResource(Res.string.already_account))
                 }
-
             }
         }
 
         TextButton(
-            modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.BottomCenter),
-            onClick = onCreditClicked
+            modifier =
+                Modifier
+                    .padding(16.dp)
+                    .align(Alignment.BottomCenter),
+            onClick = onCreditClicked,
         ) {
             Text(stringResource(Res.string.credit_opensource_licence_label))
         }

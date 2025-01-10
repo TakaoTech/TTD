@@ -2,8 +2,8 @@ package com.takaotech.dashboard.configuration
 
 data class CredentialConfig(
     val googleOauth2Config: GoogleOauth2Config,
-	val googleJwtConfig: GoogleJwtConfig,
-    val takaoJwtConfig: TakaoJwtConfig
+    val googleJwtConfig: GoogleJwtConfig,
+    val takaoJwtConfig: TakaoJwtConfig,
 )
 
 data class GoogleOauth2Config(
@@ -42,5 +42,5 @@ data class TakaoJwtConfig(
     val audience: String,
     val realm: String,
     val accessLifetime: String,
-    val refreshLifetime: String
+    val refreshLifetime: String,
 )

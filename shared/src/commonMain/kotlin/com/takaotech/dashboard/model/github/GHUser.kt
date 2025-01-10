@@ -5,12 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GHUser(
-	@SerialName("id")
-	val id: Long,
-	@SerialName("name")
-	val name: String,
-	@SerialName("url")
-	val url: String,
-	@SerialName("avatarUrl")
-	val avatarUrl: String?
+    @SerialName("id")
+    val id: Long,
+    @SerialName("name")
+    val name: String,
+    @SerialName("url")
+    val url: String,
+    @SerialName("avatarUrl")
+    val avatarUrl: String?,
 )

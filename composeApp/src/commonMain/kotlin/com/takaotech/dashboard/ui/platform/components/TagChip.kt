@@ -8,15 +8,15 @@ import com.takaotech.dashboard.ui.utils.toColor
 
 @Composable
 fun TagChip(
-	text: String,
-	color: String? = null,
-	onTagClicked: () -> Unit
+    text: String,
+    color: String? = null,
+    onTagClicked: () -> Unit,
 ) {
-	AssistChip(
-		onClick = onTagClicked,
-		colors = color?.toColor().assistChipColors(),
-		label = {
-			Text(text = text)
-		}
-	)
+    AssistChip(
+        onClick = onTagClicked,
+        colors = color?.toColor().assistChipColors(),
+        label = {
+            Text(text = text)
+        },
+    )
 }

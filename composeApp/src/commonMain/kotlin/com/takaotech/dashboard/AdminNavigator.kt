@@ -7,10 +7,10 @@ import cafe.adriel.voyager.navigator.Navigator
 import com.takaotech.dashboard.ui.admin.github.GHRepositoryScreen
 
 object AdminNavigator : Screen {
-	@Composable
-	override fun Content() {
-		Navigator(GHRepositoryScreen()) {
-			CurrentScreen()
-		}
-	}
+    @Composable
+    override fun Content() {
+        Navigator(GHRepositoryScreen()) {
+            CurrentScreen()
+        }
+    }
 }

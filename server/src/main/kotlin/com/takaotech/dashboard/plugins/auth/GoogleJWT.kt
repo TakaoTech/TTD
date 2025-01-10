@@ -42,10 +42,11 @@ fun AuthenticationConfig.configureGoogleJWT(
      * To verify the token's signature, I load Google's public keys from
      * their JWT oauth URL.
      */
-    val jwkProvider = JwkProviderBuilder(URL("https://www.googleapis.com/oauth2/v3/certs"))
-        .cached(10, 24, TimeUnit.HOURS)
-        .rateLimited(10, 1, TimeUnit.MINUTES)
-        .build()
+    val jwkProvider =
+        JwkProviderBuilder(URL("https://www.googleapis.com/oauth2/v3/certs"))
+            .cached(10, 24, TimeUnit.HOURS)
+            .rateLimited(10, 1, TimeUnit.MINUTES)
+            .build()
 
     /**
      * Now it's time to create the JWT Authentication provider.
@@ -53,7 +54,6 @@ fun AuthenticationConfig.configureGoogleJWT(
      * to implement my own JWT tokens later on.
      */
     jwt("google") {
-
         /**
          * Next, I use Google's public keys that are stored in the jwkProvider
          * to verify the token's signature. I also make sure that the token
@@ -97,7 +97,6 @@ fun AuthenticationConfig.configureGoogleJWT(
              * Finally, if validation is successful, I return the payload.
              */
             JWTPrincipal(jwtCredential.payload)
-
         }
         /**
          * For the challenge, I created a custom Google exception.

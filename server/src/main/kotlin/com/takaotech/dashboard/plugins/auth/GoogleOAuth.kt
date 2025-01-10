@@ -24,21 +24,21 @@ fun AuthenticationConfig.configureGoogleOAuth(
                     requestMethod = HttpMethod.Post,
                     clientId = clientId,
                     clientSecret = clientSecret,
-                    defaultScopes = listOf(
-                        "https://www.googleapis.com/auth/userinfo.profile",
-                        "https://www.googleapis.com/auth/userinfo.email",
-                    ),
+                    defaultScopes =
+                        listOf(
+                            "https://www.googleapis.com/auth/userinfo.profile",
+                            "https://www.googleapis.com/auth/userinfo.email",
+                        ),
                     extraAuthParameters = listOf("access_type" to "offline"),
                     onStateCreated = { call, state ->
-                        //saves new state with redirect url value
+                        // saves new state with redirect url value
                         call.request.queryParameters["redirectUrl"]?.let {
                             redirects[state] = it
                         }
-                    }
+                    },
                 )
             }
         }
         client = applicationHttpClient
     }
-
 }

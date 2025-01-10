@@ -15,26 +15,27 @@ class UserRepository(
     private val database: HikariDatabase,
     private val logger: Logger,
 ) {
-    suspend fun getRoles(): List<RoleEntity> {
-        return database.dbExec {
-            //TODO Add mapping
+    suspend fun getRoles(): List<RoleEntity> =
+        database.dbExec {
+            // TODO Add mapping
             RoleEntity.all().toList()
         }
-    }
 
     suspend fun getUsers() {
         database.dbExec {
-
         }
     }
 
-    suspend fun getUserRolesById(id: String): List<RoleEntity>? {
-        return database.dbExec {
+    suspend fun getUserRolesById(id: String): List<RoleEntity>? =
+        database.dbExec {
             UserEntity.findById(id)?.roles?.toList()
         }
-    }
 
-    suspend fun createUser(email: String, name: String, picture: String) {
+    suspend fun createUser(
+        email: String,
+        name: String,
+        picture: String,
+    ) {
         database.dbExec {
             UserEntity.new(email.sha256()) {
                 this.email = email
@@ -45,9 +46,8 @@ class UserRepository(
         }
     }
 
-    suspend fun getUser(id: String): UserEntity? {
-        return database.dbExec {
+    suspend fun getUser(id: String): UserEntity? =
+        database.dbExec {
             UserEntity.findById(id)?.load(UserEntity::roles)
         }
-    }
 }

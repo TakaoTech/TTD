@@ -28,40 +28,43 @@ fun SignInButton(
     borderColor: Color = Color.LightGray,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     progressIndicatorColor: Color = MaterialTheme.colorScheme.primary,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Surface(
-        modifier = Modifier
-            .clip(shape)
-            .clickable(
-                enabled = !isLoading,
-                onClick = onClick
-            ),
+        modifier =
+            Modifier
+                .clip(shape)
+                .clickable(
+                    enabled = !isLoading,
+                    onClick = onClick,
+                ),
         shape = shape,
         border = BorderStroke(width = 1.dp, color = borderColor),
-        color = backgroundColor
+        color = backgroundColor,
     ) {
         Row(
-            modifier = Modifier
-                .padding(
-                    start = 12.dp,
-                    end = 16.dp,
-                    top = 12.dp,
-                    bottom = 12.dp
-                )
-                .animateContentSize(
-                    animationSpec = tween(
-                        durationMillis = 300,
-                        easing = LinearOutSlowInEasing
+            modifier =
+                Modifier
+                    .padding(
+                        start = 12.dp,
+                        end = 16.dp,
+                        top = 12.dp,
+                        bottom = 12.dp,
                     )
-                ),
+                    .animateContentSize(
+                        animationSpec =
+                            tween(
+                                durationMillis = 300,
+                                easing = LinearOutSlowInEasing,
+                            ),
+                    ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
             Icon(
                 painter = icon,
                 contentDescription = "SignInButton",
-                tint = Color.Unspecified
+                tint = Color.Unspecified,
             )
             Spacer(modifier = Modifier.width(8.dp))
 
@@ -69,11 +72,12 @@ fun SignInButton(
             if (isLoading) {
                 Spacer(modifier = Modifier.width(16.dp))
                 CircularProgressIndicator(
-                    modifier = Modifier
-                        .height(16.dp)
-                        .width(16.dp),
+                    modifier =
+                        Modifier
+                            .height(16.dp)
+                            .width(16.dp),
                     strokeWidth = 2.dp,
-                    color = progressIndicatorColor
+                    color = progressIndicatorColor,
                 )
             }
         }

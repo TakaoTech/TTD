@@ -11,18 +11,16 @@ data class TokenPairDao(
     @SerialName("accessToken")
     val accessToken: AccessToken,
     @SerialName("refreshToken")
-    val refreshToken: RefreshToken
+    val refreshToken: RefreshToken,
 ) {
-    override fun toString(): String {
-        return "$accessToken|$refreshToken"
-    }
+    override fun toString(): String = "$accessToken|$refreshToken"
 
     companion object {
         fun parse(mergedToken: String): TokenPairDao {
             val splitToken = mergedToken.split("|")
             return TokenPairDao(
                 splitToken[0],
-                splitToken[1]
+                splitToken[1],
             )
         }
     }
@@ -31,5 +29,5 @@ data class TokenPairDao(
 @Serializable
 data class RefreshTokenDao(
     @SerialName("refreshToken")
-    val refreshToken: String
+    val refreshToken: String,
 )

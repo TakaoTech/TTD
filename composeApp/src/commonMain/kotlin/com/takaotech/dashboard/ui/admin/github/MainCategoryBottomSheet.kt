@@ -16,25 +16,28 @@ import com.takaotech.dashboard.model.github.MainCategory
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainCategoryBottomSheet(
-	categoryList: List<MainCategory?>,
-	onDismissRequest: () -> Unit,
-	onCategoryClicked: (MainCategory?) -> Unit
+    categoryList: List<MainCategory?>,
+    onDismissRequest: () -> Unit,
+    onCategoryClicked: (MainCategory?) -> Unit,
 ) {
-	ModalBottomSheet(
-		onDismissRequest = onDismissRequest
-	) {
-		categoryList.forEach {
-			Row(modifier = Modifier.fillMaxWidth()
-				.clickable {
-					onDismissRequest()
-					onCategoryClicked(it)
-				}
-				.padding(16.dp)
-			) {
-				Text(
-					text = AnnotatedString(it?.name ?: "--")
-				)
-			}
-		}
-	}
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+    ) {
+        categoryList.forEach {
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onDismissRequest()
+                            onCategoryClicked(it)
+                        }
+                        .padding(16.dp),
+            ) {
+                Text(
+                    text = AnnotatedString(it?.name ?: "--"),
+                )
+            }
+        }
+    }
 }

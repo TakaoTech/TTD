@@ -15,44 +15,44 @@ import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-fun getGeneralModule(
-    log: Logger,
-): Module = module {
-    single<Logger> {
-        log
-    }
+fun getGeneralModule(log: Logger): Module =
+    module {
+        single<Logger> {
+            log
+        }
 
-    single {
-        val githubConfiguration = get<GithubConfiguration>()
+        single {
+            val githubConfiguration = get<GithubConfiguration>()
 
-        GitHubBuilder().apply {
-            withConnector(
-                OkHttpGitHubConnector(
-                    OkHttpClient.Builder()
-                        .addInterceptor(
-                            HttpLoggingInterceptor(
-                                GithubClientLoggerAdapter(get())
-                            ).apply {
-                                level = HttpLoggingInterceptor.Level.BODY
-                            }
-                        )
-                        .build()
-                )
-            )
-            withOAuthToken(githubConfiguration.githubToken)
-        }.build()
-    }
+            GitHubBuilder()
+                .apply {
+                    withConnector(
+                        OkHttpGitHubConnector(
+                            OkHttpClient
+                                .Builder()
+                                .addInterceptor(
+                                    HttpLoggingInterceptor(
+                                        GithubClientLoggerAdapter(get()),
+                                    ).apply {
+                                        level = HttpLoggingInterceptor.Level.BODY
+                                    },
+                                ).build(),
+                        ),
+                    )
+                    withOAuthToken(githubConfiguration.githubToken)
+                }.build()
+        }
 
-    factory(named(HTTP_JSON_CLIENT)) {
-        HttpClient(Java) {
-            engine {
-                protocolVersion = java.net.http.HttpClient.Version.HTTP_2
-            }
-            install(ContentNegotiation) {
-                json()
+        factory(named(HTTP_JSON_CLIENT)) {
+            HttpClient(Java) {
+                engine {
+                    protocolVersion = java.net.http.HttpClient.Version.HTTP_2
+                }
+                install(ContentNegotiation) {
+                    json()
+                }
             }
         }
     }
-}
 
 const val HTTP_JSON_CLIENT = "HTTP_JSON_CLIENT"

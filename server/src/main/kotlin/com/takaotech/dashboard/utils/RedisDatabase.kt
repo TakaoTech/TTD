@@ -8,7 +8,7 @@ import org.koin.core.annotation.Singleton
 
 @Singleton
 class RedisDatabase(
-    dbConfiguration: DbConfiguration
+    dbConfiguration: DbConfiguration,
 ) {
     private val redisConfiguration: RedisConfiguration = dbConfiguration.redisConfiguration
     lateinit var client: ReThis
@@ -17,5 +17,4 @@ class RedisDatabase(
     fun connect() {
         client = ReThis(Url(redisConfiguration.url))
     }
-
 }

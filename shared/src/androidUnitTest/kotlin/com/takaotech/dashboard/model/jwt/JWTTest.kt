@@ -11,43 +11,44 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.test.*
 import kotlin.time.Duration.Companion.seconds
 
-
 class JWTTest {
-
     // Exceptions
     @Test
     fun shouldThrowIfLessThan3Parts() {
-        val exception = assertThrows<DecodeException> {
-            JWT("two.parts")
-        }
+        val exception =
+            assertThrows<DecodeException> {
+                JWT("two.parts")
+            }
 
         assertEquals("The token was expected to have 3 parts, but got 2.", exception.message)
     }
 
     @Test
     fun shouldThrowIfMoreThan3Parts() {
-        val exception = assertThrows<DecodeException> {
-            JWT("this.has.four.parts")
-        }
+        val exception =
+            assertThrows<DecodeException> {
+                JWT("this.has.four.parts")
+            }
 
         assertEquals("The token was expected to have 3 parts, but got 4.", exception.message)
     }
 
     @Test
     fun shouldThrowIfItsNotBase64Encoded() {
-        val exception = assertThrows<DecodeException> {
-            JWT("thisIsNot.Base64_Enc.oded")
-        }
+        val exception =
+            assertThrows<DecodeException> {
+                JWT("thisIsNot.Base64_Enc.oded")
+            }
 
         assertEquals("Received bytes didn't correspond to a valid Base64 encoded string.", exception.message)
     }
 
     @Test
     fun shouldThrowIfPayloadHasInvalidJSONFormat() {
-        val exception = assertThrows<DecodeException> {
-            JWT("eyJhbGciOiJIUzI1NiJ9.e30ijfe923.XmNK3GpH3Ys_7lyQ")
-
-        }
+        val exception =
+            assertThrows<DecodeException> {
+                JWT("eyJhbGciOiJIUzI1NiJ9.e30ijfe923.XmNK3GpH3Ys_7lyQ")
+            }
 
         assertEquals("The token's payload had an invalid JSON format.", exception.message)
     }
@@ -56,7 +57,7 @@ class JWTTest {
     @Test
     fun shouldGetStringToken() {
         val jwt = JWT("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ")
-        //Useless Java test in Kotlin, Null not Exist
+        // Useless Java test in Kotlin, Null not Exist
 //        assertNotNull(jwt)
 //        assertNotNull(jwt.toString())
         assertEquals("eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ", jwt.toString())
@@ -141,7 +142,9 @@ class JWTTest {
     @Test
     fun shouldDeserializeDatesUsingLong() {
         val jwt =
-            JWT("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjIxNDc0OTM2NDcsIm5iZiI6MjE0NzQ5MzY0NywiZXhwIjoyMTQ3NDkzNjQ3LCJjdG0iOjIxNDc0OTM2NDd9.txmUJ0UCy2pqTFrEgj49eNDQCWUSW_XRMjMaRqcrgLg")
+            JWT(
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjIxNDc0OTM2NDcsIm5iZiI6MjE0NzQ5MzY0NywiZXhwIjoyMTQ3NDkzNjQ3LCJjdG0iOjIxNDc0OTM2NDd9.txmUJ0UCy2pqTFrEgj49eNDQCWUSW_XRMjMaRqcrgLg",
+            )
 
         val secs = Int.MAX_VALUE + 10000L
         val expectedDate = Instant.fromEpochMilliseconds(secs * 1000)
@@ -292,19 +295,21 @@ class JWTTest {
 
     @Test
     fun shouldThrowIfLeewayIsNegative() {
-        val exception = assertThrows<IllegalArgumentException> {
-            val jwt = customTimeJWT(null, null)
-            jwt.isExpired((-1).seconds)
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                val jwt = customTimeJWT(null, null)
+                jwt.isExpired((-1).seconds)
+            }
 
         assertEquals("The leeway must be a positive value.", exception.message)
-
     }
 
     @Test
     fun shouldNotRemoveKnownPublicClaimsFromTree() {
         val jwt =
-            JWT("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCIsInN1YiI6ImVtYWlscyIsImF1ZCI6InVzZXJzIiwiaWF0IjoxMDEwMTAxMCwiZXhwIjoxMTExMTExMSwibmJmIjoxMDEwMTAxMSwianRpIjoiaWRpZCIsInJvbGVzIjoiYWRtaW4ifQ.jCchxb-mdMTq5EpeVMSQyTp6zSwByKnfl9U-Zc9kg_w")
+            JWT(
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoMCIsInN1YiI6ImVtYWlscyIsImF1ZCI6InVzZXJzIiwiaWF0IjoxMDEwMTAxMCwiZXhwIjoxMTExMTExMSwibmJmIjoxMDEwMTAxMSwianRpIjoiaWRpZCIsInJvbGVzIjoiYWRtaW4ifQ.jCchxb-mdMTq5EpeVMSQyTp6zSwByKnfl9U-Zc9kg_w",
+            )
 
         assertEquals("auth0", jwt.issuer)
         assertEquals("emails", jwt.subject)
@@ -329,8 +334,7 @@ class JWTTest {
         assertEquals("idid", jwt.getClaim("jti")?.asString())
     }
 
-
-    //Private Claims
+    // Private Claims
     @Test
     fun shouldGetNullIsMissing() {
         val jwt = JWT("eyJhbGciOiJIUzI1NiJ9.e30.K17vlwhE8FCMShdl1_65jEYqsQqBOVMPUU9IgG-QlTM")
@@ -374,7 +378,7 @@ class JWTTest {
         assertTrue { claims.isEmpty() }
     }
 
-    //Parcelable
+    // Parcelable
 //    @Test
 //    fun shouldBeParceled() {
 //        val jwtOrigin = JWT("eyJhbGciOiJIUzI1NiJ9.e30.K17vlwhE8FCMShdl1_65jEYqsQqBOVMPUU9IgG-QlTM")
@@ -396,8 +400,8 @@ class JWTTest {
 //        assertThat(jwtOrigin.toString(), `is`(jwtDest.toString()))
 //    }
 
+    // Helper Methods
 
-    //Helper Methods
     /**
      * Creates a new JWT with custom time claims.
      *
@@ -405,7 +409,10 @@ class JWTTest {
      * @param expMs exp value in MILLISECONDS
      * @return a JWT
      */
-    private fun customTimeJWT(iatMs: Long?, expMs: Long?): JWT {
+    private fun customTimeJWT(
+        iatMs: Long?,
+        expMs: Long?,
+    ): JWT {
         val header = encodeString("{}")
         val bodyBuilder = StringBuilder("{")
         if (iatMs != null) {

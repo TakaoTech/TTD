@@ -13,7 +13,7 @@ import kotlinx.serialization.json.Json
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-//@Single
+// @Single
 @OptIn(ExperimentalEncodingApi::class)
 class SessionManagerImpl(
     json: Json,
@@ -22,7 +22,6 @@ class SessionManagerImpl(
     authApi: AuthApi,
     private val context: Context,
 ) : SessionManager(json, logger, googleLogin, authApi) {
-
     private val cryptoManager = SymmetricCryptoManager(AppBuildKonfig.SESSION_KEY_ALIAS)
 
     override fun initSessionDatastore(): DataStore<Preferences> = createSessionDataStore(context)
@@ -34,9 +33,8 @@ class SessionManagerImpl(
         return TokenPairDao.parse(String(decoded))
     }
 
-    override fun encryptTokens(tokenPair: TokenPairDao): ByteArray {
-        return cryptoManager.encryptFromByteArrayToByteArray(
-            tokenPair.toString().toByteArray()
+    override fun encryptTokens(tokenPair: TokenPairDao): ByteArray =
+        cryptoManager.encryptFromByteArrayToByteArray(
+            tokenPair.toString().toByteArray(),
         )
-    }
 }

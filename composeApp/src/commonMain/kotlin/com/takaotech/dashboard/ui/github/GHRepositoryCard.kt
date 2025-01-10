@@ -25,151 +25,162 @@ import net.sergeych.sprintf.sprintf
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun GHRepositoryCard(
-	fullName: String,
-	tags: List<TagDao>,
-	languages: List<GHLanguageDao>,
-	modifier: Modifier = Modifier,
-	onTagClicked: (tagId: Int) -> Unit,
-	onCardClicked: () -> Unit
+    fullName: String,
+    tags: List<TagDao>,
+    languages: List<GHLanguageDao>,
+    modifier: Modifier = Modifier,
+    onTagClicked: (tagId: Int) -> Unit,
+    onCardClicked: () -> Unit,
 ) {
-	ElevatedCard(modifier = modifier, onClick = onCardClicked) {
-		Column(
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(vertical = 16.dp)
-		) {
-			Row(
-				modifier = Modifier.padding(horizontal = 16.dp),
-				verticalAlignment = Alignment.CenterVertically
-			) {
-				Text(
-					modifier = Modifier.weight(1f),
-					text = fullName
-				)
-			}
+    ElevatedCard(modifier = modifier, onClick = onCardClicked) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = fullName,
+                )
+            }
 
-			LazyRow(
-				modifier = Modifier.fillMaxWidth(),
-				horizontalArrangement = Arrangement.spacedBy(4.dp),
-				contentPadding = PaddingValues(horizontal = 16.dp)
-			) {
-				items(tags) {
-					AssistChip(
-						onClick = {
-							onTagClicked(it.id)
-						},
-						label = {
-							Text(it.name)
-						}
-					)
-				}
-			}
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+            ) {
+                items(tags) {
+                    AssistChip(
+                        onClick = {
+                            onTagClicked(it.id)
+                        },
+                        label = {
+                            Text(it.name)
+                        },
+                    )
+                }
+            }
 
-			Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
 
-			BoxWithConstraints(
-				modifier = Modifier
-					.fillMaxWidth()
-					.padding(horizontal = 16.dp)
-			) {
-				Canvas(
-					modifier = Modifier.fillMaxWidth()
-						.height(8.dp)
-						.clip(RoundedCornerShape(16.dp))
-				) {
-					var start = 0f
-					//https://github.com/ozh/github-colors/blob/master/colors.json
+            BoxWithConstraints(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+            ) {
+                Canvas(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(16.dp)),
+                ) {
+                    var start = 0f
+                    // https://github.com/ozh/github-colors/blob/master/colors.json
 
-					languages.forEachIndexed { index, ghLanguageDao ->
-						val k = start + (((maxWidth.toPx()) * (ghLanguageDao.weight)) / 100)
-						val color = ghLanguageDao.colorCode?.replace("#", "")?.toColor() ?: Color.Gray
+                    languages.forEachIndexed { index, ghLanguageDao ->
+                        val k = start + (((maxWidth.toPx()) * (ghLanguageDao.weight)) / 100)
+                        val color = ghLanguageDao.colorCode?.replace("#", "")?.toColor() ?: Color.Gray
 
-						when {
-							index == 0 -> {
-								drawPath(
-									color = color,
-									path = Path().apply {
-										addRoundRect(
-											RoundRect(
-												left = 0F,
-												top = 0F,
-												right = k,
-												bottom = 8.dp.toPx(),
-												topLeftCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-												bottomLeftCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-												topRightCornerRadius = if (languages.size == 1) {
-													CornerRadius(4.dp.toPx(), 4.dp.toPx())
-												} else {
-													CornerRadius.Zero
-												},
-												bottomRightCornerRadius = if (languages.size == 1) {
-													CornerRadius(4.dp.toPx(), 4.dp.toPx())
-												} else {
-													CornerRadius.Zero
-												}
-											)
-										)
-									}
-								)
-							}
+                        when {
+                            index == 0 -> {
+                                drawPath(
+                                    color = color,
+                                    path =
+                                        Path().apply {
+                                            addRoundRect(
+                                                RoundRect(
+                                                    left = 0F,
+                                                    top = 0F,
+                                                    right = k,
+                                                    bottom = 8.dp.toPx(),
+                                                    topLeftCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+                                                    bottomLeftCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+                                                    topRightCornerRadius =
+                                                        if (languages.size == 1) {
+                                                            CornerRadius(4.dp.toPx(), 4.dp.toPx())
+                                                        } else {
+                                                            CornerRadius.Zero
+                                                        },
+                                                    bottomRightCornerRadius =
+                                                        if (languages.size == 1) {
+                                                            CornerRadius(4.dp.toPx(), 4.dp.toPx())
+                                                        } else {
+                                                            CornerRadius.Zero
+                                                        },
+                                                ),
+                                            )
+                                        },
+                                )
+                            }
 
-							languages.lastIndex == index -> {
-								drawPath(
-									color = color,
-									path = Path().apply {
-										addRoundRect(
-											RoundRect(
-												left = start,
-												top = 0F,
-												right = k,
-												bottom = 8.dp.toPx(),
-												topLeftCornerRadius = CornerRadius.Zero,
-												bottomLeftCornerRadius = CornerRadius.Zero,
-												topRightCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-												bottomRightCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
-											)
-										)
-									}
-								)
-							}
+                            languages.lastIndex == index -> {
+                                drawPath(
+                                    color = color,
+                                    path =
+                                        Path().apply {
+                                            addRoundRect(
+                                                RoundRect(
+                                                    left = start,
+                                                    top = 0F,
+                                                    right = k,
+                                                    bottom = 8.dp.toPx(),
+                                                    topLeftCornerRadius = CornerRadius.Zero,
+                                                    bottomLeftCornerRadius = CornerRadius.Zero,
+                                                    topRightCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+                                                    bottomRightCornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+                                                ),
+                                            )
+                                        },
+                                )
+                            }
 
-							else -> {
-								drawPath(
-									color = color,
-									path = Path().apply {
-										addRoundRect(
-											RoundRect(
-												left = start,
-												top = 0F,
-												right = k,
-												bottom = 8.dp.toPx(),
-												topLeftCornerRadius = CornerRadius.Zero,
-												bottomLeftCornerRadius = CornerRadius.Zero,
-												topRightCornerRadius = CornerRadius.Zero,
-												bottomRightCornerRadius = CornerRadius.Zero,
-											)
-										)
-									}
-								)
-							}
-						}
+                            else -> {
+                                drawPath(
+                                    color = color,
+                                    path =
+                                        Path().apply {
+                                            addRoundRect(
+                                                RoundRect(
+                                                    left = start,
+                                                    top = 0F,
+                                                    right = k,
+                                                    bottom = 8.dp.toPx(),
+                                                    topLeftCornerRadius = CornerRadius.Zero,
+                                                    bottomLeftCornerRadius = CornerRadius.Zero,
+                                                    topRightCornerRadius = CornerRadius.Zero,
+                                                    bottomRightCornerRadius = CornerRadius.Zero,
+                                                ),
+                                            )
+                                        },
+                                )
+                            }
+                        }
 
-						start = k
-					}
-				}
-			}
+                        start = k
+                    }
+                }
+            }
 
-			Spacer(Modifier.height(8.dp))
-			FlowRow(
-				modifier = Modifier.fillMaxWidth()
-					.padding(horizontal = 16.dp),
-				horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start)
-			) {
-				languages.forEach {
-					//TODO Support RTL
-					Text("${it.name} ${"%.1f".sprintf(it.weight)}%")
-				}
-			}
-		}
-	}
+            Spacer(Modifier.height(8.dp))
+            FlowRow(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.Start),
+            ) {
+                languages.forEach {
+                    // TODO Support RTL
+                    Text("${it.name} ${"%.1f".sprintf(it.weight)}%")
+                }
+            }
+        }
+    }
 }

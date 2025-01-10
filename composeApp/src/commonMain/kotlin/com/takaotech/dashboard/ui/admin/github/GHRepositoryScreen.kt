@@ -22,9 +22,9 @@ import com.takaotech.dashboard.ui.platform.LocalTTDUriHandler
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 
-
-class GHRepositoryScreen : Screen, KoinComponent {
-
+class GHRepositoryScreen :
+    Screen,
+    KoinComponent {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
@@ -40,25 +40,24 @@ class GHRepositoryScreen : Screen, KoinComponent {
                 if (it == GHRepositoryListUiState.SnackbarType.TAG_UPDATE) {
                     scope.launch {
                         snackbarHostState.showSnackbar(
-                            message = "Aggiornato Repository"
+                            message = "Aggiornato Repository",
                         )
                     }
                 }
             }
         }
 
-
         Scaffold(
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
-            }
+            },
         ) {
             GHRepositoryScreen(
                 uiState = uiState,
                 viewModel = viewModel,
                 onCardClicked = {
                     uriHandler.openUrl(it)
-                }
+                },
             )
         }
     }
@@ -68,7 +67,7 @@ class GHRepositoryScreen : Screen, KoinComponent {
 internal fun GHRepositoryScreen(
     uiState: GHRepositoryListUiState,
     viewModel: GHRepositoryListViewModel,
-    onCardClicked: (url: String) -> Unit
+    onCardClicked: (url: String) -> Unit,
 ) {
     val navigator = LocalNavigator.currentOrThrow
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
@@ -76,10 +75,11 @@ internal fun GHRepositoryScreen(
     val counterRefresh by viewModel.counterForRefresh.collectAsState()
 
     if (openBottomSheet) {
-        MainCategoryBottomSheet(categoryList = uiState.mainCategoryUi.categoryList,
+        MainCategoryBottomSheet(
+            categoryList = uiState.mainCategoryUi.categoryList,
             onDismissRequest = {
                 openBottomSheet = false
-            }
+            },
         ) {
             viewModel.updateFilterMainCategory(it)
         }
@@ -88,7 +88,7 @@ internal fun GHRepositoryScreen(
     Column {
         Row(
             modifier = Modifier.padding(4.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box {
                 AssistChip(
@@ -97,61 +97,57 @@ internal fun GHRepositoryScreen(
                     },
                     label = {
                         Text(uiState.mainCategoryUi.selectedCategory?.name ?: "--")
-                    }
+                    },
                 )
             }
-
-
 
             if (counterRefresh != null) {
                 var showCancelMenu by remember { mutableStateOf(false) }
 
                 Text(
-                    modifier = Modifier
-                        .minimumInteractiveComponentSize()
-                        .pointerInput(Unit) {
-                            detectTapGestures(
-                                onLongPress = {
-                                    // Azione da eseguire al long press
-                                    showCancelMenu = true
-                                }
-                            )
-                        },
-                    text = counterRefresh.toString()
+                    modifier =
+                        Modifier
+                            .minimumInteractiveComponentSize()
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onLongPress = {
+                                        // Azione da eseguire al long press
+                                        showCancelMenu = true
+                                    },
+                                )
+                            },
+                    text = counterRefresh.toString(),
                 )
 
                 DropdownMenu(
                     expanded = showCancelMenu,
                     onDismissRequest = {
                         showCancelMenu = false
-                    }
-                ){
+                    },
+                ) {
                     DropdownMenuItem(
                         text = {
                             Text("Cancel Pull")
                         },
                         onClick = {
-
-                        }
+                        },
                     )
                 }
-
             } else {
                 IconButton(
                     onClick = {
                         viewModel.pullGHRepositories()
-                    }
+                    },
                 ) {
                     Icon(Icons.Filled.Refresh, "")
                 }
             }
-
         }
 
         Button(
             onClick = {
                 navigator.push(AdminTagsScreen())
-            }
+            },
         ) {
             Text("ListTag")
         }
@@ -165,7 +161,7 @@ internal fun GHRepositoryScreen(
             },
             onTagEditClicked = {
                 navigator.push(TagSelectionList(it))
-            }
+            },
         )
     }
 }

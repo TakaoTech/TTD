@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TagsUpdateRequest(
-	@SerialName("tagIds")
-	val tagIds: List<Int>
+    @SerialName("tagIds")
+    val tagIds: List<Int>,
 )

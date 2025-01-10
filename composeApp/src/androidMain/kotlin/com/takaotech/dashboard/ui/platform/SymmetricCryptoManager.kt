@@ -19,15 +19,14 @@ import javax.crypto.spec.GCMParameterSpec
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-
-//https://github.com/ClarkStoro/AndroidEncryptionExamples/blob/main/app/src/main/java/com/clarkstoro/androidencryptionexamples/utils/SymmetricCryptoManager.kt
+// https://github.com/ClarkStoro/AndroidEncryptionExamples/blob/main/app/src/main/java/com/clarkstoro/androidencryptionexamples/utils/SymmetricCryptoManager.kt
 @OptIn(ExperimentalEncodingApi::class)
-class SymmetricCryptoManager(private val aliasKey: String) : KoinComponent {
-
+class SymmetricCryptoManager(
+    private val aliasKey: String,
+) : KoinComponent {
     private val logger by inject<Logger>()
 
     companion object {
-
         private const val KEYSTORE = "AndroidKeyStore"
 
         private const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
@@ -47,19 +46,18 @@ class SymmetricCryptoManager(private val aliasKey: String) : KoinComponent {
         private const val APPEND_SEPARATOR = "|||"
     }
 
+    private val keystore =
+        KeyStore.getInstance(KEYSTORE).apply {
+            load(null)
+        }
 
-    private val keystore = KeyStore.getInstance(KEYSTORE).apply {
-        load(null)
-    }
-
-    private fun getEncryptCipher(): Cipher {
-        return Cipher.getInstance(TRANSFORMATION).apply {
+    private fun getEncryptCipher(): Cipher =
+        Cipher.getInstance(TRANSFORMATION).apply {
             init(Cipher.ENCRYPT_MODE, getKey())
         }
-    }
 
-    private fun getDecryptCipherForIv(initializationVector: ByteArray): Cipher {
-        return Cipher.getInstance(TRANSFORMATION).apply {
+    private fun getDecryptCipherForIv(initializationVector: ByteArray): Cipher =
+        Cipher.getInstance(TRANSFORMATION).apply {
             when (CURRENT_BLOCK_MODE) {
                 GCM_BLOCK_MODE -> {
                     val gcmParameterSpec = GCMParameterSpec(GCM_TAG_LENGTH, initializationVector)
@@ -71,14 +69,11 @@ class SymmetricCryptoManager(private val aliasKey: String) : KoinComponent {
                 }
             }
         }
-    }
 
-    private fun getKey(): SecretKey {
-        return getValidKeyOrNull() ?: generateKey()
-    }
+    private fun getKey(): SecretKey = getValidKeyOrNull() ?: generateKey()
 
-    private fun getValidKeyOrNull(): SecretKey? {
-        return try {
+    private fun getValidKeyOrNull(): SecretKey? =
+        try {
             val existingKey = keystore.getEntry(aliasKey, null) as? SecretKeyEntry
             existingKey?.secretKey?.also { sk ->
                 Cipher.getInstance(TRANSFORMATION).apply {
@@ -88,27 +83,24 @@ class SymmetricCryptoManager(private val aliasKey: String) : KoinComponent {
         } catch (e: Exception) {
             null
         }
-    }
 
-    private fun isKeyValid(): Boolean {
-        return getValidKeyOrNull() != null
-    }
+    private fun isKeyValid(): Boolean = getValidKeyOrNull() != null
 
-    private fun generateKey(): SecretKey {
-        return KeyGenerator.getInstance(ALGORITHM).apply {
-            init(
-                KeyGenParameterSpec.Builder(
-                    aliasKey,
-                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+    private fun generateKey(): SecretKey =
+        KeyGenerator
+            .getInstance(ALGORITHM)
+            .apply {
+                init(
+                    KeyGenParameterSpec
+                        .Builder(
+                            aliasKey,
+                            KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
+                        ).setKeySize(KEY_SIZE)
+                        .setBlockModes(CURRENT_BLOCK_MODE)
+                        .setEncryptionPaddings(CURRENT_PADDING)
+                        .build(),
                 )
-                    .setKeySize(KEY_SIZE)
-                    .setBlockModes(CURRENT_BLOCK_MODE)
-                    .setEncryptionPaddings(CURRENT_PADDING)
-                    .build()
-            )
-        }.generateKey()
-    }
-
+            }.generateKey()
 
     fun encryptStringAppendMode(plainText: String): String? {
         return try {
@@ -139,9 +131,8 @@ class SymmetricCryptoManager(private val aliasKey: String) : KoinComponent {
         }
     }
 
-
-    fun encryptToStringByteArrayMode(bytes: ByteArray): String? {
-        return try {
+    fun encryptToStringByteArrayMode(bytes: ByteArray): String? =
+        try {
             val encryptCipher = getEncryptCipher()
             val cipherText = encryptCipher.doFinal(bytes)
             val outputStream = ByteArrayOutputStream()
@@ -157,11 +148,10 @@ class SymmetricCryptoManager(private val aliasKey: String) : KoinComponent {
             logger.e(e) { "Error: failed to encrypt string - Byte Array Mode " }
             null
         }
-    }
 
     @OptIn(ExperimentalEncodingApi::class)
-    fun encryptFromByteArrayToByteArray(bytes: ByteArray): ByteArray {
-        return try {
+    fun encryptFromByteArrayToByteArray(bytes: ByteArray): ByteArray =
+        try {
             val encryptCipher = getEncryptCipher()
             val cipherText = encryptCipher.doFinal(bytes)
             val outputStream = ByteArrayOutputStream()
@@ -177,16 +167,16 @@ class SymmetricCryptoManager(private val aliasKey: String) : KoinComponent {
                 it.write(cipherText)
             }
 //            Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
-            kotlin.io.encoding.Base64.encodeToByteArray(outputStream.toByteArray())
+            kotlin.io.encoding.Base64
+                .encodeToByteArray(outputStream.toByteArray())
         } catch (e: Exception) {
             logger.e(e) { "Error: failed to encrypt string - Byte Array Mode " }
             throw e
 //            null
         }
-    }
 
-    fun decryptFromStringByteArrayMode(stringToDecode: String): ByteArray? {
-        return try {
+    fun decryptFromStringByteArrayMode(stringToDecode: String): ByteArray? =
+        try {
             val decodedString = Base64.decode(stringToDecode)
             val inputStream = ByteArrayInputStream(decodedString)
             inputStream.use {
@@ -204,22 +194,24 @@ class SymmetricCryptoManager(private val aliasKey: String) : KoinComponent {
             logger.e(e) { "Error: failed to decrypt string - Byte Array Mode " }
             null
         }
-    }
 
-    fun decryptFromByteArray(bytes: ByteArray): ByteArray {
-        return try {
+    fun decryptFromByteArray(bytes: ByteArray): ByteArray =
+        try {
             val inputStream = ByteArrayInputStream(bytes)
             inputStream.use {
                 val ivSize = it.read()
                 val iv = ByteArray(ivSize)
                 it.read(iv)
 
-                val cipherTextBytesSize = ByteArray(4).let { siz ->
-                    it.read(siz)
-                    ByteBuffer.wrap(siz).also {
-                        it.order(ByteOrder.LITTLE_ENDIAN)
-                    }.getInt()
-                }
+                val cipherTextBytesSize =
+                    ByteArray(4).let { siz ->
+                        it.read(siz)
+                        ByteBuffer
+                            .wrap(siz)
+                            .also {
+                                it.order(ByteOrder.LITTLE_ENDIAN)
+                            }.getInt()
+                    }
 
                 val cipherTextBytes = ByteArray(cipherTextBytesSize)
                 it.read(cipherTextBytes)
@@ -231,5 +223,4 @@ class SymmetricCryptoManager(private val aliasKey: String) : KoinComponent {
             throw e
 //            null
         }
-    }
 }

@@ -6,7 +6,9 @@ import com.takaotech.dashboard.utils.tables.StringEntity
 import com.takaotech.dashboard.utils.tables.StringEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 
-class UserEntity(id: EntityID<String>) : StringEntity(id) {
+class UserEntity(
+    id: EntityID<String>,
+) : StringEntity(id) {
     companion object : StringEntityClass<UserEntity>(UserTable)
 
     var email by UserTable.email

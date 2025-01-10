@@ -15,261 +15,283 @@ import io.mockk.mockk
 import kotlinx.datetime.Clock
 import kotlin.test.assertEquals
 
+class GithubControllerTest :
+    FunSpec({
+        var githubRepository = mockk<GithubRepository>()
+        var depository = mockk<DepositoryRepository>()
+        var tagsRepository = mockk<TagsRepository>()
+        var controller = GithubController(githubRepository, depository, tagsRepository)
 
-class GithubControllerTest : FunSpec({
-	var githubRepository = mockk<GithubRepository>()
-	var depository = mockk<DepositoryRepository>()
-	var tagsRepository = mockk<TagsRepository>()
-	var controller = GithubController(githubRepository, depository, tagsRepository)
+        val refreshAt = Clock.System.now()
 
-	val refreshAt = Clock.System.now()
+        beforeEach {
+            githubRepository = mockk<GithubRepository>()
+            depository = mockk<DepositoryRepository>()
+            tagsRepository = mockk<TagsRepository>()
+            controller = GithubController(githubRepository, depository, tagsRepository)
 
-	beforeEach {
-		githubRepository = mockk<GithubRepository>()
-		depository = mockk<DepositoryRepository>()
-		tagsRepository = mockk<TagsRepository>()
-		controller = GithubController(githubRepository, depository, tagsRepository)
+            coEvery {
+                depository.detachUpdateTimestamp()
+            } returns refreshAt
+        }
 
-		coEvery {
-			depository.detachUpdateTimestamp()
-		} returns refreshAt
-	}
+        test("Insert new data, all data inserted") {
+            val testList =
+                listOf(
+                    GHRepositoryDao(
+                        id = 1,
+                        name = "Kotlin",
+                        fullName = "Kotlin",
+                        description = "Test Description",
+                        url = "https://www.bing.com/search?q=kotlin",
+                        license = "Apache 2",
+                        licenseUrl = "https://test.com",
+                        user =
+                            GHUser(
+                                id = 1,
+                                name = "Kotlin",
+                                url = "https://duckduckgo.com/?q=kotlin",
+                                avatarUrl = "https://duckduckgo.com/?q=avatar",
+                            ),
+                        languages =
+                            listOf(
+                                GHLanguageDao("Kotlin", 100),
+                            ),
+                        tags = listOf(),
+                        mainCategory = MainCategory.KOTLIN,
+                        updatedAt = Clock.System.now(),
+                    ),
+                    GHRepositoryDao(
+                        id = 2,
+                        name = "Kotlin",
+                        fullName = "Kotlin",
+                        description = "Test Description",
+                        url = "https://www.bing.com/search?q=kotlin",
+                        license = "Apache 2",
+                        licenseUrl = "https://test.com",
+                        user =
+                            GHUser(
+                                id = 1,
+                                name = "Kotlin",
+                                url = "https://duckduckgo.com/?q=kotlin",
+                                avatarUrl = "https://duckduckgo.com/?q=avatar",
+                            ),
+                        languages =
+                            listOf(
+                                GHLanguageDao("Kotlin", 100),
+                            ),
+                        tags = listOf(),
+                        mainCategory = MainCategory.KOTLIN,
+                        updatedAt = Clock.System.now(),
+                    ),
+                )
 
-	test("Insert new data, all data inserted") {
-		val testList = listOf(
-			GHRepositoryDao(
-				id = 1,
-				name = "Kotlin",
-				fullName = "Kotlin",
-				description = "Test Description",
-				url = "https://www.bing.com/search?q=kotlin",
-				license = "Apache 2",
-				licenseUrl = "https://test.com",
-				user = GHUser(
-					id = 1,
-					name = "Kotlin",
-					url = "https://duckduckgo.com/?q=kotlin",
-					avatarUrl = "https://duckduckgo.com/?q=avatar"
-				),
-				languages = listOf(
-					GHLanguageDao("Kotlin", 100)
-				),
-				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN,
-				updatedAt = Clock.System.now()
-			),
-			GHRepositoryDao(
-				id = 2,
-				name = "Kotlin",
-				fullName = "Kotlin",
-				description = "Test Description",
-				url = "https://www.bing.com/search?q=kotlin",
-				license = "Apache 2",
-				licenseUrl = "https://test.com",
-				user = GHUser(
-					id = 1,
-					name = "Kotlin",
-					url = "https://duckduckgo.com/?q=kotlin",
-					avatarUrl = "https://duckduckgo.com/?q=avatar"
-				),
-				languages = listOf(
-					GHLanguageDao("Kotlin", 100)
-				),
-				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN,
-				updatedAt = Clock.System.now()
-			)
-		)
+            coEvery { githubRepository.getAllStars() } returns testList
 
-		coEvery { githubRepository.getAllStars() } returns testList
+            coEvery {
+                depository.ghRepositoryExist(any())
+            } returns false
 
-		coEvery {
-			depository.ghRepositoryExist(any())
-		} returns false
+            coJustRun { depository.saveRepositoriesToDB(refreshAt, any()) }
 
-		coJustRun { depository.saveRepositoriesToDB(refreshAt, any()) }
+            controller.getStarsAndStore()
 
-		controller.getStarsAndStore()
+            coVerify {
+                depository.saveRepositoriesToDB(refreshAt, testList)
+            }
+        }
 
-		coVerify {
-			depository.saveRepositoriesToDB(refreshAt, testList)
-		}
-	}
+        test("Insert new data, no data inserted because exist") {
+            val testList =
+                listOf(
+                    GHRepositoryDao(
+                        id = 1,
+                        name = "Kotlin",
+                        fullName = "Kotlin",
+                        description = "Test Description",
+                        url = "https://www.bing.com/search?q=kotlin",
+                        license = "Apache 2",
+                        licenseUrl = "https://test.com",
+                        user =
+                            GHUser(
+                                id = 1,
+                                name = "Kotlin",
+                                url = "https://duckduckgo.com/?q=kotlin",
+                                avatarUrl = "https://duckduckgo.com/?q=avatar",
+                            ),
+                        languages =
+                            listOf(
+                                GHLanguageDao("Kotlin", 100),
+                            ),
+                        tags = listOf(),
+                        mainCategory = MainCategory.KOTLIN,
+                        updatedAt = Clock.System.now(),
+                    ),
+                    GHRepositoryDao(
+                        id = 2,
+                        name = "Kotlin",
+                        fullName = "Kotlin",
+                        description = "Test Description",
+                        url = "https://www.bing.com/search?q=kotlin",
+                        license = "Apache 2",
+                        licenseUrl = "https://test.com",
+                        user =
+                            GHUser(
+                                id = 1,
+                                name = "Kotlin",
+                                url = "https://duckduckgo.com/?q=kotlin",
+                                avatarUrl = "https://duckduckgo.com/?q=avatar",
+                            ),
+                        languages =
+                            listOf(
+                                GHLanguageDao("Kotlin", 100),
+                            ),
+                        tags = listOf(),
+                        mainCategory = MainCategory.KOTLIN,
+                        updatedAt = Clock.System.now(),
+                    ),
+                )
 
-	test("Insert new data, no data inserted because exist") {
-		val testList = listOf(
-			GHRepositoryDao(
-				id = 1,
-				name = "Kotlin",
-				fullName = "Kotlin",
-				description = "Test Description",
-				url = "https://www.bing.com/search?q=kotlin",
-				license = "Apache 2",
-				licenseUrl = "https://test.com",
-				user = GHUser(
-					id = 1,
-					name = "Kotlin",
-					url = "https://duckduckgo.com/?q=kotlin",
-					avatarUrl = "https://duckduckgo.com/?q=avatar"
-				),
-				languages = listOf(
-					GHLanguageDao("Kotlin", 100)
-				),
-				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN,
-				updatedAt = Clock.System.now()
-			),
-			GHRepositoryDao(
-				id = 2,
-				name = "Kotlin",
-				fullName = "Kotlin",
-				description = "Test Description",
-				url = "https://www.bing.com/search?q=kotlin",
-				license = "Apache 2",
-				licenseUrl = "https://test.com",
-				user = GHUser(
-					id = 1,
-					name = "Kotlin",
-					url = "https://duckduckgo.com/?q=kotlin",
-					avatarUrl = "https://duckduckgo.com/?q=avatar"
-				),
-				languages = listOf(
-					GHLanguageDao("Kotlin", 100)
-				),
-				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN,
-				updatedAt = Clock.System.now()
-			)
-		)
+            coEvery { githubRepository.getAllStars() } returns testList.toList()
 
-		coEvery { githubRepository.getAllStars() } returns testList.toList()
+// 		coEvery {
+// 			depository.ghRepositoryExist(any())
+// 		} returns true
 
-//		coEvery {
-//			depository.ghRepositoryExist(any())
-//		} returns true
+            coJustRun { depository.saveRepositoriesToDB(refreshAt, any()) }
 
-		coJustRun { depository.saveRepositoriesToDB(refreshAt, any()) }
+            controller.getStarsAndStore()
 
-		controller.getStarsAndStore()
+            coVerify {
+                depository.saveRepositoriesToDB(refreshAt, any())
+            }
+        }
 
-		coVerify {
-			depository.saveRepositoriesToDB(refreshAt, any())
-		}
-	}
+        test("Insert new data, filter ID=1 because exist") {
+            val newObj =
+                GHRepositoryDao(
+                    id = 2,
+                    name = "Kotlin",
+                    fullName = "Kotlin",
+                    description = "Test Description",
+                    url = "https://www.bing.com/search?q=kotlin",
+                    license = "Apache 2",
+                    licenseUrl = "https://test.com",
+                    user =
+                        GHUser(
+                            id = 1,
+                            name = "Kotlin",
+                            url = "https://duckduckgo.com/?q=kotlin",
+                            avatarUrl = "https://duckduckgo.com/?q=avatar",
+                        ),
+                    languages =
+                        listOf(
+                            GHLanguageDao("Kotlin", 100),
+                        ),
+                    tags = listOf(),
+                    mainCategory = MainCategory.KOTLIN,
+                    updatedAt = Clock.System.now(),
+                )
+            val testList =
+                listOf(
+                    GHRepositoryDao(
+                        id = 1,
+                        name = "Kotlin",
+                        fullName = "Kotlin",
+                        description = "Test Description",
+                        url = "https://www.bing.com/search?q=kotlin",
+                        license = "Apache 2",
+                        licenseUrl = "https://test.com",
+                        user =
+                            GHUser(
+                                id = 1,
+                                name = "Kotlin",
+                                url = "https://duckduckgo.com/?q=kotlin",
+                                avatarUrl = "https://duckduckgo.com/?q=avatar",
+                            ),
+                        languages =
+                            listOf(
+                                GHLanguageDao("Kotlin", 100),
+                            ),
+                        tags = listOf(),
+                        mainCategory = MainCategory.KOTLIN,
+                        updatedAt = Clock.System.now(),
+                    ),
+                    newObj,
+                )
 
-	test("Insert new data, filter ID=1 because exist") {
-		val newObj = GHRepositoryDao(
-			id = 2,
-			name = "Kotlin",
-			fullName = "Kotlin",
-			description = "Test Description",
-			url = "https://www.bing.com/search?q=kotlin",
-			license = "Apache 2",
-			licenseUrl = "https://test.com",
-			user = GHUser(
-				id = 1, name = "Kotlin",
-				url = "https://duckduckgo.com/?q=kotlin",
-				avatarUrl = "https://duckduckgo.com/?q=avatar"
-			),
-			languages = listOf(
-				GHLanguageDao("Kotlin", 100)
-			),
-			tags = listOf(),
-			mainCategory = MainCategory.KOTLIN,
-			updatedAt = Clock.System.now()
-		)
-		val testList = listOf(
-			GHRepositoryDao(
-				id = 1,
-				name = "Kotlin",
-				fullName = "Kotlin",
-				description = "Test Description",
-				url = "https://www.bing.com/search?q=kotlin",
-				license = "Apache 2",
-				licenseUrl = "https://test.com",
-				user = GHUser(
-					id = 1,
-					name = "Kotlin",
-					url = "https://duckduckgo.com/?q=kotlin",
-					avatarUrl = "https://duckduckgo.com/?q=avatar"
-				),
-				languages = listOf(
-					GHLanguageDao("Kotlin", 100)
-				),
-				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN,
-				updatedAt = Clock.System.now()
-			),
-			newObj
-		)
+            coEvery { githubRepository.getAllStars() } returns testList
 
-		coEvery { githubRepository.getAllStars() } returns testList
+            coEvery {
+                depository.ghRepositoryExist(1)
+            } returns true
 
-		coEvery {
-			depository.ghRepositoryExist(1)
-		} returns true
+            coEvery {
+                depository.ghRepositoryExist(2)
+            } returns false
 
-		coEvery {
-			depository.ghRepositoryExist(2)
-		} returns false
+            coJustRun { depository.saveRepositoriesToDB(refreshAt, any()) }
 
-		coJustRun { depository.saveRepositoriesToDB(refreshAt, any()) }
+            controller.getStarsAndStore()
 
-		controller.getStarsAndStore()
+            coEvery {
+                depository.saveRepositoriesToDB(refreshAt, listOf(newObj))
+            }
+        }
 
-		coEvery {
-			depository.saveRepositoriesToDB(refreshAt, listOf(newObj))
-		}
-	}
+        test("Get Stored Depository, not empty") {
+            val testList =
+                listOf(
+                    GHRepositoryDao(
+                        id = 1,
+                        name = "Kotlin",
+                        fullName = "Kotlin",
+                        description = "Test Description",
+                        url = "https://www.bing.com/search?q=kotlin",
+                        license = "Apache 2",
+                        licenseUrl = "https://test.com",
+                        user =
+                            GHUser(
+                                id = 1,
+                                name = "Kotlin",
+                                url = "https://duckduckgo.com/?q=kotlin",
+                                avatarUrl = "https://duckduckgo.com/?q=avatar",
+                            ),
+                        languages =
+                            listOf(
+                                GHLanguageDao("Kotlin", 100),
+                            ),
+                        tags = listOf(),
+                        mainCategory = MainCategory.KOTLIN,
+                        updatedAt = Clock.System.now(),
+                    ),
+                    GHRepositoryDao(
+                        id = 2,
+                        name = "Kotlin",
+                        fullName = "Kotlin",
+                        description = "Test Description",
+                        url = "https://www.bing.com/search?q=kotlin",
+                        license = "Apache 2",
+                        licenseUrl = "https://test.com",
+                        user =
+                            GHUser(
+                                id = 1,
+                                name = "Kotlin",
+                                url = "https://duckduckgo.com/?q=kotlin",
+                                avatarUrl = "https://duckduckgo.com/?q=avatar",
+                            ),
+                        languages =
+                            listOf(
+                                GHLanguageDao("Kotlin", 100),
+                            ),
+                        tags = listOf(),
+                        mainCategory = MainCategory.KOTLIN,
+                        updatedAt = Clock.System.now(),
+                    ),
+                )
 
-	test("Get Stored Depository, not empty") {
-		val testList = listOf(
-			GHRepositoryDao(
-				id = 1,
-				name = "Kotlin",
-				fullName = "Kotlin",
-				description = "Test Description",
-				url = "https://www.bing.com/search?q=kotlin",
-				license = "Apache 2",
-				licenseUrl = "https://test.com",
-				user = GHUser(
-					id = 1,
-					name = "Kotlin",
-					url = "https://duckduckgo.com/?q=kotlin",
-					avatarUrl = "https://duckduckgo.com/?q=avatar"
-				),
-				languages = listOf(
-					GHLanguageDao("Kotlin", 100)
-				),
-				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN,
-				updatedAt = Clock.System.now()
-			),
-			GHRepositoryDao(
-				id = 2,
-				name = "Kotlin",
-				fullName = "Kotlin",
-				description = "Test Description",
-				url = "https://www.bing.com/search?q=kotlin",
-				license = "Apache 2",
-				licenseUrl = "https://test.com",
-				user = GHUser(
-					id = 1,
-					name = "Kotlin",
-					url = "https://duckduckgo.com/?q=kotlin",
-					avatarUrl = "https://duckduckgo.com/?q=avatar"
-				),
-				languages = listOf(
-					GHLanguageDao("Kotlin", 100)
-				),
-				tags = listOf(),
-				mainCategory = MainCategory.KOTLIN,
-				updatedAt = Clock.System.now()
-			)
-		)
+            coEvery { depository.getGHRepository() } returns testList
 
-		coEvery { depository.getGHRepository() } returns testList
-
-		assertEquals(testList, controller.getRepository().data)
-	}
-})
+            assertEquals(testList, controller.getRepository().data)
+        }
+    })

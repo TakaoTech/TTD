@@ -23,36 +23,35 @@ import ttd.composeapp.generated.resources.Res
 import ttd.composeapp.generated.resources.ghrepository_add_new_tag
 
 class TagListScreen : Screen {
+    @OptIn(ExperimentalResourceApi::class)
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        val viewModel = navigator.getNavigatorScreenModel<TagListViewModel>()
+        val uiState by viewModel.uiState.collectAsState()
 
-	@OptIn(ExperimentalResourceApi::class)
-	@Composable
-	override fun Content() {
-		val navigator = LocalNavigator.currentOrThrow
-		val viewModel = navigator.getNavigatorScreenModel<TagListViewModel>()
-		val uiState by viewModel.uiState.collectAsState()
-
-		Scaffold(
-			topBar = {
-				Row(
-					modifier = Modifier.fillMaxWidth(),
-					horizontalArrangement = Arrangement.End
-				) {
-					IconButton(
-						onClick = {
-							navigator.push(TagEditScreen(editMode = false))
-						}
-					) {
-						Icon(Icons.Filled.Add, stringResource(Res.string.ghrepository_add_new_tag))
-					}
-				}
-			}
-		) {
-			TagList(
-				tagListUi = uiState.tagUi,
-				onTagClicked = {
-					navigator.push(TagEditScreen(tagId = it, editMode = true))
-				}
-			)
-		}
-	}
+        Scaffold(
+            topBar = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    IconButton(
+                        onClick = {
+                            navigator.push(TagEditScreen(editMode = false))
+                        },
+                    ) {
+                        Icon(Icons.Filled.Add, stringResource(Res.string.ghrepository_add_new_tag))
+                    }
+                }
+            },
+        ) {
+            TagList(
+                tagListUi = uiState.tagUi,
+                onTagClicked = {
+                    navigator.push(TagEditScreen(tagId = it, editMode = true))
+                },
+            )
+        }
+    }
 }

@@ -15,6 +15,6 @@ private fun LoginScreenUiPreview() {
         modifier = Modifier,
         onGoogleSignupClicked = {},
         onAppleSignupClicked = {},
-        onLoginSwitch = {}
+        onLoginSwitch = {},
     )
 }

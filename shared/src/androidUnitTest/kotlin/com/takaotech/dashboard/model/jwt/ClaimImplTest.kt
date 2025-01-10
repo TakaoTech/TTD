@@ -7,7 +7,6 @@ import kotlin.test.*
 
 @OptIn(ExperimentalSerializationApi::class)
 class ClaimImplTest {
-
     val json = Json { ignoreUnknownKeys = true }
 
     @Test
@@ -98,12 +97,12 @@ class ClaimImplTest {
         assertNotNull(claim.asInstantFromSeconds())
         assertEquals(
             Instant.fromEpochMilliseconds(1476824844L * 1000),
-            claim.asInstantFromSeconds()
+            claim.asInstantFromSeconds(),
         )
 
         assertEquals(
             Instant.fromEpochMilliseconds(1476824844L),
-            claim.asInstantFromMilliseconds()
+            claim.asInstantFromMilliseconds(),
         )
     }
 
@@ -135,12 +134,11 @@ class ClaimImplTest {
 
     @Test
     fun shouldGetArrayValueOfCustomClass() {
-
         val value: JsonElement = json.encodeToJsonElement(arrayOf(UserPojo("George", 1), UserPojo("Mark", 2)))
         val claim = Claim(value)
 
         assertNotNull(
-            json.decodeFromJsonElement<Array<UserPojo>>(claim.value)
+            json.decodeFromJsonElement<Array<UserPojo>>(claim.value),
         )
         assertTrue {
             arrayOf(UserPojo("George", 1), UserPojo("Mark", 2))
@@ -172,20 +170,20 @@ class ClaimImplTest {
         }
     }
 
-    //Skipped array deserialization delegated to library user
+    // Skipped array deserialization delegated to library user
 //    @Test
 //    fun shouldGetEmptyArrayIfNonArrayValue() {
 //        val value: JsonElement = json.encodeToJsonElement(1)
 //        val claim = Claim(value)
 //
-////        assertThat(claim.asArray(String::class.java), CoreMatchers.`is`(CoreMatchers.notNullValue()))
-////        assertThat(claim.asArray(String::class.java), CoreMatchers.`is`(IsArrayWithSize.emptyArray<String>()))
+// //        assertThat(claim.asArray(String::class.java), CoreMatchers.`is`(CoreMatchers.notNullValue()))
+// //        assertThat(claim.asArray(String::class.java), CoreMatchers.`is`(IsArrayWithSize.emptyArray<String>()))
 //
 //        assertThat(json.decodeFromJsonElement<Array<String>>(claim.value), CoreMatchers.`is`(CoreMatchers.notNullValue()))
 //        assertThat(json.decodeFromJsonElement<Array<String>>(claim.value), CoreMatchers.`is`(IsArrayWithSize.emptyArray<String>()))
 //    }
 
-    //Skipped array deserialization delegated to library user
+    // Skipped array deserialization delegated to library user
 //    @Test
 //    fun shouldThrowIfArrayClassMismatch() {
 //        val value: JsonElement = json.encodeToJsonElement(arrayOf("keys", "values"))
@@ -204,8 +202,9 @@ class ClaimImplTest {
         assertTrue {
             json.decodeFromJsonElement<List<UserPojo>>(claim.value).containsAll(
                 listOf(
-                    UserPojo("George", 1), UserPojo("Mark", 2)
-                )
+                    UserPojo("George", 1),
+                    UserPojo("Mark", 2),
+                ),
             )
         }
     }
@@ -216,11 +215,11 @@ class ClaimImplTest {
         val claim = Claim(value)
 
         assertNotNull(
-            json.decodeFromJsonElement<List<String>>(claim.value)
+            json.decodeFromJsonElement<List<String>>(claim.value),
         )
         assertEquals(
             listOf("string1", "string2"),
-            json.decodeFromJsonElement<List<String>>(claim.value)
+            json.decodeFromJsonElement<List<String>>(claim.value),
         )
     }
 
@@ -230,15 +229,15 @@ class ClaimImplTest {
         val claim = Claim(value)
 
         assertNotNull(
-            json.decodeFromJsonElement<List<String>>(claim.value)
+            json.decodeFromJsonElement<List<String>>(claim.value),
         )
         assertEquals(
             listOf(),
-            json.decodeFromJsonElement<List<String>>(claim.value)
+            json.decodeFromJsonElement<List<String>>(claim.value),
         )
     }
 
-    //Skipped
+    // Skipped
 //    @Test
 //    fun shouldGetEmptyListIfNonArrayValue() {
 //        val value: JsonElement = gson.toJsonTree(1)

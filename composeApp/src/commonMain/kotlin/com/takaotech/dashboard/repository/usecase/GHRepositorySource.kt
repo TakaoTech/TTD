@@ -8,12 +8,12 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class GHRepositorySource(
-	private val ghRepository: GHRepository
+    private val ghRepository: GHRepository,
 ) : BasePagingSource<GHRepositoryMiniDao>() {
+    var tagId: Int? = null
 
-	var tagId: Int? = null
-
-	override suspend fun fetchData(page: Int, limit: Int): TakaoPaging<GHRepositoryMiniDao> {
-		return ghRepository.getRepositories(page, limit, tagId = tagId).get()
-	}
+    override suspend fun fetchData(
+        page: Int,
+        limit: Int,
+    ): TakaoPaging<GHRepositoryMiniDao> = ghRepository.getRepositories(page, limit, tagId = tagId).get()
 }

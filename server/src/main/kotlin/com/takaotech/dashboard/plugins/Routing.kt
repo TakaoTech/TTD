@@ -25,5 +25,4 @@ fun Application.configureRouting() {
         githubRouter()
     }
     sessionRoute()
-
 }

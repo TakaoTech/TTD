@@ -9,8 +9,9 @@ import io.ktor.server.auth.jwt.*
 class TakaoJWTPrincipal(
     payload: Payload,
     val user: String = payload.getClaim(TAKAO_JWT_USER).asString(),
-    val roles: Set<TakaoRole> = payload
-        .getClaim(TAKAO_JWT_PERMISSION)
-        .asList(TakaoRole::class.java)
-        .toSet(),
+    val roles: Set<TakaoRole> =
+        payload
+            .getClaim(TAKAO_JWT_PERMISSION)
+            .asList(TakaoRole::class.java)
+            .toSet(),
 ) : JWTPayloadHolder(payload)

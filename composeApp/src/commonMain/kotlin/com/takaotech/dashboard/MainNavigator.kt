@@ -52,14 +52,14 @@ object MainNavigator : Screen, KoinComponent {
                                 selected = false,
                                 onClick = {
                                     navigator.push(
-                                        AdminNavigator
+                                        AdminNavigator,
                                     )
                                 },
-                                icon = { Icon(Icons.Filled.AdminPanelSettings, "") }
+                                icon = { Icon(Icons.Filled.AdminPanelSettings, "") },
                             )
                         }
                     }
-                }
+                },
             )
         }
     }

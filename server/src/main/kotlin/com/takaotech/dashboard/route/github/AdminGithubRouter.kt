@@ -34,28 +34,30 @@ fun Route.adminGithubRouter(coroutineScope: CoroutineScope) {
     }
 
     get<AdminGithubRoute.Refresh> {
-        //TODO Catch exception for correct error body
+        // TODO Catch exception for correct error body
 
         jobGithubRefreshMutex.withLock {
             if (it.mock) {
-                jobGithubRefresh = coroutineScope.launch(Dispatchers.Default + SupervisorJob()) {
-                    delay(20.seconds)
-                    jobGithubRefresh = null
-                }
+                jobGithubRefresh =
+                    coroutineScope.launch(Dispatchers.Default + SupervisorJob()) {
+                        delay(20.seconds)
+                        jobGithubRefresh = null
+                    }
                 call.respond(HttpStatusCode.OK)
             } else {
                 if (jobGithubRefresh != null && jobGithubRefresh?.isActive == true) {
                     call.respond(HttpStatusCode.Conflict)
                 } else {
-                    jobGithubRefresh = coroutineScope.launch(Dispatchers.Default + SupervisorJob()) {
-                        try {
-                            controller.getStarsAndStore()
-                            jobGithubRefresh = null
-                        } catch (ex: Throwable) {
-                            logger.error(ex)
-                            jobGithubRefresh = null
+                    jobGithubRefresh =
+                        coroutineScope.launch(Dispatchers.Default + SupervisorJob()) {
+                            try {
+                                controller.getStarsAndStore()
+                                jobGithubRefresh = null
+                            } catch (ex: Throwable) {
+                                logger.error(ex)
+                                jobGithubRefresh = null
+                            }
                         }
-                    }
                     call.respond(HttpStatusCode.OK)
                 }
             }
@@ -79,7 +81,7 @@ fun Route.adminGithubRouter(coroutineScope: CoroutineScope) {
     }
 
     get<AdminGithubRoute.Refresh.Status> {
-        //TODO Catch exception for correct error body
+        // TODO Catch exception for correct error body
         jobGithubRefreshMutex.withLock {
             val mJobGithubRefresh = jobGithubRefresh
             if (mJobGithubRefresh != null) {
@@ -128,7 +130,8 @@ fun Route.adminGithubRouter(coroutineScope: CoroutineScope) {
             return@post
         }
 
-        controller.updateRepositoryTags(id, tagIds)
+        controller
+            .updateRepositoryTags(id, tagIds)
             .onSuccess {
                 call.respond(HttpStatusCode.OK)
             }.onFailure {
@@ -136,4 +139,3 @@ fun Route.adminGithubRouter(coroutineScope: CoroutineScope) {
             }
     }
 }
-

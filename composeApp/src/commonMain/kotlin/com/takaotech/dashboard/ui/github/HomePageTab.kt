@@ -18,10 +18,9 @@ import com.takaotech.dashboard.ui.github.list.GHHomepageListPage
 import com.takaotech.dashboard.ui.github.list.GHTagsPage
 
 object HomePageTab : Tab {
-
     @Composable
     override fun Content() {
-        //https://proandroiddev.com/collapsing-toolbar-in-jetpack-compose-lazycolumn-3-approaches-702684d61843
+        // https://proandroiddev.com/collapsing-toolbar-in-jetpack-compose-lazycolumn-3-approaches-702684d61843
         val parent = LocalNavigator.currentOrThrow.parent
         val viewModel: HomePageViewModel = parent?.koinNavigatorScreenModel<HomePageViewModel>() ?: koinScreenModel()
 
@@ -45,7 +44,7 @@ object HomePageTab : Tab {
             },
             onRefresh = {
                 viewModel.refresh()
-            }
+            },
         )
     }
 
@@ -59,9 +58,8 @@ object HomePageTab : Tab {
                 TabOptions(
                     index = 0u,
                     title = title,
-                    icon = icon
+                    icon = icon,
                 )
             }
         }
-
 }

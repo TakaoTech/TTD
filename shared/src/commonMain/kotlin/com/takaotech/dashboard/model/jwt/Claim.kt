@@ -11,21 +11,21 @@ import kotlin.jvm.JvmInline
  * @constructor Create Claim
  */
 @JvmInline
-value class Claim(val value: JsonElement) {
-
+value class Claim(
+    val value: JsonElement,
+) {
     /**
      * Get this Claim as a Boolean.
      * If the value isn't of type Boolean or it can't be converted to a Boolean, null will be returned.
      *
      * @return the value as a Boolean or null.
      */
-    fun asBoolean(): Boolean? {
-        return if (value is JsonPrimitive) {
+    fun asBoolean(): Boolean? =
+        if (value is JsonPrimitive) {
             value.booleanOrNull
         } else {
             null
         }
-    }
 
     /**
      * Get this Claim as an Integer.
@@ -46,13 +46,12 @@ value class Claim(val value: JsonElement) {
      *
      * @return the value as an Long or null.
      */
-    fun asLong(): Long? {
-        return if (value is JsonPrimitive) {
+    fun asLong(): Long? =
+        if (value is JsonPrimitive) {
             value.longOrNull
         } else {
             null
         }
-    }
 
     /**
      * Get this Claim as a Double.
@@ -60,14 +59,12 @@ value class Claim(val value: JsonElement) {
      *
      * @return the value as a Double or null.
      */
-    fun asDouble(): Double? {
-        return if (value is JsonPrimitive) {
+    fun asDouble(): Double? =
+        if (value is JsonPrimitive) {
             value.doubleOrNull
         } else {
             null
         }
-
-    }
 
     /**
      * Get this Claim as a String.
@@ -75,31 +72,26 @@ value class Claim(val value: JsonElement) {
      *
      * @return the value as a String or null.
      */
-    fun asString(): String? {
-        return if (value is JsonPrimitive) {
+    fun asString(): String? =
+        if (value is JsonPrimitive) {
             value.contentOrNull
         } else {
             null
         }
-    }
 
-
-    fun asInstantFromMilliseconds(): Instant? {
-        return if (value is JsonPrimitive) {
+    fun asInstantFromMilliseconds(): Instant? =
+        if (value is JsonPrimitive) {
             value.longOrNull?.let { Instant.fromEpochMilliseconds(it) }
         } else {
             null
         }
-    }
 
-    fun asInstantFromSeconds(): Instant? {
-        return if (value is JsonPrimitive) {
+    fun asInstantFromSeconds(): Instant? =
+        if (value is JsonPrimitive) {
             value.longOrNull?.let { Instant.fromEpochSeconds(it) }
         } else {
             null
         }
-    }
-
 
 //    @Nullable
 //    fun asDate(): Date? {

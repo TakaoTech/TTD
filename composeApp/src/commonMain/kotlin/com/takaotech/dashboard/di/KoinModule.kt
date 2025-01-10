@@ -24,80 +24,78 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import co.touchlab.kermit.Logger as KermitLogger
 
-
-fun getApiModule(baseUrl: String) = module {
-
-    single {
-        Json {
-            ignoreUnknownKeys = true
-        }
-    }
-
-    single(named("AuthKtor")) {
-        Ktorfit.Builder()
-            .baseUrl(baseUrl)
-            .httpClient(getBaseKtor(get<KermitLogger>()))
-            .build()
-    }
-
-    single {
-        val sessionManager = get<SessionManager>()
-        val baseKtor = getBaseKtor(get<KermitLogger>()).config {
-            Auth {
-                bearer {
-                    refreshTokens {
-                        sessionManager.getRefreshToken(oldTokens)
-                    }
-                    loadTokens {
-                        sessionManager.loadToken()
-                    }
-                    realm = "TTD"
-                }
+fun getApiModule(baseUrl: String) =
+    module {
+        single {
+            Json {
+                ignoreUnknownKeys = true
             }
         }
-        sessionManager.bindKtor(baseKtor)
-        baseKtor
+
+        single(named("AuthKtor")) {
+            Ktorfit
+                .Builder()
+                .baseUrl(baseUrl)
+                .httpClient(getBaseKtor(get<KermitLogger>()))
+                .build()
+        }
+
+        single {
+            val sessionManager = get<SessionManager>()
+            val baseKtor =
+                getBaseKtor(get<KermitLogger>()).config {
+                    Auth {
+                        bearer {
+                            refreshTokens {
+                                sessionManager.getRefreshToken(oldTokens)
+                            }
+                            loadTokens {
+                                sessionManager.loadToken()
+                            }
+                            realm = "TTD"
+                        }
+                    }
+                }
+            sessionManager.bindKtor(baseKtor)
+            baseKtor
+        }
+
+        single {
+            Ktorfit
+                .Builder()
+                .baseUrl(baseUrl)
+                .httpClient(get<HttpClient>())
+                .build()
+        }
+
+        single {
+            get<Ktorfit>(named("AuthKtor")).create<AuthApi>()
+        }
+
+        single {
+            get<Ktorfit>().create<AdminGHApi>()
+        }
+
+        single {
+            get<Ktorfit>().create<GHApi>()
+        }
     }
 
-    single {
-        Ktorfit.Builder()
-            .baseUrl(baseUrl)
-            .httpClient(get<HttpClient>())
-            .build()
-    }
+internal expect fun getBaseKtor(kermitLogger: KermitLogger): HttpClient
 
-    single {
-        get<Ktorfit>(named("AuthKtor")).create<AuthApi>()
-    }
-
-    single {
-        get<Ktorfit>().create<AdminGHApi>()
-    }
-
-    single {
-        get<Ktorfit>().create<GHApi>()
-    }
-}
-
-internal expect fun getBaseKtor(
-    kermitLogger: KermitLogger,
-): HttpClient
-
-
-fun HttpClientConfig<out HttpClientEngineConfig>.configureCommonHttp(
-    kermitLogger: KermitLogger,
-) {
+fun HttpClientConfig<out HttpClientEngineConfig>.configureCommonHttp(kermitLogger: KermitLogger) {
     install(HttpTimeout)
     install(ContentNegotiation) {
         json()
     }
 
     install(Logging) {
-        logger = object : Logger {
-            override fun log(message: String) {
-                kermitLogger.largeLog(message)
+        logger =
+            object : Logger {
+                override fun log(message: String) {
+                    kermitLogger.largeLog(message)
+                }
             }
-        }
 
         level = LogLevel.ALL
     }
@@ -115,18 +113,18 @@ fun HttpClientConfig<out HttpClientEngineConfig>.configureCommonHttp(
     }
 }
 
-//private fun getBaseKtor(
+// private fun getBaseKtor(
 //    kermitLogger: KermitLogger
-//): HttpClient {
+// ): HttpClient {
 //    return HttpClient {
 //        //https://ktor.io/docs/client-engines.html#cio
-////        engine {
-////            this.
-////
-////            https {
-////                trustManager = SslSettings.getTrustManager()
-////            }
-////        }
+// //        engine {
+// //            this.
+// //
+// //            https {
+// //                trustManager = SslSettings.getTrustManager()
+// //            }
+// //        }
 //
 //        install(HttpTimeout)
 //        install(ContentNegotiation) {
@@ -155,11 +153,11 @@ fun HttpClientConfig<out HttpClientEngineConfig>.configureCommonHttp(
 //            }
 //        }
 //    }
-//}
+// }
 
 private const val _charLimit = 2000
-fun KermitLogger.largeLog(message: String) {
 
+fun KermitLogger.largeLog(message: String) {
     if (message.length < _charLimit) {
         return d { message }
     }
@@ -174,14 +172,15 @@ fun KermitLogger.largeLog(message: String) {
     }
 }
 
-fun commonModule() = module {
-    single {
-        KermitLogger(
-            config = loggerConfigInit(platformLogWriter()),
-            tag = "TTDApp"
-        )
+fun commonModule() =
+    module {
+        single {
+            KermitLogger(
+                config = loggerConfigInit(platformLogWriter()),
+                tag = "TTDApp",
+            )
+        }
     }
-}
 
 fun appModules() = arrayOf(getApiModule(AppBuildKonfig.baseUrl), commonModule())
 

@@ -4,9 +4,8 @@ import org.koin.core.annotation.Single
 
 @Single
 class AuthRepository(
-	private val authApi: AuthApi
+    private val authApi: AuthApi,
 ) {
-
-	fun login() {
-	}
+    fun login() {
+    }
 }

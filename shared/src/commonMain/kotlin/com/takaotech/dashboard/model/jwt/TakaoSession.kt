@@ -5,10 +5,9 @@ import com.takaotech.dashboard.model.session.AccessToken
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 
-
 class TakaoSession(
     json: Json,
-    accessToken: AccessToken
+    accessToken: AccessToken,
 ) {
     val roles: List<TakaoRole>
     val version: Int

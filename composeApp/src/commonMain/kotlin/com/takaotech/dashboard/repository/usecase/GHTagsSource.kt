@@ -8,10 +8,10 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class GHTagsSource(
-	private val ghRepository: GHRepository
+    private val ghRepository: GHRepository,
 ) : BasePagingSource<TagDao>() {
-
-	override suspend fun fetchData(page: Int, limit: Int): TakaoPaging<TagDao> {
-		return ghRepository.getTags(page, limit).get()
-	}
+    override suspend fun fetchData(
+        page: Int,
+        limit: Int,
+    ): TakaoPaging<TagDao> = ghRepository.getTags(page, limit).get()
 }

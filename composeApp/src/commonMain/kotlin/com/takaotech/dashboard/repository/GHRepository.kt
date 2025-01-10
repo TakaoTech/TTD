@@ -11,42 +11,35 @@ import org.koin.core.annotation.Single
 
 @Single
 class GHRepository(
-	private val githubApi: GHApi,
-	private val logger: Logger
+    private val githubApi: GHApi,
+    private val logger: Logger,
 ) {
+    suspend fun getRepositories(
+        page: Int,
+        size: Int,
+        tagId: Int? = null,
+    ): Result<TakaoPaging<GHRepositoryMiniDao>, Throwable> =
+        Result.of<TakaoPaging<GHRepositoryMiniDao>, Throwable> {
+            githubApi.getRepositories(
+                page = page,
+                size = size,
+                tagId = tagId,
+            )
+        }
 
-	suspend fun getRepositories(
-		page: Int,
-		size: Int,
-		tagId: Int? = null
-	): Result<TakaoPaging<GHRepositoryMiniDao>, Throwable> {
-		return Result.of<TakaoPaging<GHRepositoryMiniDao>, Throwable> {
-			githubApi.getRepositories(
-				page = page,
-				size = size,
-				tagId = tagId
-			)
-		}
-	}
+    suspend fun getRepository(id: Long): Result<GHRepositoryDao, Throwable> =
+        Result.of<GHRepositoryDao, Throwable> {
+            githubApi.getRepository(id)
+        }
 
-	suspend fun getRepository(
-		id: Long
-	): Result<GHRepositoryDao, Throwable> {
-		return Result.of<GHRepositoryDao, Throwable> {
-			githubApi.getRepository(id)
-		}
-	}
-
-	suspend fun getTags(
-		page: Int?,
-		size: Int?
-	): Result<TakaoPaging<TagDao>, Throwable> {
-		return Result.of<TakaoPaging<TagDao>, Throwable> {
-			githubApi.getTags(
-				page = page,
-				size = size
-			)
-		}
-	}
-
+    suspend fun getTags(
+        page: Int?,
+        size: Int?,
+    ): Result<TakaoPaging<TagDao>, Throwable> =
+        Result.of<TakaoPaging<TagDao>, Throwable> {
+            githubApi.getTags(
+                page = page,
+                size = size,
+            )
+        }
 }

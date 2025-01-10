@@ -9,20 +9,19 @@ import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
 import com.takaotech.dashboard.ui.preview.RepositoryProvider
 import com.takaotech.dashboard.ui.theme.AppTheme
 
-
 @Preview
 @Composable
 fun GHRepositoryCardPreview(
-	@PreviewParameter(RepositoryProvider::class) data: GHRepositoryMiniDao,
+    @PreviewParameter(RepositoryProvider::class) data: GHRepositoryMiniDao,
 ) {
-	AppTheme {
-		GHRepositoryCard(
-			fullName = "Malcolm Nelson",
-			tags = data.tags,
-			modifier = Modifier.fillMaxWidth(),
-			languages = data.languages,
-			onCardClicked = {},
-			onTagClicked = {}
-		)
-	}
+    AppTheme {
+        GHRepositoryCard(
+            fullName = "Malcolm Nelson",
+            tags = data.tags,
+            modifier = Modifier.fillMaxWidth(),
+            languages = data.languages,
+            onCardClicked = {},
+            onTagClicked = {},
+        )
+    }
 }

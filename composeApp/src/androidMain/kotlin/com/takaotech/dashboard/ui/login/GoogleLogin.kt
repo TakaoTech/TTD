@@ -18,64 +18,73 @@ import java.util.*
 
 class GoogleLoginImpl(
     private val context: Context,
-    private val logger: Logger
+    private val logger: Logger,
 ) : GoogleLogin {
+    override suspend fun startLogin(): Result<Pair<Nonce, GoogleToken>, Exception> =
+        Result
+            .of<Pair<Nonce, GoogleToken>, Exception> {
+                val credentialManager = CredentialManager.create(context)
 
-    override suspend fun startLogin(): Result<Pair<Nonce, GoogleToken>, Exception> {
-        return Result.of<Pair<Nonce, GoogleToken>, Exception> {
-            val credentialManager = CredentialManager.create(context)
+                // Generate a nonce and hash it with sha-256
+                // Providing a nonce is optional but recommended
+                val rawNonce =
+                    UUID
+                        .randomUUID()
+                        .toString() // Generate a random String. UUID should be sufficient, but can also be any other random string.
+                val bytes = rawNonce.toByteArray()
+                val md = MessageDigest.getInstance("SHA-256")
+                val digest = md.digest(bytes)
+                val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) }
 
-            // Generate a nonce and hash it with sha-256
-            // Providing a nonce is optional but recommended
-            val rawNonce = UUID.randomUUID()
-                .toString() // Generate a random String. UUID should be sufficient, but can also be any other random string.
-            val bytes = rawNonce.toByteArray()
-            val md = MessageDigest.getInstance("SHA-256")
-            val digest = md.digest(bytes)
-            val hashedNonce = digest.fold("") { str, it -> str + "%02x".format(it) }
+                val googleIdOption: GetGoogleIdOption =
+                    GetGoogleIdOption
+                        .Builder()
+                        .setFilterByAuthorizedAccounts(false)
+                        .setServerClientId(AppBuildKonfig.googleWebAuth)
+                        .setAutoSelectEnabled(false)
+                        .setNonce(hashedNonce)
+                        .build()
 
-            val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
-                .setFilterByAuthorizedAccounts(false)
-                .setServerClientId(AppBuildKonfig.googleWebAuth)
-                .setAutoSelectEnabled(false)
-                .setNonce(hashedNonce)
-                .build()
+                val request: GetCredentialRequest =
+                    GetCredentialRequest
+                        .Builder()
+                        .addCredentialOption(googleIdOption)
+                        .build()
 
-            val request: GetCredentialRequest = GetCredentialRequest.Builder()
-                .addCredentialOption(googleIdOption)
-                .build()
+                val result =
+                    credentialManager.getCredential(
+                        request = request,
+                        context = context,
+                    )
 
-            val result = credentialManager.getCredential(
-                request = request,
-                context = context,
-            )
+                handleSignIn(result, hashedNonce)
+            }.onFailure {
+                when (it) {
+                    is GetCredentialCancellationException -> {
+                    }
 
-            handleSignIn(result, hashedNonce)
-        }.onFailure {
-            when (it) {
-                is GetCredentialCancellationException -> {
-
+                    is NoCredentialException -> {
+                    }
                 }
-
-                is NoCredentialException -> {
-
-                }
+                logger
+                    .withTag("GoogleLogin")
+                    .e("Bruh error get Google credential", it)
             }
-            logger.withTag("GoogleLogin")
-                .e("Bruh error get Google credential", it)
-        }
-    }
 
-    private fun handleSignIn(result: GetCredentialResponse, hashedNonce: String): Pair<String, String> {
-        return when (val credential = result.credential) {
+    private fun handleSignIn(
+        result: GetCredentialResponse,
+        hashedNonce: String,
+    ): Pair<String, String> =
+        when (val credential = result.credential) {
             // GoogleIdToken credential
             is CustomCredential -> {
                 if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                    hashedNonce to GoogleIdTokenCredential
-                        .createFrom(credential.data)
-                        .idToken
+                    hashedNonce to
+                            GoogleIdTokenCredential
+                                .createFrom(credential.data)
+                                .idToken
                 } else {
-                    //TODO Throw custom credential
+                    // TODO Throw custom credential
 
                     // Catch any unrecognized custom credential type here.
                     throw Exception("Unsupported login type")
@@ -83,11 +92,10 @@ class GoogleLoginImpl(
             }
 
             else -> {
-                //TODO Throw custom credential
+                // TODO Throw custom credential
 
                 // Catch any unrecognized credential type here.
                 throw Exception("Unsupported login type")
             }
         }
-    }
 }

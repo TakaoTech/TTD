@@ -29,11 +29,11 @@ abstract class SessionManager(
     private val json: Json,
     protected val logger: Logger,
     protected val googleLogin: GoogleLogin,
-    protected val authApi: AuthApi
+    protected val authApi: AuthApi,
 ) {
-    //https://github.com/android/kotlin-multiplatform-samples/tree/main/DiceRoller
+    // https://github.com/android/kotlin-multiplatform-samples/tree/main/DiceRoller
 
-    //https://github.com/philipplackner/AndroidCrypto
+    // https://github.com/philipplackner/AndroidCrypto
     protected val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val SESSION_KEY = byteArrayPreferencesKey("SESSION_LOGIN")
     private lateinit var sessionDatastore: DataStore<Preferences>
@@ -43,43 +43,46 @@ abstract class SessionManager(
 
     private lateinit var authKtor: HttpClient
 
-
     fun init() {
         sessionDatastore = initSessionDatastore()
-        sessionFlow = sessionDatastore.data.map {
-            val sessionEncrypted = it[SESSION_KEY]
-            if (sessionEncrypted != null) {
-                try {
-                    decryptTokens(sessionEncrypted)
-                } catch (ex: Exception) {
-                    logger.e(ex) { "Error while decrypt session, logout executed" }
-                    null
-                }
-            } else {
-                null
-            }
-        }.stateIn(coroutineScope, SharingStarted.Eagerly, null)
+        sessionFlow =
+            sessionDatastore.data
+                .map {
+                    val sessionEncrypted = it[SESSION_KEY]
+                    if (sessionEncrypted != null) {
+                        try {
+                            decryptTokens(sessionEncrypted)
+                        } catch (ex: Exception) {
+                            logger.e(ex) { "Error while decrypt session, logout executed" }
+                            null
+                        }
+                    } else {
+                        null
+                    }
+                }.stateIn(coroutineScope, SharingStarted.Eagerly, null)
 
-        takaoSession = sessionFlow.map {
-            if (it != null) {
-                try {
-                    TakaoSession(json, it.accessToken)
-                } catch (ex: Exception) {
-                    logger.e(ex) { "Error while loading session, logout executed" }
-                    logout()
-                    null
-                }
-            } else {
-                null
-            }
-        }.stateIn(coroutineScope, SharingStarted.Eagerly, null)
-
+        takaoSession =
+            sessionFlow
+                .map {
+                    if (it != null) {
+                        try {
+                            TakaoSession(json, it.accessToken)
+                        } catch (ex: Exception) {
+                            logger.e(ex) { "Error while loading session, logout executed" }
+                            logout()
+                            null
+                        }
+                    } else {
+                        null
+                    }
+                }.stateIn(coroutineScope, SharingStarted.Eagerly, null)
     }
 
     abstract fun initSessionDatastore(): DataStore<Preferences>
-    abstract fun decryptTokens(sessionEncrypted: ByteArray): TokenPairDao?
-    abstract fun encryptTokens(tokenPair: TokenPairDao): ByteArray
 
+    abstract fun decryptTokens(sessionEncrypted: ByteArray): TokenPairDao?
+
+    abstract fun encryptTokens(tokenPair: TokenPairDao): ByteArray
 
     fun startGoogleLogin() {
         coroutineScope.launch(Dispatchers.IO) {
@@ -98,7 +101,6 @@ abstract class SessionManager(
         }
     }
 
-
     fun startGoogleSignup() {
         coroutineScope.launch(Dispatchers.IO) {
             internalGoogleLogin {
@@ -116,18 +118,21 @@ abstract class SessionManager(
         }
     }
 
-    private suspend inline fun internalGoogleLogin(crossinline callService: suspend (googleTokenPair: Pair<Nonce, GoogleToken>) -> TokenPairDao?): Result<Unit, Exception> {
+    private suspend inline fun internalGoogleLogin(
+        crossinline callService: suspend (googleTokenPair: Pair<Nonce, GoogleToken>) -> TokenPairDao?,
+    ): Result<Unit, Exception> {
         val googleLoginResult = googleLogin.startLogin()
         return if (googleLoginResult.isSuccess()) {
-            Result.of<TokenPairDao, Exception> {
-                callService(googleLoginResult.value)
-            }.map { tokenPair ->
-                sessionDatastore.edit {
-                    it[SESSION_KEY] = encryptTokens(tokenPair)
-                }
+            Result
+                .of<TokenPairDao, Exception> {
+                    callService(googleLoginResult.value)
+                }.map { tokenPair ->
+                    sessionDatastore.edit {
+                        it[SESSION_KEY] = encryptTokens(tokenPair)
+                    }
 
-                Unit
-            }
+                    Unit
+                }
         } else {
             Result.failure(Exception("Error while login"))
         }
@@ -152,7 +157,7 @@ abstract class SessionManager(
 
     suspend fun getRefreshToken(oldTokens: BearerTokens?): BearerTokens? {
         val mOldToken = oldTokens ?: return null
-        //TODO Manage Error 500, execute logout
+        // TODO Manage Error 500, execute logout
         // Error getRepositories
         // io.ktor.client.call.NoTransformationFoundException: Expected response body of the type 'class com.takaotech.dashboard.model.session.TokenPairDao (Kotlin reflection is not available)' but was 'class
         // io.ktor.utils.io.ByteBufferChannel (Kotlin reflection is not available)'
@@ -162,17 +167,18 @@ abstract class SessionManager(
         // Request header `Accept: application/json`
         return try {
             withContext(coroutineScope.coroutineContext) {
-                authApi.refresh(
-                    RefreshTokenDao(mOldToken.refreshToken!!),
-                    ext = {
-                        timeout {
-                            requestTimeoutMillis = 1.minutes.inWholeMilliseconds
-                            connectTimeoutMillis = 1.minutes.inWholeMilliseconds
-                        }
+                authApi
+                    .refresh(
+                        RefreshTokenDao(mOldToken.refreshToken!!),
+                        ext = {
+                            timeout {
+                                requestTimeoutMillis = 1.minutes.inWholeMilliseconds
+                                connectTimeoutMillis = 1.minutes.inWholeMilliseconds
+                            }
+                        },
+                    ).let {
+                        BearerTokens(it.accessToken, it.refreshToken)
                     }
-                ).let {
-                    BearerTokens(it.accessToken, it.refreshToken)
-                }
             }
         } catch (ex: Exception) {
             logout()
@@ -189,5 +195,3 @@ abstract class SessionManager(
         }
     }
 }
-
-

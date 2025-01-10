@@ -7,11 +7,10 @@ import cafe.adriel.voyager.navigator.Navigator
 import com.takaotech.dashboard.ui.admin.tags.list.TagListScreen
 
 class AdminTagsScreen : Screen {
-
-	@Composable
-	override fun Content() {
-		Navigator(TagListScreen()) {
-			CurrentScreen()
-		}
-	}
+    @Composable
+    override fun Content() {
+        Navigator(TagListScreen()) {
+            CurrentScreen()
+        }
+    }
 }

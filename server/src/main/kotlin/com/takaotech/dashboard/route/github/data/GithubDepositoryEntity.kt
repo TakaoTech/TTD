@@ -6,43 +6,45 @@ import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 
-class GithubDepositoryEntity(id: EntityID<Long>) : LongEntity(id) {
-	companion object : LongEntityClass<GithubDepositoryEntity>(GithubDepositoryTable)
+class GithubDepositoryEntity(
+    id: EntityID<Long>,
+) : LongEntity(id) {
+    companion object : LongEntityClass<GithubDepositoryEntity>(GithubDepositoryTable)
 
-	//TODO supporto ai campi virtuali per description, license/licenseUrl
+    // TODO supporto ai campi virtuali per description, license/licenseUrl
 
-	var name by GithubDepositoryTable.name
-	var fullName by GithubDepositoryTable.fullName
-	var description by GithubDepositoryTable.description
-	var url by GithubDepositoryTable.url
-	var user by GithubUserEntity referencedOn GithubDepositoryTable.user
+    var name by GithubDepositoryTable.name
+    var fullName by GithubDepositoryTable.fullName
+    var description by GithubDepositoryTable.description
+    var url by GithubDepositoryTable.url
+    var user by GithubUserEntity referencedOn GithubDepositoryTable.user
 
-	//val userRef by GithubUserEntity referrersOn GithubUserTable.id
-	var languages by GithubDepositoryTable.languages
+    // val userRef by GithubUserEntity referrersOn GithubUserTable.id
+    var languages by GithubDepositoryTable.languages
 
-	//Mitigation because default enu on db isn't currently supported
-	var category by GithubDepositoryTable.category.clientDefault { MainCategory.NONE }
+    // Mitigation because default enu on db isn't currently supported
+    var category by GithubDepositoryTable.category.clientDefault { MainCategory.NONE }
 
-	var tags by TagsEntity via GithubDepositoryTagsTable
+    var tags by TagsEntity via GithubDepositoryTagsTable
 
-	var license by GithubDepositoryTable.license
-	var licenseUrl by GithubDepositoryTable.licenseUrl
+    var license by GithubDepositoryTable.license
+    var licenseUrl by GithubDepositoryTable.licenseUrl
 
-	var updatedAt by GithubDepositoryTable.updatedAt
-	var refreshedAt by GithubDepositoryTable.refreshedAt
-
+    var updatedAt by GithubDepositoryTable.updatedAt
+    var refreshedAt by GithubDepositoryTable.refreshedAt
 }
 
-class GithubDepositoryMiniEntity(id: EntityID<Long>) : LongEntity(id) {
-	companion object : LongEntityClass<GithubDepositoryMiniEntity>(GithubDepositoryTable)
+class GithubDepositoryMiniEntity(
+    id: EntityID<Long>,
+) : LongEntity(id) {
+    companion object : LongEntityClass<GithubDepositoryMiniEntity>(GithubDepositoryTable)
 
-	val category by GithubDepositoryTable.category
+    val category by GithubDepositoryTable.category
 
-	var fullName by GithubDepositoryTable.fullName
-	var url by GithubDepositoryTable.url
-	var languages by GithubDepositoryTable.languages
-	var tags by TagsEntity via GithubDepositoryTagsTable
-	var license by GithubDepositoryTable.license
-	var updatedAt by GithubDepositoryTable.updatedAt
-
+    var fullName by GithubDepositoryTable.fullName
+    var url by GithubDepositoryTable.url
+    var languages by GithubDepositoryTable.languages
+    var tags by TagsEntity via GithubDepositoryTagsTable
+    var license by GithubDepositoryTable.license
+    var updatedAt by GithubDepositoryTable.updatedAt
 }

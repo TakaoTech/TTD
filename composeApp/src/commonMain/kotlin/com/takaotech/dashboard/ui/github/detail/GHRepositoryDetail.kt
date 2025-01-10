@@ -28,9 +28,9 @@ import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf
 
 data class GHRepositoryDetail(
-    private val repositoryId: Long
-) : Screen, KoinComponent {
-
+    private val repositoryId: Long,
+) : Screen,
+    KoinComponent {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
@@ -38,15 +38,15 @@ data class GHRepositoryDetail(
 
         val logger by inject<Logger>()
 
-        val viewModel = getScreenModel<GHRepositoryDetailViewModel>(
-            parameters = { parametersOf(repositoryId) }
-        )
+        val viewModel =
+            getScreenModel<GHRepositoryDetailViewModel>(
+                parameters = { parametersOf(repositoryId) },
+            )
         val uiState by viewModel.uiState.collectAsState()
 
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-
                 when (val repositoryUiState = uiState.repositoryUiState) {
                     is GHRepositoryDetailUi.GHRepositoryDetailUiState.Success -> {
                         TopAppBar(
@@ -57,34 +57,32 @@ data class GHRepositoryDetail(
                                 IconButton(
                                     onClick = {
                                         uriHandler.openUrl(repositoryUiState.repository.url)
-                                    }
+                                    },
                                 ) {
                                     Icon(Icons.AutoMirrored.Filled.OpenInNew, "")
                                 }
-                            }
+                            },
                         )
                     }
 
                     else -> Unit
                 }
-            }
+            },
         ) {
             when (val repositoryUiState = uiState.repositoryUiState) {
                 GHRepositoryDetailUi.GHRepositoryDetailUiState.Error -> {
-
                 }
 
                 GHRepositoryDetailUi.GHRepositoryDetailUiState.Loading -> {
-
-
                 }
 
                 is GHRepositoryDetailUi.GHRepositoryDetailUiState.Success -> {
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(it)
-                            .verticalScroll(rememberScrollState())
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .padding(it)
+                                .verticalScroll(rememberScrollState()),
                     ) {
                         AsyncImage(
                             modifier = Modifier.size(32.dp),
@@ -101,7 +99,7 @@ data class GHRepositoryDetail(
                                         data = it.lines.toDouble(),
                                         color = it.colorCode?.toColor()!!,
                                     )
-                                }
+                                },
                             )
                         }
 
@@ -111,18 +109,20 @@ data class GHRepositoryDetail(
                             onPieClick = {
                                 println("${it.label} Clicked")
                                 val pieIndex = chartData.indexOf(it)
-                                chartData = chartData.mapIndexed { mapIndex, pie ->
-                                    if (pieIndex == mapIndex) {
-                                        pie.copy(selected = !pie.selected)
-                                    } else {
-                                        pie.copy(selected = false)
+                                chartData =
+                                    chartData.mapIndexed { mapIndex, pie ->
+                                        if (pieIndex == mapIndex) {
+                                            pie.copy(selected = !pie.selected)
+                                        } else {
+                                            pie.copy(selected = false)
+                                        }
                                     }
-                                }
                             },
-                            scaleAnimEnterSpec = spring<Float>(
-                                dampingRatio = Spring.DampingRatioMediumBouncy,
-                                stiffness = Spring.StiffnessLow
-                            ),
+                            scaleAnimEnterSpec =
+                                spring<Float>(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessLow,
+                                ),
                             colorAnimEnterSpec = tween(300),
                             colorAnimExitSpec = tween(300),
                             scaleAnimExitSpec = tween(300),
@@ -131,9 +131,6 @@ data class GHRepositoryDetail(
                     }
                 }
             }
-
         }
-
-
     }
 }

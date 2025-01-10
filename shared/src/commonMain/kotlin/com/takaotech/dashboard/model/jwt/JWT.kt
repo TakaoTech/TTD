@@ -13,7 +13,9 @@ import kotlin.time.Duration
 /**
  * Wrapper class for values contained inside a Json Web Token (JWT).
  */
-class JWT(token: String) {
+class JWT(
+    token: String,
+) {
     private val json = Json { ignoreUnknownKeys = true }
 
     private val token: String
@@ -97,9 +99,7 @@ class JWT(token: String) {
      * @param name the name of the Claim to retrieve.
      * @return a valid Claim or null if not exist
      */
-    fun getClaim(name: String): Claim? {
-        return payload.claimForName(name)
-    }
+    fun getClaim(name: String): Claim? = payload.claimForName(name)
 
     val claims: Map<String, Claim?>
         /**
@@ -138,9 +138,7 @@ class JWT(token: String) {
      *
      * @return the String Token.
      */
-    override fun toString(): String {
-        return token
-    }
+    override fun toString(): String = token
 
 //    fun describeContents(): Int {
 //        return 0
@@ -178,7 +176,7 @@ class JWT(token: String) {
     private fun splitToken(token: String): Array<String> {
         var parts = token.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         if (parts.size == 2 && token.endsWith(".")) {
-            //Tokens with alg='none' have empty String as Signature.
+            // Tokens with alg='none' have empty String as Signature.
             parts = arrayOf(parts[0], parts[1], "")
         }
         if (parts.size != 3) {

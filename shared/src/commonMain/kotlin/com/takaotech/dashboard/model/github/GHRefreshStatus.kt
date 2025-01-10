@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GHRefreshStatus(
     @SerialName("active")
-    val active: Boolean?
+    val active: Boolean?,
 )

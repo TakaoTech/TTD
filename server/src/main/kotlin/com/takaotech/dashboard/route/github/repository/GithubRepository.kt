@@ -5,10 +5,10 @@ import org.koin.core.annotation.Singleton
 
 @Singleton
 class GithubRepository(
-	private val logger: Logger,
-	private val githubClient: GithubClientInterface
+    private val logger: Logger,
+    private val githubClient: GithubClientInterface,
 ) {
-	suspend fun getAllStars() = githubClient.getAllStarsRemote()
+    suspend fun getAllStars() = githubClient.getAllStarsRemote()
 
-	suspend fun getRepositoryLanguages(repositoryId: Long) = githubClient.getLanguagesByRepository(repositoryId)
+    suspend fun getRepositoryLanguages(repositoryId: Long) = githubClient.getLanguagesByRepository(repositoryId)
 }

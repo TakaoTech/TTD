@@ -22,77 +22,80 @@ import ttd.composeapp.generated.resources.*
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun TagEdit(
-	titleTag: TextFieldValue,
-	descriptionTag: TextFieldValue,
-	colorTag: TextFieldValue,
-	onTitleTagChanged: (TextFieldValue) -> Unit,
-	onDescriptionTagChanged: (TextFieldValue) -> Unit,
-	onColorTagChanged: (TextFieldValue) -> Unit,
-	onSaveClicked: () -> Unit
+    titleTag: TextFieldValue,
+    descriptionTag: TextFieldValue,
+    colorTag: TextFieldValue,
+    onTitleTagChanged: (TextFieldValue) -> Unit,
+    onDescriptionTagChanged: (TextFieldValue) -> Unit,
+    onColorTagChanged: (TextFieldValue) -> Unit,
+    onSaveClicked: () -> Unit,
 ) {
-	Scaffold(
-		bottomBar = {
-			Button(
-				modifier = Modifier.fillMaxWidth()
-					.padding(16.dp),
-				onClick = onSaveClicked
-			) {
-				Text(stringResource(Res.string.save))
-			}
-		}
-	) {
-		Column(
-			modifier = Modifier
-				.verticalScroll(rememberScrollState())
-				.padding(horizontal = 8.dp)
-		) {
-			OutlinedTextField(
-				modifier = Modifier.fillMaxWidth(),
-				singleLine = true,
-				label = {
-					Text(stringResource(Res.string.ghrepository_tag_edit_title_label))
-				},
-				value = titleTag,
-				onValueChange = onTitleTagChanged
-			)
+    Scaffold(
+        bottomBar = {
+            Button(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                onClick = onSaveClicked,
+            ) {
+                Text(stringResource(Res.string.save))
+            }
+        },
+    ) {
+        Column(
+            modifier =
+                Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 8.dp),
+        ) {
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                label = {
+                    Text(stringResource(Res.string.ghrepository_tag_edit_title_label))
+                },
+                value = titleTag,
+                onValueChange = onTitleTagChanged,
+            )
 
-			Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
 
-			OutlinedTextField(
-				modifier = Modifier.fillMaxWidth(),
-				label = {
-					Text(stringResource(Res.string.ghrepository_tag_edit_description_label))
-				},
-				value = descriptionTag,
-				onValueChange = onDescriptionTagChanged
-			)
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(stringResource(Res.string.ghrepository_tag_edit_description_label))
+                },
+                value = descriptionTag,
+                onValueChange = onDescriptionTagChanged,
+            )
 
-			Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
 
-			OutlinedTextField(
-				modifier = Modifier.fillMaxWidth(),
-				singleLine = true,
-				label = {
-					Text(stringResource(Res.string.ghrepository_tag_edit_color_label))
-				},
-				leadingIcon = {
-					Box(
-						modifier = Modifier
-							.size(24.dp)
-							.border(1.dp, Color.Black)
-							.background(
-								try {
-									colorTag.text.toColor()
-								} catch (ex: Exception) {
-									Color.Transparent
-								}
-							)
-					)
-				},
-				value = colorTag,
-				onValueChange = onColorTagChanged
-			)
-
-		}
-	}
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                label = {
+                    Text(stringResource(Res.string.ghrepository_tag_edit_color_label))
+                },
+                leadingIcon = {
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(24.dp)
+                                .border(1.dp, Color.Black)
+                                .background(
+                                    try {
+                                        colorTag.text.toColor()
+                                    } catch (ex: Exception) {
+                                        Color.Transparent
+                                    },
+                                ),
+                    )
+                },
+                value = colorTag,
+                onValueChange = onColorTagChanged,
+            )
+        }
+    }
 }

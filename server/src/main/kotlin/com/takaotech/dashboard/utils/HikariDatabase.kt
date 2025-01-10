@@ -34,13 +34,16 @@ class HikariDatabase(
     private lateinit var connection: HikariDataSource
 
     fun connect() {
-        //log.info("Initialising database")
+        // log.info("Initialising database")
         connection = hikari()
-        database = Database.connect(datasource = connection,
-            databaseConfig = DatabaseConfig.invoke {
-                keepLoadedReferencesOutOfTransaction = true
-            }
-        )
+        database =
+            Database.connect(
+                datasource = connection,
+                databaseConfig =
+                    DatabaseConfig.invoke {
+                        keepLoadedReferencesOutOfTransaction = true
+                    },
+            )
         setupSchema()
     }
 
@@ -49,18 +52,19 @@ class HikariDatabase(
     }
 
     private fun hikari(): HikariDataSource {
-        val config = HikariConfig().apply {
-            with(dbConfiguration) {
-                driverClassName = sqlDbConfiguration.driver
-                jdbcUrl = sqlDbConfiguration.url
-                username = sqlDbConfiguration.user
-                password = sqlDbConfiguration.password
+        val config =
+            HikariConfig().apply {
+                with(dbConfiguration) {
+                    driverClassName = sqlDbConfiguration.driver
+                    jdbcUrl = sqlDbConfiguration.url
+                    username = sqlDbConfiguration.user
+                    password = sqlDbConfiguration.password
+                }
+                maximumPoolSize = 3
+                isAutoCommit = false
+                transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+                validate()
             }
-            maximumPoolSize = 3
-            isAutoCommit = false
-            transactionIsolation = "TRANSACTION_REPEATABLE_READ"
-            validate()
-        }
         return HikariDataSource(config)
     }
 
@@ -69,36 +73,34 @@ class HikariDatabase(
             withDataBaseLock {
                 SchemaUtils.createMissingTablesAndColumns(*dbTables)
 
-                TakaoRole.entries.mapNotNull {
-                    if (RoleEntity.findById(it) != null) {
-                        null
-                    } else {
-                        it
+                TakaoRole.entries
+                    .mapNotNull {
+                        if (RoleEntity.findById(it) != null) {
+                            null
+                        } else {
+                            it
+                        }
+                    }.map {
+                        RoleEntity.new(it) {}
                     }
-                }.map {
-                    RoleEntity.new(it) {}
-                }
-
             }
         }
     }
 
-    suspend fun <T> dbExec(
-        statement: suspend Transaction.() -> T,
-    ): T = withContext(Dispatchers.IO) {
-        newSuspendedTransaction(statement = statement)
-    }
+    suspend fun <T> dbExec(statement: suspend Transaction.() -> T): T =
+        withContext(Dispatchers.IO) {
+            newSuspendedTransaction(statement = statement)
+        }
 }
 
-val dbTables = arrayOf(
-    TagsTable,
-    GithubDepositoryTable,
-    GithubUserTable,
-    GithubDepositoryTagsTable,
-
-    UserTable,
-    RoleTable,
-    UserRoleTable,
-
-    TokenTable
-)
+val dbTables =
+    arrayOf(
+        TagsTable,
+        GithubDepositoryTable,
+        GithubUserTable,
+        GithubDepositoryTagsTable,
+        UserTable,
+        RoleTable,
+        UserRoleTable,
+        TokenTable,
+    )

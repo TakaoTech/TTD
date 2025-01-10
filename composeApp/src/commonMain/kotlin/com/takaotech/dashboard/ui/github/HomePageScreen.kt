@@ -34,7 +34,6 @@ import ttd.composeapp.generated.resources.homepage_ghrepository_more_tags_label
 import ttd.composeapp.generated.resources.homepage_ghrepository_tags_label
 import ttd.composeapp.generated.resources.homepage_title_label
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePageScreen(
@@ -45,7 +44,7 @@ fun HomePageScreen(
     onMoreTagClicked: () -> Unit,
     onCardClicked: (repoId: Long) -> Unit,
     onMoreRepositoriesClicked: () -> Unit,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
 
@@ -57,30 +56,32 @@ fun HomePageScreen(
     Scaffold(
         topBar = {
             CollapsedTopBar(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                isCollapsed = isCollapsed
+                modifier =
+                    Modifier
+                        .fillMaxWidth(),
+                isCollapsed = isCollapsed,
             )
-        }
+        },
     ) {
         PullToRefreshBox(
             modifier = Modifier.padding(top = it.calculateTopPadding()),
             state = pullToRefreshState,
             isRefreshing = isRefreshing,
-            onRefresh = onRefresh
+            onRefresh = onRefresh,
         ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier =
+                    Modifier
+                        .fillMaxSize(),
                 state = listState,
             ) {
-//				item { ExpandedTopBar() }
+// 				item { ExpandedTopBar() }
                 if (tags.isNotEmpty()) {
                     item {
                         LazyRow(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            contentPadding = PaddingValues(8.dp)
+                            contentPadding = PaddingValues(8.dp),
                         ) {
                             item {
                                 Text(stringResource(Res.string.homepage_ghrepository_tags_label))
@@ -89,7 +90,7 @@ fun HomePageScreen(
                             items(tags) {
                                 TagChip(
                                     text = it.name,
-                                    color = it.color
+                                    color = it.color,
                                 ) {
                                     onTagClicked(it.id)
                                 }
@@ -109,7 +110,7 @@ fun HomePageScreen(
 
                 when (repositories) {
                     is NetworkResult.Error -> {
-                        //TODO Show error
+                        // TODO Show error
                     }
 
                     is NetworkResult.Loading -> {
@@ -122,8 +123,10 @@ fun HomePageScreen(
                         repositories.data?.let { repositories ->
                             items(repositories) {
                                 GHRepositoryCard(
-                                    modifier = Modifier.fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 8.dp),
                                     fullName = it.fullName,
                                     tags = it.tags,
                                     languages = it.languages,
@@ -132,7 +135,7 @@ fun HomePageScreen(
                                     },
                                     onCardClicked = {
                                         onCardClicked(it.id)
-                                    }
+                                    },
                                 )
                             }
 
@@ -140,7 +143,7 @@ fun HomePageScreen(
                                 item {
                                     TextButton(
                                         modifier = Modifier.fillMaxWidth(),
-                                        onClick = onMoreRepositoriesClicked
+                                        onClick = onMoreRepositoriesClicked,
                                     ) {
                                         Text("Show More Repositories")
 
@@ -149,7 +152,6 @@ fun HomePageScreen(
                                 }
                             }
                         }
-
                     }
                 }
             }
@@ -160,19 +162,21 @@ fun HomePageScreen(
 @Composable
 private fun ExpandedTopBar() {
     Box(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.primary)
-            .fillMaxWidth()
-            .height(EXPANDED_TOP_BAR_HEIGHT - COLLAPSED_TOP_BAR_HEIGHT),
-        contentAlignment = Alignment.BottomStart
+        modifier =
+            Modifier
+                .background(MaterialTheme.colorScheme.primary)
+                .fillMaxWidth()
+                .height(EXPANDED_TOP_BAR_HEIGHT - COLLAPSED_TOP_BAR_HEIGHT),
+        contentAlignment = Alignment.BottomStart,
     ) {
         Text(
             modifier = Modifier.padding(16.dp),
             text = stringResource(Res.string.homepage_title_label),
             color = MaterialTheme.colorScheme.onPrimary,
-            style = MaterialTheme.typography.displayMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
+            style =
+                MaterialTheme.typography.displayMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                ),
         )
     }
 }
@@ -181,7 +185,7 @@ private fun ExpandedTopBar() {
 @Composable
 private fun CollapsedTopBar(
     modifier: Modifier = Modifier,
-    isCollapsed: Boolean
+    isCollapsed: Boolean,
 ) {
     val layoutDirection = LocalLayoutDirection.current
 
@@ -191,29 +195,32 @@ private fun CollapsedTopBar(
         title = {
             AnimatedVisibility(
                 visible = isCollapsed,
-                enter = slideInHorizontally { fullWidth: Int ->
-                    if (layoutDirection == LayoutDirection.Ltr) {
-                        -fullWidth * 2
-                    } else {
-                        fullWidth * 2
-                    }
-                },
-                exit = slideOutHorizontally { fullWidth: Int ->
-                    if (layoutDirection == LayoutDirection.Ltr) {
-                        -fullWidth * 2
-                    } else {
-                        fullWidth * 2
-                    }
-                }
+                enter =
+                    slideInHorizontally { fullWidth: Int ->
+                        if (layoutDirection == LayoutDirection.Ltr) {
+                            -fullWidth * 2
+                        } else {
+                            fullWidth * 2
+                        }
+                    },
+                exit =
+                    slideOutHorizontally { fullWidth: Int ->
+                        if (layoutDirection == LayoutDirection.Ltr) {
+                            -fullWidth * 2
+                        } else {
+                            fullWidth * 2
+                        }
+                    },
             ) {
                 Text(
                     text = stringResource(Res.string.homepage_title_label),
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.ExtraBold
-                    )
+                    style =
+                        MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                        ),
                 )
             }
-        }
+        },
     )
 }
 

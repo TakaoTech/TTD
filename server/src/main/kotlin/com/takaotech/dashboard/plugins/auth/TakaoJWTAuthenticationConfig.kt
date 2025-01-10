@@ -12,11 +12,11 @@ fun AuthenticationConfig.configureTakaoJWT(
     sessionController: SessionController,
     config: TakaoJwtConfig,
 ) {
-    //https://github.com/Slenkis/ktor-full-jwt/blob/master/src/Application.kt
+    // https://github.com/Slenkis/ktor-full-jwt/blob/master/src/Application.kt
     jwt("tjwt") {
         realm = config.realm
         verifier(
-            sessionController.verifyToken()
+            sessionController.verifyToken(),
         )
 
         validate { credential ->

@@ -22,29 +22,33 @@ import com.takaotech.dashboard.ui.github.GHRepositoryCard
 import com.takaotech.dashboard.ui.github.detail.GHRepositoryDetail
 import org.koin.core.parameter.parametersOf
 
-data class GHHomepageListPage(private val tagId: Int? = null) : Screen {
-
+data class GHHomepageListPage(
+    private val tagId: Int? = null,
+) : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
 
-        val viewModel = koinScreenModel<GHHomepageListPageViewModel> {
-            parametersOf(tagId)
-        }
+        val viewModel =
+            koinScreenModel<GHHomepageListPageViewModel> {
+                parametersOf(tagId)
+            }
 
         val repoList = viewModel.repositoryList.collectAsLazyPagingItems()
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = with(WindowInsets.systemBars.asPaddingValues()) {
-                PaddingValues(
-                    top = calculateTopPadding(),
-                    bottom = calculateBottomPadding(),
-                    start = 16.dp,
-                    end = 16.dp
-                )
-            },
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize(),
+            contentPadding =
+                with(WindowInsets.systemBars.asPaddingValues()) {
+                    PaddingValues(
+                        top = calculateTopPadding(),
+                        bottom = calculateBottomPadding(),
+                        start = 16.dp,
+                        end = 16.dp,
+                    )
+                },
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(repoList.itemCount) {
                 val item = repoList[it]
@@ -55,11 +59,10 @@ data class GHHomepageListPage(private val tagId: Int? = null) : Screen {
                         languages = item.languages,
                         modifier = Modifier.fillMaxSize(),
                         onTagClicked = {
-
                         },
                         onCardClicked = {
                             navigator.push(GHRepositoryDetail(it.id))
-                        }
+                        },
                     )
                 }
             }
@@ -70,12 +73,12 @@ data class GHHomepageListPage(private val tagId: Int? = null) : Screen {
                         item(key = "LoadStateNotLoading") {
                             Box(
                                 modifier = Modifier.fillMaxWidth(),
-                                contentAlignment = Alignment.Center
+                                contentAlignment = Alignment.Center,
                             ) {
                                 Text(
                                     text = "No Items",
                                     modifier = Modifier.align(Alignment.Center),
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
                                 )
                             }
                         }
@@ -85,7 +88,7 @@ data class GHHomepageListPage(private val tagId: Int? = null) : Screen {
                         item(key = "LoadStateLoading-refresh") {
                             Box(
                                 modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
+                                contentAlignment = Alignment.Center,
                             ) {
                                 CircularProgressIndicator(
                                     Modifier.align(Alignment.Center),
@@ -100,10 +103,11 @@ data class GHHomepageListPage(private val tagId: Int? = null) : Screen {
                             Row {
                                 CircularProgressIndicator(
                                     color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(16.dp)
-                                        .wrapContentWidth(Alignment.CenterHorizontally)
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize()
+                                            .padding(16.dp)
+                                            .wrapContentWidth(Alignment.CenterHorizontally),
                                 )
                             }
                         }
@@ -111,22 +115,22 @@ data class GHHomepageListPage(private val tagId: Int? = null) : Screen {
 
                     refresh is LoadStateError -> {
                         item(key = "LoadStateError-refresh") {
-                            //TODO
-//							ErrorView(
-//								message = "No Internet Connection",
-//								onClickRetry = { data.retry() },
-//								modifier = Modifier.fillParentMaxSize()
-//							)
+                            // TODO
+// 							ErrorView(
+// 								message = "No Internet Connection",
+// 								onClickRetry = { data.retry() },
+// 								modifier = Modifier.fillParentMaxSize()
+// 							)
                         }
                     }
 
                     append is LoadStateError -> {
                         item(key = "LoadStateError-append") {
-                            //TODO
-//							ErrorItem(
-//								message = "No Internet Connection",
-//								onClickRetry = { data.retry() },
-//							)
+                            // TODO
+// 							ErrorItem(
+// 								message = "No Internet Connection",
+// 								onClickRetry = { data.retry() },
+// 							)
                         }
                     }
                 }

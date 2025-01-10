@@ -14,86 +14,90 @@ import org.koin.core.annotation.Single
 @Single
 class AdminGHRepository(
     private val githubApi: AdminGHApi,
-    private val logger: Logger
+    private val logger: Logger,
 ) {
+    suspend fun refreshRepositories(): Result<Unit, Exception> =
+        Result
+            .of<Unit, Exception> {
+                githubApi.refreshRepositories()
+            }.onFailure {
+                logger.e(it) { "Error refreshRepositories" }
+            }
 
-    suspend fun refreshRepositories(): Result<Unit, Exception> {
-        return Result.of<Unit, Exception> {
-            githubApi.refreshRepositories()
-        }.onFailure {
-            logger.e(it) { "Error refreshRepositories" }
-        }
-    }
+    suspend fun getStatusOfRefreshRepositories(): Result<Boolean?, Exception> =
+        Result
+            .of<Boolean?, Exception> {
+                githubApi.refreshRepositoriesStatus().active
+            }.onFailure {
+                logger.e(it) { "Error getStatusOfRefreshRepositories" }
+            }
 
-    suspend fun getStatusOfRefreshRepositories(): Result<Boolean?, Exception> {
-        return Result.of<Boolean?, Exception> {
-            githubApi.refreshRepositoriesStatus().active
-        }.onFailure {
-            logger.e(it) { "Error getStatusOfRefreshRepositories" }
-        }
-    }
+    suspend fun getRepositories(mainCategory: MainCategory? = null): Result<List<GHRepositoryDao>, Throwable> =
+        Result
+            .of<List<GHRepositoryDao>, Throwable> {
+                githubApi
+                    .getRepositories(
+                        category = mainCategory,
+                    ).data
+            }.onFailure {
+                logger.e(it) { "Error getRepositories" }
+            }
 
-    suspend fun getRepositories(mainCategory: MainCategory? = null): Result<List<GHRepositoryDao>, Throwable> {
-        return Result.of<List<GHRepositoryDao>, Throwable> {
-            githubApi.getRepositories(
-                category = mainCategory
-            ).data
-        }.onFailure {
-            logger.e(it) { "Error getRepositories" }
-        }
-    }
+    suspend fun getRepositoryById(repositoryId: Long): Result<GHRepositoryDao, Throwable> =
+        Result
+            .of<GHRepositoryDao, Throwable> {
+                githubApi.getRepository(repositoryId)
+            }.onFailure {
+                logger.e(it) { "Error getRepositoryById" }
+            }
 
-    suspend fun getRepositoryById(repositoryId: Long): Result<GHRepositoryDao, Throwable> {
-        return Result.of<GHRepositoryDao, Throwable> {
-            githubApi.getRepository(repositoryId)
-        }.onFailure {
-            logger.e(it) { "Error getRepositoryById" }
-        }
-    }
-
-    suspend fun updateCategoryRepository(id: Long, newCategory: MainCategory) {
+    suspend fun updateCategoryRepository(
+        id: Long,
+        newCategory: MainCategory,
+    ) {
         githubApi.updateRepositoryCategory(
             id,
-            newCategory
+            newCategory,
         )
     }
 
-    suspend fun getTags(): Result<List<TagDao>, Throwable> {
-        return Result.of<List<TagDao>, Throwable> {
+    suspend fun getTags(): Result<List<TagDao>, Throwable> =
+        Result.of<List<TagDao>, Throwable> {
             githubApi.getTags().data
         }
-    }
 
-    suspend fun getTagById(tagId: Int): Result<TagDao, Throwable> {
-        return Result.of<TagDao, Throwable> {
+    suspend fun getTagById(tagId: Int): Result<TagDao, Throwable> =
+        Result.of<TagDao, Throwable> {
             githubApi.getTagById(tagId)
         }
-    }
 
-    suspend fun addTag(tag: TagNewDao): Result<Unit, Throwable> {
-        return Result.of<Unit, Throwable> {
-            githubApi.addTag(tag)
-        }.onFailure {
-            logger.e(it) { "Error Save Tag" }
-        }
-    }
+    suspend fun addTag(tag: TagNewDao): Result<Unit, Throwable> =
+        Result
+            .of<Unit, Throwable> {
+                githubApi.addTag(tag)
+            }.onFailure {
+                logger.e(it) { "Error Save Tag" }
+            }
 
-    suspend fun updateTag(tag: TagDao): Result<Unit, Throwable> {
-        return Result.of<Unit, Throwable> {
-            githubApi.updateTag(tag)
-        }.onFailure {
-            logger.e(it) { "Error Update Tag" }
-        }
-    }
+    suspend fun updateTag(tag: TagDao): Result<Unit, Throwable> =
+        Result
+            .of<Unit, Throwable> {
+                githubApi.updateTag(tag)
+            }.onFailure {
+                logger.e(it) { "Error Update Tag" }
+            }
 
-    suspend fun updateRepositoryTags(repositoryId: Long, newTags: List<Int>): Result<Unit, Throwable> {
-        return Result.of<Unit, Throwable> {
-            githubApi.updateRepositoryTags(
-                repositoryId,
-                TagsUpdateRequest(newTags)
-            )
-        }.onFailure {
-            logger.e(it) { "Error Update Tags for Repository $repositoryId" }
-        }
-    }
+    suspend fun updateRepositoryTags(
+        repositoryId: Long,
+        newTags: List<Int>,
+    ): Result<Unit, Throwable> =
+        Result
+            .of<Unit, Throwable> {
+                githubApi.updateRepositoryTags(
+                    repositoryId,
+                    TagsUpdateRequest(newTags),
+                )
+            }.onFailure {
+                logger.e(it) { "Error Update Tags for Repository $repositoryId" }
+            }
 }

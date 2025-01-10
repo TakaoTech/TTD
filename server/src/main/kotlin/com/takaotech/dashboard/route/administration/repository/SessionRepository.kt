@@ -14,13 +14,13 @@ import kotlin.time.Duration
 @Factory
 class SessionRepository(
     private val database: HikariDatabase,
-    credentialConfig: CredentialConfig
+    credentialConfig: CredentialConfig,
 ) {
     private val takaoJwtConfig = credentialConfig.takaoJwtConfig
 
     suspend fun saveNewToken(
         userId: String,
-        refreshToken: String
+        refreshToken: String,
     ) {
         database.dbExec {
             TokenTable.insert {
@@ -31,19 +31,19 @@ class SessionRepository(
         }
     }
 
-    suspend fun getUserIdByToken(token: String): String? {
-        return database.dbExec {
-            TokenTable.select { TokenTable.refreshToken eq token }
+    suspend fun getUserIdByToken(token: String): String? =
+        database.dbExec {
+            TokenTable
+                .select { TokenTable.refreshToken eq token }
                 .firstOrNull()
                 ?.let {
                     it[TokenTable.userId]
                 }
         }
-    }
 
     suspend fun updateRefreshToken(
         oldToken: String,
-        newToken: String
+        newToken: String,
     ) {
         database.dbExec {
             TokenTable.update({ TokenTable.refreshToken eq oldToken }) {
@@ -53,13 +53,14 @@ class SessionRepository(
         }
     }
 
-    suspend fun checkTokenIsValid(
-        refreshToken: String
-    ): Boolean {
-        val token = database.dbExec {
-            TokenTable.select { TokenTable.refreshToken eq refreshToken }
-                .map { it.toToken() }.first()
-        }
+    suspend fun checkTokenIsValid(refreshToken: String): Boolean {
+        val token =
+            database.dbExec {
+                TokenTable
+                    .select { TokenTable.refreshToken eq refreshToken }
+                    .map { it.toToken() }
+                    .first()
+            }
 
         return token.expiresAt > Clock.System.now()
     }

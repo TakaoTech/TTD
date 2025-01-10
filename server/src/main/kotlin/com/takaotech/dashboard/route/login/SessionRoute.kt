@@ -5,11 +5,17 @@ import io.ktor.resources.*
 @Resource("/session")
 class SessionRoute {
     @Resource("login")
-    class Login(val parent: SessionRoute = SessionRoute())
+    class Login(
+        val parent: SessionRoute = SessionRoute(),
+    )
 
     @Resource("signup")
-    class Signup(val parent: SessionRoute = SessionRoute())
+    class Signup(
+        val parent: SessionRoute = SessionRoute(),
+    )
 
     @Resource("refresh")
-    class Refresh(val parent: SessionRoute = SessionRoute())
+    class Refresh(
+        val parent: SessionRoute = SessionRoute(),
+    )
 }

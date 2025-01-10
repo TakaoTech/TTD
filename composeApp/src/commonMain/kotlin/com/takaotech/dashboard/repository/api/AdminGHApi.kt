@@ -7,15 +7,13 @@ import com.takaotech.dashboard.repository.api.ApiConstant.ADMIN_URL_PREFIX
 import de.jensklingenberg.ktorfit.http.*
 
 interface AdminGHApi {
-
     @GET("$ADMIN_URL_PREFIX/github/refresh")
     suspend fun refreshRepositories(
         @Query("mock") mock: Boolean = false,
     )
 
     @GET("$ADMIN_URL_PREFIX/github/refresh/status")
-    suspend fun refreshRepositoriesStatus(
-    ): GHRefreshStatus
+    suspend fun refreshRepositoriesStatus(): GHRefreshStatus
 
     @GET("$ADMIN_URL_PREFIX/github")
     suspend fun getRepositories(
@@ -23,11 +21,13 @@ interface AdminGHApi {
     ): GHRepositoriesDao
 
     @GET("$ADMIN_URL_PREFIX/github/{id}")
-    suspend fun getRepository(@Path("id") repositoryId: Long): GHRepositoryDao
+    suspend fun getRepository(
+        @Path("id") repositoryId: Long,
+    ): GHRepositoryDao
 
     @POST("$ADMIN_URL_PREFIX/github/{id}/updateCategory")
     suspend fun updateRepositoryCategory(
-        //TODO newCategory as query param?
+        // TODO newCategory as query param?
         @Path("id") repositoryId: Long,
         @Query("category") category: MainCategory? = null,
     )

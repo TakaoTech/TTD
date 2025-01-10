@@ -13,42 +13,42 @@ import kotlin.coroutines.suspendCoroutine
 import org.kohsuke.github.GHRepository as GHRepositoryExternal
 
 interface GithubClientInterface {
+    suspend fun getAllStarsRemote(): List<GHRepositoryDao>
 
-	suspend fun getAllStarsRemote(): List<GHRepositoryDao>
-
-	suspend fun getLanguagesByRepository(repositoryId: Long): Map<String, Long>
+    suspend fun getLanguagesByRepository(repositoryId: Long): Map<String, Long>
 }
 
 @Factory
 class GithubClientImpl(
-	private val logger: Logger,
-	private val githubClient: GitHub
+    private val logger: Logger,
+    private val githubClient: GitHub,
 ) : GithubClientInterface {
+    override suspend fun getAllStarsRemote(): List<GHRepositoryDao> =
+        coroutineScope {
+            val downloadedRepository = getAllStarsRemoteInternal()
 
-	override suspend fun getAllStarsRemote(): List<GHRepositoryDao> = coroutineScope {
-		val downloadedRepository = getAllStarsRemoteInternal()
+            val mapJobs = mutableListOf<Deferred<List<GHRepositoryDao>>>()
 
-		val mapJobs = mutableListOf<Deferred<List<GHRepositoryDao>>>()
-
-		try {
-			downloadedRepository.let {
-				//TODO Make split size a constant
-				if (it.size < 4) {
-					listOf(it)
-				} else {
-					it.chunked(it.size / 4)
-				}
-			}.forEach {
-				mapJobs.add(
-					async(Dispatchers.Default) {
-						try {
-							it.mapNotNull { repository ->
-								logger.info("Processing repository ID=${repository.id} Name=${repository.name} ")
-								repository.convertToGHRepositoryWithDefaults()
-							}
-						} catch (ex: Exception) {
-							logger.error(ex)
-							throw ex
+            try {
+                downloadedRepository
+                    .let {
+                        // TODO Make split size a constant
+                        if (it.size < 4) {
+                            listOf(it)
+                        } else {
+                            it.chunked(it.size / 4)
+                        }
+                    }.forEach {
+                        mapJobs.add(
+                            async(Dispatchers.Default) {
+                                try {
+                                    it.mapNotNull { repository ->
+                                        logger.info("Processing repository ID=${repository.id} Name=${repository.name} ")
+                                        repository.convertToGHRepositoryWithDefaults()
+                                    }
+                                } catch (ex: Exception) {
+                                    logger.error(ex)
+                                    throw ex
 							/* TODO Manage exception
 							 * 2024-03-01 08:20:25.479 [DefaultDispatcher-worker-4] ERROR ktor.application - Server returned HTTP response code: -1, message: 'null' for URL: https://api.github.com/repos/binwiederhier/ntfy/languages
 							 * org.kohsuke.github.HttpException: Server returned HTTP response code: -1, message: 'null' for URL: https://api.github.com/repos/binwiederhier/ntfy/languages
@@ -109,35 +109,36 @@ class GithubClientImpl(
 							 * 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
 							 * 	at java.base/java.lang.Thread.run(Thread.java:840)
 							 */
-						}
-					}
-				)
-			}
-		} catch (ex: Exception) {
-			logger.error("Error download getAllStars", ex)
-			//TODO throw correct exception
-			throw ex
-		}
+                                }
+                            },
+                        )
+                    }
+            } catch (ex: Exception) {
+                logger.error("Error download getAllStars", ex)
+                // TODO throw correct exception
+                throw ex
+            }
 
-		mapJobs.awaitAll().flatten()
-	}
+            mapJobs.awaitAll().flatten()
+        }
 
-	private suspend fun getAllStarsRemoteInternal(): List<GHRepositoryExternal> = suspendCancellableCoroutine {
-		try {
-			val repoList = mutableListOf<GHRepositoryExternal>()
+    private suspend fun getAllStarsRemoteInternal(): List<GHRepositoryExternal> =
+        suspendCancellableCoroutine {
+            try {
+                val repoList = mutableListOf<GHRepositoryExternal>()
 
-			githubClient
-				.myself
-				.listStarredRepositories()
-				.forEach { repository ->
-					if (it.isActive) {
-						repoList.add(repository)
-					} else {
-						throw Exception("getAllStarsRemoteInternal cancel requested")
-					}
-				}
-			it.resume(repoList)
-		} catch (ex: Throwable) {
+                githubClient
+                    .myself
+                    .listStarredRepositories()
+                    .forEach { repository ->
+                        if (it.isActive) {
+                            repoList.add(repository)
+                        } else {
+                            throw Exception("getAllStarsRemoteInternal cancel requested")
+                        }
+                    }
+                it.resume(repoList)
+            } catch (ex: Throwable) {
 			/* TODO Manage exception
 			 * org.kohsuke.github.HttpException: {"message":"Bad credentials","documentation_url":"https://docs.github.com/rest"}
 			 * 	at org.kohsuke.github.GitHubConnectorResponseErrorHandler$1.onError(GitHubConnectorResponseErrorHandler.java:62)
@@ -166,21 +167,22 @@ class GithubClientImpl(
 			 * 	at com.takaotech.dashboard.route.github.GithubRouteKt$githubRoute$1$2.invoke(AdminGithubRouter.kt
 			 */
 
-			logger.error("Error getAllStartsRemote", ex)
-			it.resumeWithException(ex)
-		}
-	}
+                logger.error("Error getAllStartsRemote", ex)
+                it.resumeWithException(ex)
+            }
+        }
 
-	override suspend fun getLanguagesByRepository(repositoryId: Long): Map<String, Long> =
-		suspendCoroutine<Map<String, Long>> {
-			try {
-				val listLanguages = githubClient
-					.getRepositoryById(repositoryId)
-					.listLanguages()
-				it.resume(listLanguages)
-			} catch (ex: IOException) {
-				logger.error("Error getLanguagesByRepository", ex)
-				it.resumeWithException(ex)
-			}
-		}
+    override suspend fun getLanguagesByRepository(repositoryId: Long): Map<String, Long> =
+        suspendCoroutine<Map<String, Long>> {
+            try {
+                val listLanguages =
+                    githubClient
+                        .getRepositoryById(repositoryId)
+                        .listLanguages()
+                it.resume(listLanguages)
+            } catch (ex: IOException) {
+                logger.error("Error getLanguagesByRepository", ex)
+                it.resumeWithException(ex)
+            }
+        }
 }

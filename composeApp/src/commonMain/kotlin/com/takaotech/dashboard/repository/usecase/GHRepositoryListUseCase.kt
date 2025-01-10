@@ -9,13 +9,13 @@ import org.koin.core.annotation.Factory
 
 @Factory
 class GHRepositoryListUseCase(
-	private val ghRepositorySource: GHRepositorySource,
+    private val ghRepositorySource: GHRepositorySource,
 ) {
-	fun getGhRepositoryList(tagId: Int? = null): Flow<PagingData<GHRepositoryMiniDao>> {
-		ghRepositorySource.tagId = tagId
-		return Pager(
-			config = PagingConfig(pageSize = 10),
-			pagingSourceFactory = { ghRepositorySource }
-		).flow
-	}
+    fun getGhRepositoryList(tagId: Int? = null): Flow<PagingData<GHRepositoryMiniDao>> {
+        ghRepositorySource.tagId = tagId
+        return Pager(
+            config = PagingConfig(pageSize = 10),
+            pagingSourceFactory = { ghRepositorySource },
+        ).flow
+    }
 }
