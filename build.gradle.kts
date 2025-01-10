@@ -19,6 +19,7 @@ plugins {
     alias(libs.plugins.gms) apply false
     alias(libs.plugins.firebase.appdistribution) apply false
     alias(libs.plugins.ktlint.gradle) apply false
+    alias(libs.plugins.cfu)
 }
 
 subprojects {

@@ -62,6 +62,7 @@ kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 kotlin-result = { module = "com.github.kittinunf.result:result", version = "5.5.0" }
 kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.6.0-RC.2" }
 kotlin-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version = "0.24.0" }
+kotlin-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version = "0.27.0" }
 
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
@@ -166,7 +167,7 @@ ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.0" }
 depscredit = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "depscredit" }
-cfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version = "2.0.0" }
+cfu = { id = "org.jetbrains.kotlinx.atomicfu", version = "0.27.0" }
 gms = { id = "com.google.gms.google-services", version = "4.4.2" }
 firebase-appdistribution = { id = "com.google.firebase.appdistribution", version = "5.0.0" }
 ktlint-gradle = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
