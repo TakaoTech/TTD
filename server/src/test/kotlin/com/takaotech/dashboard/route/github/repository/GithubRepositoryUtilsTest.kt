@@ -6,6 +6,7 @@ import com.takaotech.dashboard.model.github.GHUser
 import com.takaotech.dashboard.model.github.MainCategory
 import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryWithDefaults
 import com.takaotech.dashboard.utils.LOGGER
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.coEvery
 import io.mockk.every
@@ -177,7 +178,7 @@ class GithubRepositoryUtilsTest :
                 assertEquals(Instant.parse("2011-01-26T19:14:43Z"), convertedMockk.updatedAt)
             }
 
-            test("user null return GHRepository null") {
+            test("user null throw NPE GHRepository") {
                 val ghExternalMockk = mockk<GHRepositoryExternal>()
 
                 every { ghExternalMockk.id } returns 456L
@@ -190,8 +191,7 @@ class GithubRepositoryUtilsTest :
                 every { ghExternalMockk.license.htmlUrl } returns URL("https://duckduckgo.com/?q=apache2License")
                 every { ghExternalMockk.listLanguages() } returns mapOf("Kotlin" to 100L)
 
-                val convertedMockk = ghExternalMockk.convertToGHRepositoryWithDefaults()
-                assertTrue { convertedMockk == null }
+                shouldThrow<NullPointerException> { ghExternalMockk.convertToGHRepositoryWithDefaults() }
             }
         }
 

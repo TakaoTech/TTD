@@ -129,10 +129,15 @@ dependencies {
     testImplementation(libs.kotest.extension)
     testImplementation(libs.kotest.ktor)
     testImplementation(libs.kotest.testcontainer)
+    testImplementation(libs.kotest.property)
     testImplementation(libs.kotest.testcontainer.redis)
     testImplementation(libs.koin.test)
     testImplementation(libs.koin.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
+    testImplementation(kotlin("reflect"))
+    implementation(platform(libs.faker.bom))
+    testImplementation(libs.bundles.faker)
 }
 
 ktor {

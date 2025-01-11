@@ -90,12 +90,7 @@ internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(
     )
 
 internal fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): GHRepositoryDao? {
-    val repoOwner =
-        try {
-            owner.convertToGHUser()
-        } catch (ex: Exception) {
-            null
-        } ?: return null
+    val repoOwner = owner.convertToGHUser()
 
     return GHRepositoryDao(
         id = id,

@@ -18,8 +18,10 @@ compose = "1.7.6"
 compose-plugin = "1.7.3"
 junit = "4.13.2"
 kermit = "2.0.3"
+
 kotest = "5.9.0"
 mockk = "1.13.9"
+faker = "2.0.0-rc.7"
 
 kotlin = "2.1.0"
 postgresql = "42.7.3"
@@ -118,9 +120,15 @@ kotest-ktor = { module = "io.kotest.extensions:kotest-assertions-ktor", version 
 kotest-extension = { module = "io.kotest:kotest-extensions-jvm", version.ref = "kotest" }
 kotest-testcontainer = { module = "io.kotest.extensions:kotest-extensions-testcontainers", version = "2.0.2" }
 kotest-testcontainer-redis = { module = "com.redis:testcontainers-redis", version = "2.2.2" }
+kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
 koin-test = { module = "io.insert-koin:koin-test" }
 koin-junit = { module = "io.insert-koin:koin-test-junit5" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+turbine = { module = "app.cash.turbine:turbine", version = "1.2.0" }
+faker-bom = { module = "io.github.serpro69:kotlin-faker-bom", version.ref = "faker" }
+faker = { module = "io.github.serpro69:kotlin-faker" }
+faker-kotest-property = { module = "io.github.serpro69:kotlin-faker-kotest-property" }
+faker-lorem = { module = "io.github.serpro69:kotlin-faker-lorem" }
 
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
 serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
@@ -169,3 +177,6 @@ cfu = { id = "org.jetbrains.kotlinx.atomicfu", version = "0.27.0" }
 gms = { id = "com.google.gms.google-services", version = "4.4.2" }
 firebase-appdistribution = { id = "com.google.firebase.appdistribution", version = "5.0.0" }
 ktlint-gradle = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
+
+[bundles]
+faker = ["faker", "faker-kotest-property", "faker-lorem"]
