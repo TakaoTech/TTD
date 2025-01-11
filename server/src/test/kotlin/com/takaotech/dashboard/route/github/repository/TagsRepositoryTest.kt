@@ -24,7 +24,9 @@ class TagsRepositoryTest : FunSpec() {
             HikariDatabase(
                 dbConfiguration,
                 logger,
-            )
+            ).also {
+                it.connect()
+            }
 
         val tagsRepository = TagsRepository(database)
 

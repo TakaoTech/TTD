@@ -18,7 +18,7 @@ compose = "1.7.6"
 compose-plugin = "1.7.3"
 junit = "4.13.2"
 kermit = "2.0.3"
-kotest = "5.8.0"
+kotest = "5.9.0"
 mockk = "1.13.9"
 
 kotlin = "2.1.0"

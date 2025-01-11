@@ -1,6 +1,5 @@
 package com.takaotech.dashboard.utils
 
-import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.configuration.RedisConfiguration
 import eu.vendeli.rethis.ReThis
 import eu.vendeli.rethis.types.core.Url
@@ -8,13 +7,14 @@ import org.koin.core.annotation.Singleton
 
 @Singleton
 class RedisDatabase(
-    dbConfiguration: DbConfiguration,
+    dbConfiguration: RedisConfiguration,
 ) {
-    private val redisConfiguration: RedisConfiguration = dbConfiguration.redisConfiguration
-    lateinit var client: ReThis
-        private set
+    private val redisConfiguration: RedisConfiguration = dbConfiguration
+    val client: ReThis = ReThis(Url(redisConfiguration.url))
 
-    fun connect() {
-        client = ReThis(Url(redisConfiguration.url))
+    suspend fun connect() {
+        if (client.isDisconnected) {
+            client.reconnect().join()
+        }
     }
 }

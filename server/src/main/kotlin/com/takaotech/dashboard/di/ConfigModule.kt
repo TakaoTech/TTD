@@ -12,5 +12,6 @@ fun getConfigurationModule(
 ) = module {
     single { credentialConfig }
     single { githubConfiguration }
-    single { dbConfiguration }
+    single { dbConfiguration.redisConfiguration }
+    single { dbConfiguration.sqlDbConfiguration }
 }

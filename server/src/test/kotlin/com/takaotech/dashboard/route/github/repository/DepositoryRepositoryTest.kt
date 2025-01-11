@@ -7,6 +7,7 @@ import com.takaotech.dashboard.model.github.*
 import com.takaotech.dashboard.route.github.data.GithubUserEntity
 import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.utils.*
+import io.kotest.common.runBlocking
 import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.extensions.testcontainers.ContainerExtension
@@ -148,14 +149,20 @@ class DepositoryRepositoryTest : FunSpec() {
         val redisDatabase =
             RedisDatabase(
                 dbConfiguration.redisConfiguration,
-            )
+            ).also {
+                runBlocking {
+                    it.connect()
+                }
+            }
 
         val database =
             HikariDatabase(
                 dbConfiguration.sqlDbConfiguration,
                 logger,
-            )
-        database.connect()
+            ).also {
+                it.connect()
+            }
+
 
         val testResourcePath = Paths.get("").toAbsolutePath().toString() + "/src/test/resources/"
         val colors = Json.parseToJsonElement(File(testResourcePath, "githubColors.json").readText()).jsonObject
