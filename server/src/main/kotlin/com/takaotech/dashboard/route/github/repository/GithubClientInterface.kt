@@ -1,6 +1,9 @@
 package com.takaotech.dashboard.route.github.repository
 
+import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.onFailure
 import com.takaotech.dashboard.model.github.GHRepositoryDao
+import com.takaotech.dashboard.model.github.exception.GHExternalConversionException
 import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryWithDefaults
 import io.ktor.util.logging.*
 import kotlinx.coroutines.*
@@ -26,7 +29,7 @@ class GithubClientImpl2(
     private val logger: Logger,
     private val githubClient: GitHub,
 ) {
-    fun getAllStarsRemote(): Flow<List<GHRepositoryDao>> = flow {
+    fun getAllStarsRemote(): Flow<List<Result<GHRepositoryDao, GHExternalConversionException>>> = flow {
         val iterator = githubClient
             .myself
             .listStarredRepositories()
@@ -37,12 +40,18 @@ class GithubClientImpl2(
             currentCoroutineContext().ensureActive()
             val page = iterator.nextPage()
             page.mapNotNull { repository ->
-                repository.convertToGHRepositoryWithDefaults()
+                logger.debug("Conversion repository {} {}", repository.id.toString(), repository.name)
+                Result.of<GHRepositoryDao, GHExternalConversionException> {
+                    repository.convertToGHRepositoryWithDefaults()
+                }.onFailure {
+                    logger.error("Failed to convert repository {} {}:", repository.id.toString(), repository.name, it)
+                }
             }.also { emit(it) }
         }
     }.buffer()
         .catch {
-            logger.error(it)
+            logger.error("Error during flow processing GithubClientImpl.getAllStarsRemote: {}", it.message, it)
+            throw it
         }
 
     suspend fun getLanguagesByRepository(repositoryId: Long): Map<String, Long> =

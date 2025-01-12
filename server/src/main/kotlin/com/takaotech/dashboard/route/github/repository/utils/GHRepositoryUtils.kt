@@ -1,12 +1,15 @@
+@file:JvmName("GHRepositoryUtilsKt")
 package com.takaotech.dashboard.route.github.repository.utils
 
 import com.takaotech.dashboard.model.github.*
+import com.takaotech.dashboard.model.github.exception.GHExternalConversionException
 import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.route.github.data.GithubDepositoryMiniEntity
 import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.route.github.repository.GithubColorController
 import com.takaotech.dashboard.utils.HikariDatabase
 import kotlinx.datetime.toKotlinInstant
+import okio.IOException
 import org.kohsuke.github.GHRepository as GHRepositoryExternal
 import org.kohsuke.github.GHUser as GHUserExternal
 
@@ -89,8 +92,46 @@ internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(
         updatedAt = updatedAt,
     )
 
-internal fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): GHRepositoryDao? {
-    val repoOwner = owner.convertToGHUser()
+internal fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): GHRepositoryDao {
+    val repoOwner = try {
+        owner.convertToGHUser()
+    } catch (ex: Exception) {
+        when (ex) {
+            is NullPointerException, is IOException -> {
+                throw GHExternalConversionException(
+                    id = id.toString(),
+                    name = name,
+                    property = "owner",
+                    cause = ex
+                )
+            }
+
+            else -> throw ex
+        }
+    }
+
+    var mLicense: String? = null
+    var mLicenseUrl: String? = null
+
+    try {
+        license?.let {
+            mLicense = it.name
+            mLicenseUrl = it.htmlUrl?.toString()
+        }
+    } catch (ex: Exception) {
+        when (ex) {
+            is IOException -> {
+                throw GHExternalConversionException(
+                    id = id.toString(),
+                    name = name,
+                    property = "license",
+                    cause = ex
+                )
+            }
+
+            else -> throw ex
+        }
+    }
 
     return GHRepositoryDao(
         id = id,
@@ -98,14 +139,30 @@ internal fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): GHReposit
         fullName = fullName,
         description = description,
         url = htmlUrl.toString(),
-        license = license?.name,
-        licenseUrl = license?.htmlUrl?.toString(),
+        license = mLicense,
+        licenseUrl = mLicenseUrl,
         user = repoOwner,
-        languages = listLanguages().mapToLanguageDao(),
+        languages = try {
+            listLanguages().mapToLanguageDao()
+        } catch (ex: Exception) {
+            when (ex) {
+                is NullPointerException, is IOException -> {
+                    throw GHExternalConversionException(
+                        id = id.toString(),
+                        name = name,
+                        property = "listLanguages()",
+                        cause = ex
+                    )
+                }
+
+                else -> throw ex
+            }
+        },
         // Use default on data recovery
         mainCategory = MainCategory.NONE,
         // Use default on data recovery
         tags = listOf(),
+        //TODO
         updatedAt = updatedAt.toInstant().toKotlinInstant(),
     )
 }
