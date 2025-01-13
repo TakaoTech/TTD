@@ -32,7 +32,7 @@ class GithubClientInterfaceTest : FunSpec() {
     private lateinit var pagedIterator: PagedIterator<GHRepositoryExternal>
 
     init {
-        val githubClientInterface = GithubClientImpl2(
+        val githubClientInterface = GithubClientImpl(
             logger = logger,
             githubClient = githubClient
         )

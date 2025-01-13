@@ -9,10 +9,10 @@ import com.takaotech.dashboard.utils.getGHUserExternalGenerator
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldMatch
 import io.kotest.property.arbitrary.next
 import kotlinx.datetime.toKotlinInstant
 import java.util.*
-import kotlin.test.assertTrue
 import org.kohsuke.github.GHUser as GHUserExternal
 
 class GithubRepositoryUtilsTest : FunSpec() {
@@ -43,9 +43,7 @@ class GithubRepositoryUtilsTest : FunSpec() {
                 repoResult.licenseUrl.also { licenseUrl ->
                     licenseUrl shouldBe repoTest.license?.htmlUrl?.toString()
                     if (licenseUrl != null) {
-                        assertTrue {
-                            domainRegex.matches(licenseUrl)
-                        }
+                        licenseUrl shouldMatch domainRegex
                     }
                 }
                 repoResult.updatedAt shouldBe repoTest.updatedAt.toInstant().toKotlinInstant()

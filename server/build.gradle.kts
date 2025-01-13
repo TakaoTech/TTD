@@ -93,6 +93,8 @@ dependencies {
     implementation(libs.ktor.server.sessions)
     implementation(libs.ktor.server.cors)
 
+    implementation(libs.kotlin.coroutines.core)
+
     implementation(libs.ktor.client)
     implementation(libs.ktor.client.java)
     implementation(libs.ktor.client.contentnegotiation)
@@ -135,7 +137,6 @@ dependencies {
     testImplementation(libs.koin.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.turbine)
-    testImplementation(kotlin("reflect"))
     implementation(platform(libs.faker.bom))
     testImplementation(libs.bundles.faker)
 }

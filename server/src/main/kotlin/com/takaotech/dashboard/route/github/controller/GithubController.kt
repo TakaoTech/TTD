@@ -1,12 +1,12 @@
 package com.takaotech.dashboard.route.github.controller
 
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.getOrNull
 import com.takaotech.dashboard.model.TakaoPaging
 import com.takaotech.dashboard.model.github.*
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
 import com.takaotech.dashboard.route.github.repository.TagsRepository
-import kotlinx.coroutines.coroutineScope
 import org.koin.core.annotation.Singleton
 
 @Singleton
@@ -18,34 +18,16 @@ class GithubController(
     /**
      * Download all starred repositories from GH Account and save it on db
      */
-    suspend fun getStarsAndStore() =
-        coroutineScope {
-// 		val mapJobs = mutableListOf<Deferred<List<GHRepository>>>()
-            val refreshAt = githubDepositoryRepository.detachUpdateTimestamp()
-            val allStars = githubRepository.getAllStars()
-
-// 			.let {
-// 				if (it.size < 4) {
-// 					listOf(it)
-// 				} else {
-// 					it.chunked(it.size / 4)
-// 				}
-// 			}.map {
-// 				mapJobs.add(
-// 					async {
-// 						it.map {
-// 							it.copy(
-// 								languages = githubRepository.getLanguagesByRepository(it.id)
-// 							)
-// 						}
-// 					}
-// 				)
-// 			}
-
-// 		allStars = mapJobs.awaitAll().flatten()
-
-            githubDepositoryRepository.saveRepositoriesToDB(refreshAt, allStars)
+    suspend fun getStarsAndStore() {
+        val refreshAt = githubDepositoryRepository.detachUpdateTimestamp()
+        githubRepository.getAllStars().collect { repoList ->
+            repoList.mapNotNull {
+                it.getOrNull()
+            }.also {
+                githubDepositoryRepository.saveRepositoriesToDB(refreshAt, it)
+            }
         }
+    }
 
     suspend fun getRepository(category: MainCategory? = null): GHRepositoriesDao =
         GHRepositoriesDao(githubDepositoryRepository.getGHRepository(category))
