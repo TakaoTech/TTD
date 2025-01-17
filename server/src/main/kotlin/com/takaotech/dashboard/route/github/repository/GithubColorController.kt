@@ -17,7 +17,7 @@ import kotlin.time.Duration.Companion.days
 interface GithubColorController {
     suspend fun getColorLanguagesMapping(): JsonObject
 
-    suspend fun getColorLanguageByName(language: String): String?
+    suspend fun getColorLanguageByName(language: String): String
 }
 
 @Single
@@ -59,7 +59,7 @@ class GithubColorControllerImpl(
         }
     }
 
-    override suspend fun getColorLanguageByName(language: String): String? {
+    override suspend fun getColorLanguageByName(language: String): String {
         val colorMapping = getColorLanguagesMapping()
 
         return colorMapping[language]
@@ -119,6 +119,6 @@ class GithubColorControllerImpl(
 
     companion object {
         private const val LAST_UPDATE_FIELD = "lastUpdate"
-        private const val FALLBACK_COLOR = "#ededed"
+        const val FALLBACK_COLOR = "#ededed"
     }
 }

@@ -53,8 +53,9 @@ class DepositoryRepository(
             repositoryList
                 .map {
                     it.user
-                }.toSet()
-                .map {
+                }.distinctBy {
+                    it.id
+                }.map {
                     updateOrCreateGHUser(it)
                 }
 
@@ -81,7 +82,7 @@ class DepositoryRepository(
         }
     }
 
-    private suspend fun updateOrCreateGHRepository(
+    internal suspend fun updateOrCreateGHRepository(
         repository: GHRepositoryDao,
         refreshAt: Instant,
         userPool: List<GithubUserEntity>,
@@ -108,7 +109,7 @@ class DepositoryRepository(
                 }
 
                 license = repository.license
-                licenseUrl = repository.license
+                licenseUrl = repository.licenseUrl
 
                 updatedAt = repository.updatedAt
                 refreshedAt = refreshAt
