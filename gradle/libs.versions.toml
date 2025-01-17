@@ -180,4 +180,5 @@ firebase-appdistribution = { id = "com.google.firebase.appdistribution", version
 ktlint-gradle = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
 
 [bundles]
+kotest-server = ["kotest-runner", "kotest-koin", "kotest-ktor", "kotest-extension", "kotest-testcontainer", "kotest-testcontainer-redis", "kotest-property"]
 faker = ["faker", "faker-kotest-property", "faker-lorem"]
