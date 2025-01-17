@@ -23,6 +23,10 @@ plugins {
     alias(libs.plugins.firebase.appdistribution)
 }
 
+val devMode = runCatching { getEnvProperty("development", rootProject) }.onFailure {
+    println("Development variable not found, switch to false")
+}.getOrNull()?.toBoolean() == true
+
 kotlin {
 //    @OptIn(ExperimentalWasmDsl::class)
 //    wasmJs {
@@ -44,7 +48,7 @@ kotlin {
 
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     compilerOptions {
-        if (getEnvProperty("development", rootProject).toBoolean()) {
+        if (devMode) {
             freeCompilerArgs.add("-Xdebug")
         }
     }
