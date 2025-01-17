@@ -21,7 +21,7 @@ jobs:
           distribution: 'corretto'
       - id: 'step-1'
         name: 'Setup Gradle'
-        uses: 'gradle/actions/setup-gradle@v3'
+        uses: 'gradle/actions/setup-gradle@v4'
       - id: 'step-2'
         name: 'Checkout'
         uses: 'actions/checkout@v4'
@@ -30,14 +30,11 @@ jobs:
         run: 'chmod +x -R *'
         if: '${{ github.event.act }}'
       - id: 'step-4'
-        name: 'Lint Echo'
-        run: 'echo ${{ vars.ENDPOINT_URL }}'
-      - id: 'step-5'
         name: 'Lint Fix'
         env:
-          ENDPOINT_URL: ${{ vars.ENDPOINT_URL }}
+          ENDPOINT_URL: '${{ ENDPOINT_URL }}'
         run: './gradlew ktlintFormat'
-      - id: 'step-6'
+      - id: 'step-5'
         name: 'Commit format'
         uses: 'stefanzweifel/git-auto-commit-action@v5'
         with:

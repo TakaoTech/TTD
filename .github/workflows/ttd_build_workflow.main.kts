@@ -1,13 +1,21 @@
 #!/usr/bin/env kotlin
 
-@file:DependsOn("io.github.typesafegithub:github-workflows-kt:2.1.0")
+@file:Repository("https://repo.maven.apache.org/maven2/")
+@file:DependsOn("io.github.typesafegithub:github-workflows-kt:3.1.0")
+@file:Repository("https://bindings.krzeminski.it")
+@file:DependsOn("actions:checkout:v4")
+@file:DependsOn("actions:setup-java:v4")
+@file:DependsOn("docker:login-action:v3")
+@file:DependsOn("docker:build-push-action:v5")
+@file:DependsOn("docker:setup-buildx-action:v3")
+@file:DependsOn("gradle:actions__setup-gradle:v4")
 
-import io.github.typesafegithub.workflows.actions.actions.CheckoutV4
-import io.github.typesafegithub.workflows.actions.actions.SetupJavaV4
-import io.github.typesafegithub.workflows.actions.docker.BuildPushActionV5
-import io.github.typesafegithub.workflows.actions.docker.LoginActionV3
-import io.github.typesafegithub.workflows.actions.docker.SetupBuildxActionV3
-import io.github.typesafegithub.workflows.actions.gradle.ActionsSetupGradleV3
+import io.github.typesafegithub.workflows.actions.actions.Checkout
+import io.github.typesafegithub.workflows.actions.actions.SetupJava
+import io.github.typesafegithub.workflows.actions.docker.BuildPushAction
+import io.github.typesafegithub.workflows.actions.docker.LoginAction
+import io.github.typesafegithub.workflows.actions.docker.SetupBuildxAction
+import io.github.typesafegithub.workflows.actions.gradle.ActionsSetupGradle
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.actions.Action
 import io.github.typesafegithub.workflows.domain.actions.RegularAction
@@ -54,24 +62,24 @@ workflow(
     ) {
         uses(
             name = "Setup Java",
-            action = SetupJavaV4(javaVersion = "17", distribution = SetupJavaV4.Distribution.Corretto)
+            action = SetupJava(javaVersion = "17", distribution = SetupJava.Distribution.Corretto)
         )
 
         uses(
             name = "Set up Docker Buildx",
-            action = SetupBuildxActionV3()
+            action = SetupBuildxAction()
         )
 
         uses(name = "Setup Android SDK", action = SetupAndroidSDKV3())
 
         uses(
             name = "Setup Gradle",
-            action = ActionsSetupGradleV3()
+            action = ActionsSetupGradle()
         )
 
         uses(
             name = "Checkout",
-            action = CheckoutV4()
+            action = Checkout()
         )
 
         run(
@@ -102,7 +110,7 @@ workflow(
 
         uses(
             name = "Login to DockerHub",
-            action = LoginActionV3(
+            action = LoginAction(
                 username = expr(DOCKER_HUB_USERNAME),
                 password = expr { DOCKER_HUB_TOKEN }
             ),
@@ -110,7 +118,7 @@ workflow(
 
         uses(
             name = "Generate Image",
-            action = BuildPushActionV5(
+            action = BuildPushAction(
                 platforms = listOf("linux/amd64"),
                 file = "./Dockerfile",
                 push = true,
@@ -128,6 +136,8 @@ workflow(
 //		run(name = "Generate image", command = "./gradlew server:publishImage")
     }
 }
+
+println("Output Main CI")
 
 fun appendSecretEnvParams(keyStoreParams: List<String>): String {
     return buildString {

@@ -1,11 +1,17 @@
 #!/usr/bin/env kotlin
 
-@file:DependsOn("io.github.typesafegithub:github-workflows-kt:2.3.0")
+@file:Repository("https://repo.maven.apache.org/maven2/")
+@file:DependsOn("io.github.typesafegithub:github-workflows-kt:3.1.0")
+@file:Repository("https://bindings.krzeminski.it")
+@file:DependsOn("actions:checkout:v4")
+@file:DependsOn("actions:setup-java:v4")
+@file:DependsOn("gradle:actions__setup-gradle:v4")
+@file:DependsOn("stefanzweifel:git-auto-commit-action:v5")
 
-import io.github.typesafegithub.workflows.actions.actions.CheckoutV4
-import io.github.typesafegithub.workflows.actions.actions.SetupJavaV4
-import io.github.typesafegithub.workflows.actions.gradle.ActionsSetupGradleV3
-import io.github.typesafegithub.workflows.actions.stefanzweifel.GitAutoCommitActionV5
+import io.github.typesafegithub.workflows.actions.actions.Checkout
+import io.github.typesafegithub.workflows.actions.actions.SetupJava
+import io.github.typesafegithub.workflows.actions.gradle.ActionsSetupGradle
+import io.github.typesafegithub.workflows.actions.stefanzweifel.GitAutoCommitAction
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.PullRequest
 import io.github.typesafegithub.workflows.domain.triggers.Push
@@ -15,6 +21,7 @@ import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 
 val ACT by Contexts.env
+val ENDPOINT_URL by Contexts.env
 
 workflow(
     name = "Lint Check",
@@ -36,17 +43,17 @@ workflow(
     ) {
         uses(
             name = "Setup Java",
-            action = SetupJavaV4(javaVersion = "17", distribution = SetupJavaV4.Distribution.Corretto)
+            action = SetupJava(javaVersion = "17", distribution = SetupJava.Distribution.Corretto)
         )
 
         uses(
             name = "Setup Gradle",
-            action = ActionsSetupGradleV3()
+            action = ActionsSetupGradle()
         )
 
         uses(
             name = "Checkout",
-            action = CheckoutV4()
+            action = Checkout()
         )
 
         run(
@@ -56,25 +63,21 @@ workflow(
         )
 
         run(
-            name = "Lint Echo",
-            command = "echo ${expr { "vars.ENDPOINT_URL" }}",
-        )
-
-        run(
             name = "Lint Fix",
             command = "./gradlew ktlintFormat",
             env = mapOf(
-                "ENDPOINT_URL" to expr { "vars.ENDPOINT_URL" }
+                "ENDPOINT_URL" to expr { ENDPOINT_URL }
             )
         )
 
         uses(
             name = "Commit format",
-            action = GitAutoCommitActionV5(
+            action = GitAutoCommitAction(
                 commitMessage = "Lint formatting"
             )
         )
 
     }
-
 }
+
+println("Output Linting CI")
