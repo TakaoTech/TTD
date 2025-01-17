@@ -3,7 +3,9 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.extra
 import java.util.*
 
+
 fun getEnvProperty(envName: String, project: Project): String {
+    println("Search environment: $envName")
     (project.findProperty(envName) as? String).also {
         if (it != null) {
             return it
