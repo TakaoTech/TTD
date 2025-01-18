@@ -27,8 +27,12 @@ val devMode = runCatching { getEnvProperty("development", rootProject) }.onFailu
     println("Development variable not found, switch to false")
 }.getOrNull()?.toBoolean() == true
 
+val useLocalEndpoint = runCatching {
+    getEnvProperty("USE_LOCAL_ENDPOINT", rootProject)
+}.getOrNull()?.toBoolean() == true
+
 val endpoint = getEnvProperty("ENDPOINT_URL", rootProject).let { endpointUrl ->
-    if (getEnvProperty("USE_LOCAL_ENDPOINT", rootProject).toBoolean()) {
+    if (useLocalEndpoint) {
         URIBuilder()
             .apply {
                 val mEndpointUrl = URI(endpointUrl)

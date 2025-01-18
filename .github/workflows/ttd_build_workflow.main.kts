@@ -25,7 +25,9 @@ import io.github.typesafegithub.workflows.dsl.expressions.expr
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 
+//Base Env
 val ACT by Contexts.env
+val ENDPOINT_URL = "vars.ENDPOINT_URL"
 
 val DOCKER_HUB_USERNAME = "vars.DOCKER_HUB_USERNAME"
 val DOCKER_HUB_TOKEN by Contexts.secrets

@@ -4,6 +4,7 @@ import org.gradle.kotlin.dsl.extra
 import java.util.*
 
 
+@Throws(GradleException::class)
 fun getEnvProperty(envName: String, project: Project): String {
     println("Search environment: $envName")
     (project.findProperty(envName) as? String).also {
