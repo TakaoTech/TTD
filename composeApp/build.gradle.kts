@@ -27,6 +27,29 @@ val devMode = runCatching { getEnvProperty("development", rootProject) }.onFailu
     println("Development variable not found, switch to false")
 }.getOrNull()?.toBoolean() == true
 
+val endpoint = getEnvProperty("ENDPOINT_URL", rootProject).let { endpointUrl ->
+    if (getEnvProperty("USE_LOCAL_ENDPOINT", rootProject).toBoolean()) {
+        URIBuilder()
+            .apply {
+                val mEndpointUrl = URI(endpointUrl)
+                port = mEndpointUrl.port
+                scheme = mEndpointUrl.scheme
+                host =
+                    getLocalIPv4().first().also {
+                        println("Local Address $it")
+                    }
+                path = "/"
+            }.toString()
+    } else {
+        endpointUrl
+    }
+}
+
+
+if (devMode) {
+    println(endpoint)
+}
+
 kotlin {
 //    @OptIn(ExperimentalWasmDsl::class)
 //    wasmJs {
@@ -163,7 +186,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        manifestPlaceholders["useClearTraffic"] = URL(getEnvProperty("ENDPOINT_URL", rootProject)).protocol != "https"
+        manifestPlaceholders["useClearTraffic"] = URL(endpoint).protocol != "https"
 
         proguardFiles(file(projectDir.absolutePath + "/src/androidMain/proguard-rules.pro"))
     }
@@ -241,25 +264,10 @@ buildkonfig {
     packageName = projectPackage
     objectName = "AppBuildKonfig"
     defaultConfigs {
-        val endpointUrl = getEnvProperty("ENDPOINT_URL", rootProject)
         buildConfigField(
             FieldSpec.Type.STRING,
             "baseUrl",
-            if (getEnvProperty("USE_LOCAL_ENDPOINT", rootProject).toBoolean()) {
-                URIBuilder()
-                    .apply {
-                        val mEndpointUrl = URI(endpointUrl)
-                        port = mEndpointUrl.port
-                        scheme = mEndpointUrl.scheme
-                        host =
-                            getLocalIPv4().first().also {
-                                println("Local Address $it")
-                            }
-                        path = "/"
-                    }.toString()
-            } else {
-                endpointUrl
-            },
+            endpoint,
         )
 
         buildConfigField(
