@@ -96,8 +96,6 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
-            api(compose.preview)
-            api(compose.uiTooling)
             implementation(libs.androidx.activity.compose)
             implementation(libs.koin.android)
 
@@ -238,6 +236,8 @@ android {
         compose = true
     }
     dependencies {
+        debugApi(compose.preview)
+        debugApi(compose.uiTooling)
 // 		debugImplementation(libs.compose.ui.tooling)
     }
 }

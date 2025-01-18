@@ -18,21 +18,9 @@ plugins {
     alias(libs.plugins.depscredit) apply false
     alias(libs.plugins.gms) apply false
     alias(libs.plugins.firebase.appdistribution) apply false
-    alias(libs.plugins.ktlint.gradle) apply false
     alias(libs.plugins.cfu)
 }
 
-subprojects {
-    apply(plugin = "org.jlleitschuh.gradle.ktlint") // Version should be inherited from parent
-
-    // Optionally configure plugin
-    configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-        version.set("1.5.0")
-        android.set(true)
-        outputToConsole.set(true)
-        ignoreFailures.set(true)
-    }
-}
 
 val projectPackage: String by rootProject.extra { "com.takaotech.dashboard" }
 val localProps: Properties? by rootProject.extra {

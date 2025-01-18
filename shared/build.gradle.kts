@@ -55,16 +55,6 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
-/*
-Mitigation for error
-A problem was found with the configuration of task ':shared:runKtlintFormatOverCommonMainSourceSet' (type 'KtLintFormatTask').
-:shared:runKtlintFormatOverCommonMainSourceSet' uses this output of task ':shared:kspCommonMainKotlinMetadata' without declaring an explicit or implicit dependency.
-This can lead to incorrect results being produced, depending on what order the tasks are executed.
- */
-tasks.named("runKtlintFormatOverCommonMainSourceSet") {
-    mustRunAfter(tasks.named("kspCommonMainKotlinMetadata"))
-}
-
 // dependencies {
 // 	with(libs.ktorfit.ksp.get()) {
 // 		add("kspCommonMainMetadata", this)
