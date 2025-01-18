@@ -104,7 +104,7 @@ class DepositoryRepositoryTest2 : FunSpec() {
                     name = language,
                     lines = abs(faker.random.nextLong()),
                     weight = abs(faker.random.nextFloat()),
-                    colorCode = getGHLanguagesColorsGenerator(language),
+                    colorCode = getGHLanguagesColor(language),
                 )
             }
             val users: List<GHUser> = MutableList(3) {
@@ -129,7 +129,7 @@ class DepositoryRepositoryTest2 : FunSpec() {
                 coEvery {
                     githubColorController.getColorLanguageByName(capture(languageSlot))
                 } answers {
-                    getGHLanguagesColorsGenerator(languageSlot.captured)
+                    getGHLanguagesColor(languageSlot.captured)
                 }
 
                 spyDepositoryRepository.saveRepositoriesToDB(timestamp, ghRepositories)
@@ -177,9 +177,42 @@ class DepositoryRepositoryTest2 : FunSpec() {
                 }
             }
 
-            //TODO Test Aggiunta repository Kotlin
             //TODO Test Aggiornamento repository già inserito
-            xtest("WHEN Update ")
+            test("WHEN Create GHRepository with Kotlin languages, Kotlin Category Assigned") {
+                val spyDepositoryRepository = spyk(depositoryRepository, recordPrivateCalls = true)
+
+                val kotlinRepositoryForSave = ghRepositoryGenerator.next()
+                    .copy(
+                        languages = generateLanguages(5, "Kotlin", languageModifier = GHLanguageModifier.MAX)
+                    )
+
+                spyDepositoryRepository.saveRepositoriesToDB(timestamp, listOf(kotlinRepositoryForSave))
+
+                coVerify(exactly = 1) {
+                    spyDepositoryRepository.updateOrCreateGHUser(any())
+                }
+
+                coVerify(exactly = 1) {
+                    spyDepositoryRepository.updateOrCreateGHRepository(any(), any(), any())
+                }
+
+                depositoryRepository.getGHRepository().first {
+                    it.id == kotlinRepositoryForSave.id
+                }.also {
+                    val kotlinRepositoryForEq = with(kotlinRepositoryForSave) {
+                        copy(
+                            mainCategory = MainCategory.KOTLIN,
+                            languages = this.languages.map { color ->
+                                color.copy(
+                                    colorCode = getGHLanguagesColor(color.name)
+                                )
+                            }
+                        )
+                    }
+
+                    it shouldBe kotlinRepositoryForEq
+                }
+            }
         }
     }
 

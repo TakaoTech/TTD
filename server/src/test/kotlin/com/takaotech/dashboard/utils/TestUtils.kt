@@ -8,6 +8,7 @@ import com.takaotech.dashboard.model.github.*
 import com.takaotech.dashboard.route.github.repository.GithubColorControllerImpl.Companion.FALLBACK_COLOR
 import io.github.serpro69.kfaker.Faker
 import io.github.serpro69.kfaker.lorem.LoremFaker
+import io.kotest.common.DelicateKotest
 import io.kotest.property.Arb
 import io.kotest.property.arbitrary.*
 import io.ktor.util.logging.*
@@ -74,12 +75,6 @@ fun getBaseTestKoin() =
         ),
         defaultModule,
     )
-
-enum class GHFieldModifier {
-    AS_NULL,
-    IOEXCEPTION,
-    OTHER_EXCEPTION,
-}
 
 class TestCustomException : Exception()
 
@@ -160,7 +155,7 @@ fun getGHRepositoryExternalGenerator(
             }
             every { it.updatedAt } returns mDateMock
             every { it.listLanguages() }.let {
-                val languagesGen = Arb.map(Arb.pair(Arb.string(), Arb.long()), 1, 10)
+                val languagesGen = generateLanguages(faker.random.nextInt(0..10))
 
                 when (languagesModifier) {
                     GHFieldModifier.AS_NULL -> it returns null
@@ -172,14 +167,66 @@ fun getGHRepositoryExternalGenerator(
                         throw TestCustomException()
                     }
 
-                    null -> it returns languagesGen.next()
+                    null -> it returns languagesGen.associate { ghLanguageDao ->
+                        ghLanguageDao.name to ghLanguageDao.lines
+                    }
                 }
             }
         }
     }
 }
 
-fun getGHLanguagesColorsGenerator(language: String): String {
+@OptIn(DelicateKotest::class)
+fun generateLanguages(
+    count: Int,
+    forcedLanguage: String? = null,
+    languageModifier: GHLanguageModifier? = null,
+): List<GHLanguageDao> {
+    val faker = Faker()
+    val languages = getGHLanguagesGenerator().distinct().let {
+        MutableList(count) { _ ->
+            it.next()
+        }
+    }.apply {
+        if (forcedLanguage != null) {
+            remove(forcedLanguage)
+            add(forcedLanguage)
+        }
+    }
+
+    val linesList = (0..<count).map { _ ->
+        abs(
+            faker.random
+                .nextLong(
+                    min = 11,
+                    max = Long.MAX_VALUE
+                )
+        )
+    }.toMutableList().also {
+        it.add(
+            when (languageModifier) {
+                GHLanguageModifier.MAX -> it.max() + 10
+                GHLanguageModifier.MIN -> it.min() - 10
+                GHLanguageModifier.INSIDE -> faker.random
+                    .nextLong(
+                        min = it.min() + 1,
+                        max = it.max() - 1
+                    )
+
+                null -> return@also
+            }
+        )
+    }
+
+    val totalLines = linesList.sum()
+
+    return languages.zip(linesList) { name, lines ->
+        val weight = (lines.toFloat() / totalLines) * 100
+        GHLanguageDao(name, lines, weight)
+    }
+}
+
+fun getGHLanguagesColor(language: String): String {
     return (Paths.get("").toAbsolutePath().toString() + GITHUB_TEST_RESOURCE_PATH).let {
         Json.parseToJsonElement(File(it, "githubColors.json").readText()).let {
             it.jsonObject[language]
