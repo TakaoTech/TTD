@@ -32,7 +32,7 @@ jobs:
       - id: 'step-4'
         name: 'Lint Fix'
         env:
-          ENDPOINT_URL: '${{ ENDPOINT_URL }}'
+          ENDPOINT_URL: '${{ vars.ENDPOINT_URL }}'
         run: './gradlew ktlintFormat'
       - id: 'step-5'
         name: 'Commit format'

@@ -21,7 +21,6 @@ import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 
 val ACT by Contexts.env
-val ENDPOINT_URL by Contexts.env
 
 workflow(
     name = "Lint Check",
@@ -66,7 +65,7 @@ workflow(
             name = "Lint Fix",
             command = "./gradlew ktlintFormat",
             env = mapOf(
-                "ENDPOINT_URL" to expr { ENDPOINT_URL }
+                "ENDPOINT_URL" to expr { "vars.ENDPOINT_URL" }
             )
         )
 
