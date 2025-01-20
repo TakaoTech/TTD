@@ -1,3 +1,4 @@
+import io.gitlab.arturbosch.detekt.Detekt
 import java.io.FileInputStream
 import java.util.*
 
@@ -9,6 +10,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.serialization)
     alias(libs.plugins.kover)
+    alias(libs.plugins.detekt)
     application
 }
 
@@ -131,12 +133,35 @@ dependencies {
     testImplementation(libs.koin.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.turbine)
-    implementation(platform(libs.faker.bom))
+    testImplementation(platform(libs.faker.bom))
     testImplementation(libs.bundles.faker)
+
+    detektPlugins(libs.detekt.formatting)
+
 }
 
 ktor {
     fatJar {
+    }
+}
+
+detekt {
+    source.setFrom(
+        "server/src/main/kotlin",
+    )
+
+    config.setFrom("$rootDir/detekt.yml")
+    ignoreFailures = true
+
+    basePath = projectDir.absolutePath
+}
+
+tasks.withType<Detekt>().configureEach {
+    reports {
+        exclude("org/koin/ksp/generated")
+
+        html.required.set(true)
+        html.outputLocation.set(file("build/reports/detekt.html"))
     }
 }
 

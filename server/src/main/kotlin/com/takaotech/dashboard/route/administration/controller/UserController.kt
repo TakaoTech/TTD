@@ -48,6 +48,7 @@ class UserController(
         }
     }
 
+    @Suppress("UnsafeCallOnNullableType")
     suspend fun signUpByGoogle(json: JsonObject) {
         if (json["verified_email"]!!.jsonPrimitive.boolean) {
             val email = json["email"]?.jsonPrimitive?.content ?: throw Exception()

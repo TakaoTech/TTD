@@ -18,8 +18,43 @@ plugins {
     alias(libs.plugins.depscredit) apply false
     alias(libs.plugins.gms) apply false
     alias(libs.plugins.firebase.appdistribution) apply false
+    alias(libs.plugins.detekt) apply false
     alias(libs.plugins.cfu)
 }
+
+//detekt {
+//    source.setFrom(
+//        "composeApp/src/commonMain/kotlin",
+//        "composeApp/src/androidMain/kotlin",
+//        "shared/src/commonMain/kotlin",
+//        "server/src/main/kotlin",
+//    )
+//
+//    config.setFrom("$projectDir/detekt.yml")
+//    ignoreFailures = true
+//
+//    ignoredBuildTypes = listOf("release")
+//    basePath = projectDir.absolutePath
+//}
+
+
+//val detekt by configurations.creating
+
+//val detektTask = tasks.register<JavaExec>("detekt") {
+//    mainClass = "io.gitlab.arturbosch.detekt.cli.Main"
+//    classpath = detekt
+//
+//    val input = projectDir
+//    val config = "$projectDir/detekt.yml"
+//    val exclude = ".*/build/*,.*/resources/*"
+//    val params = listOf("-i", input, "-c", config, "-ex", exclude)
+//
+//    args(params)
+//}
+//
+//dependencies {
+//    detekt("io.gitlab.arturbosch.detekt:detekt-cli:1.23.7")
+//}
 
 
 val projectPackage: String by rootProject.extra { "com.takaotech.dashboard" }
