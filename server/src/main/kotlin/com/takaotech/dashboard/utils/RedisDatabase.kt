@@ -10,11 +10,15 @@ class RedisDatabase(
     dbConfiguration: RedisConfiguration,
 ) {
     private val redisConfiguration: RedisConfiguration = dbConfiguration
-    val client: ReThis = ReThis(Url(redisConfiguration.url))
+    val client: ReThis = ReThis(Url(redisConfiguration.url)) {}
 
-    suspend fun connect() {
+    fun connect() {
         if (client.isDisconnected) {
-            client.reconnect().join()
+            client.reconnect()
         }
+    }
+
+    fun disconnect() {
+        client.disconnect()
     }
 }

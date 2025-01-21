@@ -1,15 +1,29 @@
 package com.takaotech.dashboard.route.github.repository
 
+import com.redis.testcontainers.RedisContainer
 import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.model.github.GHLanguageDao
 import com.takaotech.dashboard.model.github.GHRepositoryDao
 import com.takaotech.dashboard.model.github.GHUser
 import com.takaotech.dashboard.model.github.MainCategory
-import com.takaotech.dashboard.utils.*
+import com.takaotech.dashboard.utils.GHLanguageModifier
+import com.takaotech.dashboard.utils.HikariDatabase
+import com.takaotech.dashboard.utils.RedisDatabase
+import com.takaotech.dashboard.utils.dbTables
+import com.takaotech.dashboard.utils.generateLanguages
+import com.takaotech.dashboard.utils.getBaseTestKoin
+import com.takaotech.dashboard.utils.getDbConfiguration
+import com.takaotech.dashboard.utils.getGHLanguagesColor
+import com.takaotech.dashboard.utils.getGHLanguagesGenerator
+import com.takaotech.dashboard.utils.getGHRepositoryGenerator
+import com.takaotech.dashboard.utils.getGHUserGenerator
 import io.github.serpro69.kfaker.Faker
 import io.kotest.common.DelicateKotest
+import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.core.test.TestCaseOrder
+import io.kotest.extensions.testcontainers.ContainerExtension
+import io.kotest.extensions.testcontainers.ContainerLifecycleMode
 import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
@@ -17,14 +31,21 @@ import io.kotest.property.arbitrary.distinct
 import io.kotest.property.arbitrary.list
 import io.kotest.property.arbitrary.next
 import io.ktor.util.logging.*
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.spyk
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
+import org.testcontainers.Testcontainers
 import java.util.*
 import kotlin.math.abs
 import kotlin.reflect.jvm.jvmName
+import io.github.serpro69.kfaker.lorem.Faker as FakerLorem
 
 @OptIn(DelicateKotest::class)
 class DepositoryRepositoryTest2 : FunSpec() {
@@ -36,6 +57,7 @@ class DepositoryRepositoryTest2 : FunSpec() {
 
     private val logger = KtorSimpleLogger(this::class.jvmName)
     private val faker = Faker()
+    private val fakerLorem = FakerLorem()
     private val timestamp = Clock.System.now()
     private val date = Date()
 
@@ -52,24 +74,27 @@ class DepositoryRepositoryTest2 : FunSpec() {
     lateinit var dbConfiguration: DbConfiguration
 
     init {
-//        val redis = install(
-//            ContainerExtension(
-//                container = RedisContainer(RedisContainer.DEFAULT_IMAGE_NAME.withTag(RedisContainer.DEFAULT_TAG)),
-//                mode = ContainerLifecycleMode.Spec,
-//            ),
-//        ) {
-//            dbConfiguration = getDbConfiguration(redisURI)
-//            redisDatabase = RedisDatabase(
-//                dbConfiguration.redisConfiguration
-//            ).also {
-////                runBlocking {
-////                    it.connect()
-//////                if(it.client.isDisconnected){
-//////                    throw Exception("Redis not connected")
-//////                }
-////                }
-//            }
-//        }
+        val redis = install(
+            ContainerExtension(
+                container = RedisContainer(RedisContainer.DEFAULT_IMAGE_NAME.withTag(RedisContainer.DEFAULT_TAG)),
+                mode = ContainerLifecycleMode.Spec,
+            ),
+        ) {
+            Testcontainers.exposeHostPorts(redisPort)
+
+            dbConfiguration = getDbConfiguration(redisURI)
+            RedisDatabase(
+                dbConfiguration.redisConfiguration
+            ).also {
+                runBlocking {
+                    it.connect()
+//                if(it.client.isDisconnected){
+//                    throw Exception("Redis not connected")
+//                }
+                    it.disconnect()
+                }
+            }
+        }
 
 
         beforeSpec {
@@ -211,6 +236,38 @@ class DepositoryRepositoryTest2 : FunSpec() {
                     }
 
                     it shouldBe kotlinRepositoryForEq
+                }
+            }
+
+            test("WHEN Update GHRepository, GHRepository is updated") {
+                val spyDepositoryRepository = spyk(depositoryRepository, recordPrivateCalls = true)
+
+                ghRepositories = ghRepositories.mapIndexed { index, ghRepositoryDao ->
+                    if (index == 0) {
+                        ghRepositoryDao.copy(
+                            description = fakerLorem.lorem.words()
+                        )
+                    } else {
+                        ghRepositoryDao
+                    }
+                }.toMutableList()
+
+                val ghRepositoryForSave = ghRepositories.first()
+
+                spyDepositoryRepository.saveRepositoriesToDB(timestamp, listOf(ghRepositoryForSave))
+
+                coVerify(exactly = 1) {
+                    spyDepositoryRepository.updateOrCreateGHUser(any())
+                }
+
+                coVerify(exactly = 1) {
+                    spyDepositoryRepository.updateOrCreateGHRepository(any(), any(), any())
+                }
+
+                depositoryRepository.getGHRepository().first {
+                    it.id == ghRepositoryForSave.id
+                }.also {
+                    it shouldBe ghRepositoryForSave
                 }
             }
         }
