@@ -120,6 +120,7 @@ kotest-ktor = { module = "io.kotest.extensions:kotest-assertions-ktor", version 
 kotest-extension = { module = "io.kotest:kotest-extensions-jvm", version.ref = "kotest" }
 kotest-testcontainer = { module = "io.kotest.extensions:kotest-extensions-testcontainers", version = "2.0.2" }
 kotest-testcontainer-redis = { module = "com.redis:testcontainers-redis", version = "2.2.2" }
+kotest-testcontainer-postgresql = { module = "org.testcontainers:postgresql", version = "1.20.0" }
 kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
 koin-test = { module = "io.insert-koin:koin-test" }
 koin-junit = { module = "io.insert-koin:koin-test-junit5" }
@@ -181,5 +182,5 @@ firebase-appdistribution = { id = "com.google.firebase.appdistribution", version
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
 [bundles]
-kotest-server = ["kotest-runner", "kotest-koin", "kotest-ktor", "kotest-extension", "kotest-testcontainer", "kotest-testcontainer-redis", "kotest-property"]
+kotest-server = ["kotest-runner", "kotest-koin", "kotest-ktor", "kotest-extension", "kotest-testcontainer", "kotest-testcontainer-redis", "kotest-testcontainer-postgresql", "kotest-property"]
 faker = ["faker", "faker-kotest-property", "faker-lorem"]

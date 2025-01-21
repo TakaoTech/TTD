@@ -33,17 +33,15 @@ class HikariDatabase(
     lateinit var database: Database
     private lateinit var connection: HikariDataSource
 
-    fun connect() {
-        // log.info("Initialising database")
-        connection = hikari()
-        database =
-            Database.connect(
-                datasource = connection,
-                databaseConfig =
-                    DatabaseConfig.invoke {
-                        keepLoadedReferencesOutOfTransaction = true
-                    },
-            )
+    fun connect(hikariDataSource: HikariDataSource = hikari()) {
+        logger.info("Initialising database")
+        connection = hikariDataSource
+        database = Database.connect(
+            datasource = connection,
+            databaseConfig = DatabaseConfig.invoke {
+                keepLoadedReferencesOutOfTransaction = true
+            },
+        )
         setupSchema()
     }
 

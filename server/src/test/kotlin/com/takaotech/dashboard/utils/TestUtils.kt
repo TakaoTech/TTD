@@ -6,16 +6,25 @@ import com.takaotech.dashboard.configuration.SqlDbConfiguration
 import com.takaotech.dashboard.di.getGeneralModule
 import com.takaotech.dashboard.model.github.*
 import com.takaotech.dashboard.route.github.repository.GithubColorControllerImpl.Companion.FALLBACK_COLOR
+import com.zaxxer.hikari.HikariDataSource
 import io.github.serpro69.kfaker.Faker
 import io.github.serpro69.kfaker.lorem.LoremFaker
 import io.kotest.common.DelicateKotest
 import io.kotest.property.Arb
-import io.kotest.property.arbitrary.*
+import io.kotest.property.arbitrary.arbitrary
+import io.kotest.property.arbitrary.distinct
+import io.kotest.property.arbitrary.next
+import io.kotest.property.arbitrary.of
+import io.kotest.property.arbitrary.orNull
 import io.ktor.util.logging.*
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.Instant
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import okio.IOException
 import org.kohsuke.github.GHRepository
 import org.koin.ksp.generated.defaultModule
@@ -27,15 +36,16 @@ import kotlin.math.abs
 import org.kohsuke.github.GHUser as GHUserExternal
 
 const val GITHUB_TEST_RESOURCE_PATH = "/src/test/resources/github"
+const val POSTGRESQL_DRIVER = "org.postgresql.Driver"
 
 val LOGGER = KtorSimpleLogger("TestLogger")
 
-fun getSqlDbConfiguration() =
+fun getSqlDbConfiguration(postgres: HikariDataSource) =
     SqlDbConfiguration(
-        url = System.getenv("DB_URL"),
-        driver = System.getenv("DB_DRIVER"),
-        user = System.getenv("DB_USER"),
-        password = System.getenv("DB_PASSWORD"),
+        url = postgres.jdbcUrl,
+        driver = POSTGRESQL_DRIVER,
+        user = postgres.username,
+        password = postgres.password,
     )
 
 fun getRedisConfiguration(redisURI: String) =
@@ -43,11 +53,13 @@ fun getRedisConfiguration(redisURI: String) =
         url = redisURI,
     )
 
-fun getDbConfiguration(redisURI: String) =
-    DbConfiguration(
-        sqlDbConfiguration = getSqlDbConfiguration(),
-        redisConfiguration = getRedisConfiguration(redisURI),
-    )
+fun getDbConfiguration(
+    postgres: HikariDataSource,
+    redisURI: String
+) = DbConfiguration(
+    sqlDbConfiguration = getSqlDbConfiguration(postgres),
+    redisConfiguration = getRedisConfiguration(redisURI),
+)
 
 fun getBaseTestKoin() =
     listOf(
@@ -180,7 +192,7 @@ fun getGHRepositoryExternalGenerator(
 fun generateLanguages(
     count: Int,
     forcedLanguage: String? = null,
-    languageModifier: GHLanguageModifier? = null,
+    languageModifier: GHLanguageLinesModifier? = null,
 ): List<GHLanguageDao> {
     val faker = Faker()
     val languages = getGHLanguagesGenerator().distinct().let {
@@ -205,9 +217,9 @@ fun generateLanguages(
     }.toMutableList().also {
         it.add(
             when (languageModifier) {
-                GHLanguageModifier.MAX -> it.max() + 10
-                GHLanguageModifier.MIN -> it.min() - 10
-                GHLanguageModifier.INSIDE -> faker.random
+                GHLanguageLinesModifier.MAX -> it.max() + 10
+                GHLanguageLinesModifier.MIN -> it.min() - 10
+                GHLanguageLinesModifier.INSIDE -> faker.random
                     .nextLong(
                         min = it.min() + 1,
                         max = it.max() - 1
@@ -238,13 +250,27 @@ fun getGHLanguagesColor(language: String): String {
     }
 }
 
-fun getGHLanguagesGenerator(): Arb<String> {
+fun getGHLanguagesGenerator(
+    languageNameModifier: GHLanguageNameModifier = GHLanguageNameModifier.WITHOUT_KOTLIN
+): Arb<String> {
     val languages = (Paths.get("").toAbsolutePath().toString() + GITHUB_TEST_RESOURCE_PATH).let {
         Json.parseToJsonElement(File(it, "languages.json").readText()).jsonArray.toList()
-    }
+    }.map {
+        it.jsonPrimitive.content
+    }.toMutableList()
+        .also {
+            when (languageNameModifier) {
+                GHLanguageNameModifier.WITHOUT_KOTLIN -> {
+                    it.remove("Kotlin")
+                }
+
+                else -> Unit
+            }
+        }
+
 
     return arbitrary {
-        languages[it.random.nextInt(languages.lastIndex)].jsonPrimitive.content
+        languages[it.random.nextInt(languages.lastIndex)]
     }
 }
 
