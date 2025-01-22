@@ -1,6 +1,5 @@
 package com.takaotech.dashboard.route.github.repository
 
-import com.redis.testcontainers.RedisContainer
 import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.model.github.GHLanguageDao
 import com.takaotech.dashboard.model.github.GHRepositoryDao
@@ -16,14 +15,12 @@ import com.takaotech.dashboard.utils.getGHLanguagesColor
 import com.takaotech.dashboard.utils.getGHLanguagesGenerator
 import com.takaotech.dashboard.utils.getGHRepositoryGenerator
 import com.takaotech.dashboard.utils.getGHUserGenerator
+import com.takaotech.dashboard.utils.installPostgres
+import com.takaotech.dashboard.utils.installRedis
 import io.github.serpro69.kfaker.Faker
 import io.kotest.common.DelicateKotest
-import io.kotest.core.extensions.install
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.core.test.TestCaseOrder
-import io.kotest.extensions.testcontainers.ContainerExtension
-import io.kotest.extensions.testcontainers.ContainerLifecycleMode
-import io.kotest.extensions.testcontainers.JdbcDatabaseContainerExtension
 import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
@@ -41,10 +38,6 @@ import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
-import org.testcontainers.Testcontainers
-import org.testcontainers.containers.PostgreSQLContainer
-import org.testcontainers.containers.startupcheck.IsRunningStartupCheckStrategy
-import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
 import kotlin.math.abs
 import kotlin.reflect.jvm.jvmName
 import io.github.serpro69.kfaker.lorem.Faker as FakerLorem
@@ -71,39 +64,12 @@ class DepositoryRepositoryTest : FunSpec() {
     lateinit var database: HikariDatabase
     lateinit var depositoryRepository: DepositoryRepository
 
-    //    lateinit var redisDatabase: RedisDatabase
     lateinit var dbConfiguration: DbConfiguration
 
     init {
-        val redis = install(
-            ContainerExtension(
-                container = RedisContainer(RedisContainer.DEFAULT_IMAGE_NAME.withTag(RedisContainer.DEFAULT_TAG)),
-                mode = ContainerLifecycleMode.Spec,
-            ),
-        ) {
-            Testcontainers.exposeHostPorts(redisPort)
-        }
+        val redis = installRedis()
 
-        val postgres = install(
-            JdbcDatabaseContainerExtension(
-                container = PostgreSQLContainer("postgres").apply {
-//                    withStartupCheckStrategy(
-//                        IndefiniteWaitOneShotStartupCheckStrategy()
-//                            .withTimeout(10.seconds.toJavaDuration())
-//                    )
-                    // Colima Mitigation
-                    withStartupCheckStrategy(
-                        IsRunningStartupCheckStrategy()
-                    )
-                    setWaitStrategy(HostPortWaitStrategy())
-                    withStartupAttempts(5)
-                },
-                mode = ContainerLifecycleMode.Spec,
-            )
-        ) {
-
-
-        }
+        val postgres = installPostgres()
 
         beforeSpec {
             dbConfiguration = getDbConfiguration(

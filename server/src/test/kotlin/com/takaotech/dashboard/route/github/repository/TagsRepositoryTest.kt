@@ -5,6 +5,7 @@ import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.utils.HikariDatabase
 import com.takaotech.dashboard.utils.dbTables
 import com.takaotech.dashboard.utils.getSqlDbConfiguration
+import com.takaotech.dashboard.utils.installPostgres
 import io.kotest.core.spec.style.FunSpec
 import io.ktor.util.logging.*
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -19,14 +20,15 @@ class TagsRepositoryTest : FunSpec() {
     init {
         val logger = KtorSimpleLogger(this::class.jvmName)
 
-        val dbConfiguration = getSqlDbConfiguration()
-        val database =
-            HikariDatabase(
-                dbConfiguration,
-                logger,
-            ).also {
-                it.connect()
-            }
+        val postgres = installPostgres()
+
+        val dbConfiguration = getSqlDbConfiguration(postgres)
+        val database = HikariDatabase(
+            dbConfiguration,
+            logger,
+        ).also {
+            it.connect()
+        }
 
         val tagsRepository = TagsRepository(database)
 
