@@ -5,6 +5,7 @@ import com.takaotech.dashboard.model.github.GHLanguageDao
 import com.takaotech.dashboard.model.github.GHRepositoryDao
 import com.takaotech.dashboard.model.github.MainCategory
 import com.takaotech.dashboard.utils.GHLanguageLinesModifier
+import com.takaotech.dashboard.utils.GHLanguageNameModifier
 import com.takaotech.dashboard.utils.HikariDatabase
 import com.takaotech.dashboard.utils.RedisDatabase
 import com.takaotech.dashboard.utils.dbTables
@@ -21,6 +22,7 @@ import io.github.serpro69.kfaker.Faker
 import io.kotest.common.DelicateKotest
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.core.test.TestCaseOrder
+import io.kotest.datatest.withData
 import io.kotest.koin.KoinExtension
 import io.kotest.matchers.shouldBe
 import io.kotest.property.Arb
@@ -55,9 +57,9 @@ class DepositoryRepositoryTest : FunSpec() {
     private val fakerLorem = FakerLorem()
     private val timestamp = Clock.System.now()
 
-    //    val testResourcePath = Paths.get("").toAbsolutePath().toString() + "/src/test/resources/"
-//    val colors = Json.parseToJsonElement(File(testResourcePath, "githubColors.json").readText()).jsonObject
-    val languagesGenerator = getGHLanguagesGenerator().distinct()
+    val languagesGenerator: (languageNameModifier: GHLanguageNameModifier) -> Arb<String> = {
+        getGHLanguagesGenerator(it).distinct()
+    }
     val ghUserGenerator = getGHUserGenerator().distinct()
     val githubColorController = mockk<GithubColorControllerImpl>()
 
@@ -110,14 +112,18 @@ class DepositoryRepositoryTest : FunSpec() {
         }
 
         context("Save Data in DB") {
-            val languages = Arb.list(languagesGenerator, 2..20).next().map { language ->
-                GHLanguageDao(
-                    name = language,
-                    lines = abs(faker.random.nextLong()),
-                    weight = abs(faker.random.nextFloat()),
-                    colorCode = getGHLanguagesColor(language),
-                )
-            }
+            val languages = Arb.list(
+                languagesGenerator(GHLanguageNameModifier.WITHOUT_KOTLIN),
+                2..20
+            ).next()
+                .map { language ->
+                    GHLanguageDao(
+                        name = language,
+                        lines = abs(faker.random.nextLong()),
+                        weight = abs(faker.random.nextFloat()),
+                        colorCode = getGHLanguagesColor(language),
+                    )
+                }
             val users = MutableList(3) {
                 ghUserGenerator.next()
             }.toMutableList()
@@ -299,36 +305,37 @@ class DepositoryRepositoryTest : FunSpec() {
                     .filter { it.mainCategory == MainCategory.KOTLIN }
             }
 
-            xtest("WHEN get GHRepository with Category NONE IS equals") {
-                val recoveredRepositories = depositoryRepository.getGHRepository(
-                    MainCategory.NONE
-                ).sortedBy { it.id }
-
-                recoveredRepositories shouldBe ghRepositories.sortedBy { it.id }
-                    .filter { it.mainCategory == MainCategory.NONE }
-            }
-
-            xtest("WHEN get GHRepository with Category SELF_HOSTED IS equals") {
-                val recoveredRepositories = depositoryRepository.getGHRepository(
-                    MainCategory.SELF_HOSTED
-                ).sortedBy { it.id }
-
-                recoveredRepositories shouldBe ghRepositories.sortedBy { it.id }
-                    .filter { it.mainCategory == MainCategory.SELF_HOSTED }
-            }
-
-            xtest("WHEN get GHRepository with Category OTHER IS equals") {
-                val recoveredRepositories = depositoryRepository.getGHRepository(
-                    MainCategory.OTHER
-                ).sortedBy { it.id }
-
-                recoveredRepositories shouldBe ghRepositories.sortedBy { it.id }
-                    .filter { it.mainCategory == MainCategory.OTHER }
-            }
-
-            // TODO updateGhRepositoryMainCategory
             // TODO getGHRepositoryByTag
         }
-    }
 
+        context("GHRepository with Categories") {
+            val ghUser = ghUserGenerator.next()
+            var ghRepository = getGHRepositoryGenerator(
+                ghUsers = listOf(ghUser),
+                languages = listOf(),
+                updatedAt = timestamp,
+                tags = listOf(),
+                mainCategory = MainCategory.NONE
+            ).distinct().next()
+
+            depositoryRepository.saveRepositoriesToDB(timestamp, listOf(ghRepository))
+
+            withData(MainCategory.entries) { category ->
+                ghRepository = ghRepository.copy(
+                    mainCategory = category
+                )
+
+                depositoryRepository.updateGhRepositoryMainCategory(ghRepository.id, category)
+
+                depositoryRepository.getGHRepository(category).first() shouldBe ghRepository
+            }
+
+            test("Update category at nothing") {
+                depositoryRepository.updateGhRepositoryMainCategory(123, MainCategory.KOTLIN)
+
+                depositoryRepository.getGHRepositoryById(123)?.mainCategory shouldBe null
+            }
+
+        }
+    }
 }
