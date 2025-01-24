@@ -247,7 +247,14 @@ fun getTagsEntityGenerator(): Arb<TagNewDao> {
     val loremFaker = LoremFaker()
     return arbitrary {
         TagNewDao(
-            name = faker.name.name(),
+            name = faker.name.name().let {
+                println("Tag name $it length: ${it.length}")
+                if (it.length > 20) {
+                    it.substring(0..19)
+                } else {
+                    it
+                }
+            },
             description = loremFaker.lorem.words(),
             color = generateRandomColor(it.random)
         )

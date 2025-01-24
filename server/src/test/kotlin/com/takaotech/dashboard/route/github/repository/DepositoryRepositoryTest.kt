@@ -34,9 +34,12 @@ import io.kotest.property.arbitrary.next
 import io.ktor.util.logging.*
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.slot
 import io.mockk.spyk
+import io.mockk.unmockkObject
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -80,13 +83,6 @@ class DepositoryRepositoryTest : FunSpec() {
                 postgres,
                 redis.redisURI
             )
-            RedisDatabase(
-                dbConfiguration.redisConfiguration
-            ).also {
-                runBlocking {
-                    it.connect()
-                }
-            }
 
 
             database = HikariDatabase(
@@ -98,7 +94,13 @@ class DepositoryRepositoryTest : FunSpec() {
 
             depositoryRepository = DepositoryRepository(
                 database,
-                mockk(relaxed = true),
+                RedisDatabase(
+                    dbConfiguration.redisConfiguration
+                ).also {
+                    runBlocking {
+                        it.connect()
+                    }
+                },
                 logger,
                 githubColorController
             )
@@ -307,7 +309,6 @@ class DepositoryRepositoryTest : FunSpec() {
                     .filter { it.mainCategory == MainCategory.KOTLIN }
             }
 
-            // TODO getGHRepositoryByTag
         }
 
         context("Categories") {
@@ -342,7 +343,7 @@ class DepositoryRepositoryTest : FunSpec() {
 
         context("Tags") {
             val ghUser = ghUserGenerator.next()
-            var ghRepository = getGHRepositoryGenerator(
+            val ghRepository = getGHRepositoryGenerator(
                 ghUsers = listOf(ghUser),
                 languages = listOf(),
                 updatedAt = timestamp,
@@ -376,6 +377,29 @@ class DepositoryRepositoryTest : FunSpec() {
                 depositoryRepository.getGHRepositoryById(ghRepository.id) shouldBe ghRepositoryTest
             }
 
+        }
+
+        beforeContainer {
+            mockkObject(Clock.System)
+            every { Clock.System.now() } returns timestamp
+        }
+
+        afterContainer {
+            unmockkObject(Clock.System)
+        }
+
+        context("Update TimeStamp") {
+            test("Get Empty") {
+                depositoryRepository.getUpdateTimestamp() shouldBe null
+            }
+
+            test("Detach") {
+                depositoryRepository.detachUpdateTimestamp() shouldBe timestamp
+            }
+
+            test("Get") {
+                depositoryRepository.getUpdateTimestamp() shouldBe timestamp
+            }
         }
     }
 }
