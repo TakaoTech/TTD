@@ -4,6 +4,7 @@ import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.model.github.GHLanguageDao
 import com.takaotech.dashboard.model.github.GHRepositoryDao
 import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.utils.GHLanguageLinesModifier
 import com.takaotech.dashboard.utils.GHLanguageNameModifier
 import com.takaotech.dashboard.utils.HikariDatabase
@@ -16,6 +17,7 @@ import com.takaotech.dashboard.utils.getGHLanguagesColor
 import com.takaotech.dashboard.utils.getGHLanguagesGenerator
 import com.takaotech.dashboard.utils.getGHRepositoryGenerator
 import com.takaotech.dashboard.utils.getGHUserGenerator
+import com.takaotech.dashboard.utils.getTagsEntityGenerator
 import com.takaotech.dashboard.utils.installPostgres
 import com.takaotech.dashboard.utils.installRedis
 import io.github.serpro69.kfaker.Faker
@@ -308,7 +310,7 @@ class DepositoryRepositoryTest : FunSpec() {
             // TODO getGHRepositoryByTag
         }
 
-        context("GHRepository with Categories") {
+        context("Categories") {
             val ghUser = ghUserGenerator.next()
             var ghRepository = getGHRepositoryGenerator(
                 ghUsers = listOf(ghUser),
@@ -334,6 +336,44 @@ class DepositoryRepositoryTest : FunSpec() {
                 depositoryRepository.updateGhRepositoryMainCategory(123, MainCategory.KOTLIN)
 
                 depositoryRepository.getGHRepositoryById(123)?.mainCategory shouldBe null
+            }
+
+        }
+
+        context("Tags") {
+            val ghUser = ghUserGenerator.next()
+            var ghRepository = getGHRepositoryGenerator(
+                ghUsers = listOf(ghUser),
+                languages = listOf(),
+                updatedAt = timestamp,
+                tags = listOf(),
+                mainCategory = MainCategory.NONE
+            ).distinct().next()
+            val tagsRepository = TagsRepository(database)
+
+            val ghTagEntity = getTagsEntityGenerator().next().let {
+                tagsRepository.addTag(it)
+
+                database.dbExec {
+                    TagsEntity.all().first()
+                }
+            }
+
+            val ghTag = tagsRepository.getTagById(ghTagEntity.id.value)!!
+
+            depositoryRepository.saveRepositoriesToDB(timestamp, listOf(ghRepository))
+
+
+            test("Set tag at repository") {
+                depositoryRepository.setTagsAtRepository(ghRepository.id, listOf(ghTagEntity))
+            }
+
+            test("Check tag at repository") {
+                val ghRepositoryTest = ghRepository.copy(
+                    tags = listOf(ghTag)
+                )
+
+                depositoryRepository.getGHRepositoryById(ghRepository.id) shouldBe ghRepositoryTest
             }
 
         }
