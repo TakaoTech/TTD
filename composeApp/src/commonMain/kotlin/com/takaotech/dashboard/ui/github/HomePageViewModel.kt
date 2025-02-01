@@ -1,7 +1,7 @@
 package com.takaotech.dashboard.ui.github
 
-import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.isSuccess
 import com.github.kittinunf.result.map
@@ -15,12 +15,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Factory
 
-@Factory
 class HomePageViewModel(
     private val ghRepository: GHRepository,
-) : ScreenModel {
+) : ViewModel() {
     private val mUiState = MutableStateFlow(HomePageUi())
     val uiState = mUiState.asStateFlow()
 
@@ -30,18 +28,17 @@ class HomePageViewModel(
     }
 
     private fun initGHRepository() {
-        screenModelScope.launch {
+        viewModelScope.launch {
             val result = getGHRepository()
 
             mUiState.update {
                 it.copy(
-                    repositoryList =
-                        if (result.isSuccess()) {
-                            NetworkResult.Success(result.get())
-                        } else {
-                            // TODO Manage error with a message
-                            NetworkResult.Error("s")
-                        },
+                    repositoryList = if (result.isSuccess()) {
+                        NetworkResult.Success(result.get())
+                    } else {
+                        // TODO Manage error with a message
+                        NetworkResult.Error("s")
+                    },
                 )
             }
         }
@@ -49,7 +46,7 @@ class HomePageViewModel(
 
     fun refresh() {
         getTags()
-        screenModelScope.launch {
+        viewModelScope.launch {
             mUiState.update {
                 it.copy(refreshing = true)
             }
@@ -113,7 +110,7 @@ class HomePageViewModel(
             }
 
     private fun getTags() {
-        screenModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             val tagsResult = ghRepository.getTags(1, 10)
 
             mUiState.update {

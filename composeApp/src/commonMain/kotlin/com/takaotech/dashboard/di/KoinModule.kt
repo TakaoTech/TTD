@@ -6,6 +6,15 @@ import com.takaotech.dashboard.AppBuildKonfig
 import com.takaotech.dashboard.repository.AuthApi
 import com.takaotech.dashboard.repository.api.AdminGHApi
 import com.takaotech.dashboard.repository.api.GHApi
+import com.takaotech.dashboard.ui.LoginViewModel
+import com.takaotech.dashboard.ui.admin.github.GHRepositoryListViewModel
+import com.takaotech.dashboard.ui.admin.tags.edit.TagEditViewModel
+import com.takaotech.dashboard.ui.admin.tags.list.TagListViewModel
+import com.takaotech.dashboard.ui.admin.tags.list.TagSelectionListViewModel
+import com.takaotech.dashboard.ui.github.HomePageViewModel
+import com.takaotech.dashboard.ui.github.detail.GHRepositoryDetailViewModel
+import com.takaotech.dashboard.ui.github.list.GHHomepageListPageViewModel
+import com.takaotech.dashboard.ui.github.list.GHHomepageTagsPageViewModel
 import com.takaotech.dashboard.ui.login.SessionManager
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.*
@@ -20,9 +29,22 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import org.koin.core.KoinApplication
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import co.touchlab.kermit.Logger as KermitLogger
+
+fun viewModelModule() = module {
+    viewModelOf(::GHRepositoryListViewModel)
+    viewModelOf(::LoginViewModel)
+    viewModelOf(::TagEditViewModel)
+    viewModelOf(::TagListViewModel)
+    viewModelOf(::TagSelectionListViewModel)
+    viewModelOf(::HomePageViewModel)
+    viewModelOf(::GHHomepageListPageViewModel)
+    viewModelOf(::GHHomepageTagsPageViewModel)
+    viewModelOf(::GHRepositoryDetailViewModel)
+}
 
 fun getApiModule(baseUrl: String) =
     module {
@@ -182,6 +204,6 @@ fun commonModule() =
         }
     }
 
-fun appModules() = arrayOf(getApiModule(AppBuildKonfig.baseUrl), commonModule())
+fun appModules() = arrayOf(getApiModule(AppBuildKonfig.baseUrl), commonModule(), viewModelModule())
 
 expect fun KoinApplication.platformModules()

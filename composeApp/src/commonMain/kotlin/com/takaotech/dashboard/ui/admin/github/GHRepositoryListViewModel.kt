@@ -1,7 +1,7 @@
 package com.takaotech.dashboard.ui.admin.github
 
-import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.kittinunf.result.isSuccess
 import com.github.kittinunf.result.onFailure
 import com.github.kittinunf.result.onSuccess
@@ -10,16 +10,23 @@ import com.takaotech.dashboard.model.github.MainCategory
 import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.repository.AdminGHRepository
 import com.takaotech.dashboard.ui.utils.tickerCounterFlow
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
-import org.koin.core.annotation.Factory
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
-@Factory
 class GHRepositoryListViewModel(
     private val adminGhRepository: AdminGHRepository,
-) : ScreenModel {
+) : ViewModel() {
     private val mUiState = MutableStateFlow(GHRepositoryListUiState())
     val uiState = mUiState.asStateFlow()
 
@@ -28,7 +35,7 @@ class GHRepositoryListViewModel(
     private val mSnackbarChannel = Channel<GHRepositoryListUiState.SnackbarType>()
     val snackbarChannel = mSnackbarChannel.receiveAsFlow()
 
-    private val tickerCoroutineScope = CoroutineScope(screenModelScope.coroutineContext)
+    private val tickerCoroutineScope = CoroutineScope(viewModelScope.coroutineContext)
     private val mCounterForRefresh = MutableStateFlow<Long?>(null)
     val counterForRefresh = mCounterForRefresh.asStateFlow()
 
@@ -40,7 +47,7 @@ class GHRepositoryListViewModel(
     }
 
     fun updateFilterMainCategory(mainCategory: MainCategory?) {
-        screenModelScope.launch {
+        viewModelScope.launch {
             mUiState.update {
                 it.copy(
                     mainCategoryUi =
@@ -60,7 +67,7 @@ class GHRepositoryListViewModel(
         id: Long,
         newCategory: MainCategory,
     ) {
-        screenModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             adminGhRepository.updateCategoryRepository(id, newCategory)
         }
     }
@@ -72,7 +79,7 @@ class GHRepositoryListViewModel(
             ?.tags ?: listOf()
 
     fun refreshGHRepository(repositoryId: Long) {
-        screenModelScope.launch {
+        viewModelScope.launch {
             adminGhRepository
                 .getRepositoryById(repositoryId)
                 .onSuccess { repositoryUpdated ->
@@ -102,7 +109,7 @@ class GHRepositoryListViewModel(
     }
 
     fun pullGHRepositories() {
-        screenModelScope.launch {
+        viewModelScope.launch {
             adminGhRepository
                 .refreshRepositories()
                 .onSuccess {
@@ -112,7 +119,7 @@ class GHRepositoryListViewModel(
     }
 
     private fun getRepositoryList() {
-        screenModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             mUiState.update {
                 it.copy(ghRepositoryListState = GHRepositoryListUiState.GhRepositoryListState.Loading)
             }
@@ -131,7 +138,7 @@ class GHRepositoryListViewModel(
     }
 
     private fun startCheckRepositoryRefresh() {
-        screenModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             val statusResult = adminGhRepository.getStatusOfRefreshRepositories()
             statusResult.onSuccess {
                 if (it != null && it) {
@@ -169,7 +176,7 @@ class GHRepositoryListViewModel(
         }
     }
 
-    override fun onDispose() {
+    override fun onCleared() {
         tickerCoroutineScope.cancel()
     }
 }

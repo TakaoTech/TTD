@@ -2,8 +2,9 @@ package com.takaotech.dashboard.ui.admin.tags.edit
 
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.kittinunf.result.isSuccess
 import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.model.github.TagNewDao
@@ -15,15 +16,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Factory
-import org.koin.core.annotation.InjectedParam
 
-@Factory
 class TagEditViewModel(
-    @InjectedParam private val tagId: Int?,
-    @InjectedParam private val editMode: Boolean,
+    private val savedStateHandle: SavedStateHandle,
     private val adminGhRepository: AdminGHRepository,
-) : ScreenModel {
+) : ViewModel() {
+    private val tagId: Int? = savedStateHandle.get<Int>("tagId")
+    private val editMode: Boolean = savedStateHandle.get<Boolean>("editMode") == true
+
     private val mExitChannel = Channel<Unit>()
     val exitChannel = mExitChannel.receiveAsFlow()
 
@@ -41,24 +41,21 @@ class TagEditViewModel(
     }
 
     private fun getTagForEdit(tagId: Int) {
-        screenModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             val tagResult = adminGhRepository.getTagById(tagId)
             if (tagResult.isSuccess()) {
                 mUiState.update {
                     val tag = tagResult.get()
                     it.copy(
-                        name =
-                            tag.name.run {
-                                TextFieldValue(text = this, selection = TextRange(length))
-                            },
-                        description =
-                            tag.description.orEmpty().run {
-                                TextFieldValue(text = this, selection = TextRange(length))
-                            },
-                        color =
-                            tag.color.orEmpty().run {
-                                TextFieldValue(text = this, selection = TextRange(length))
-                            },
+                        name = tag.name.run {
+                            TextFieldValue(text = this, selection = TextRange(length))
+                        },
+                        description = tag.description.orEmpty().run {
+                            TextFieldValue(text = this, selection = TextRange(length))
+                        },
+                        color = tag.color.orEmpty().run {
+                            TextFieldValue(text = this, selection = TextRange(length))
+                        },
                     )
                 }
             }
@@ -84,7 +81,7 @@ class TagEditViewModel(
     }
 
     fun saveTag() {
-        screenModelScope.launch {
+        viewModelScope.launch {
             val tagSaveResult =
                 if (editMode) {
                     adminGhRepository
@@ -94,10 +91,9 @@ class TagEditViewModel(
                                     id = tagId!!,
                                     name = name.text,
                                     description = description.text.ifBlank { null },
-                                    color =
-                                        color.text.ifBlank { null }?.let {
-                                            "#$it"
-                                        },
+                                    color = color.text.ifBlank { null }?.let {
+                                        "#$it"
+                                    },
                                 )
                             },
                         ).isSuccess()
@@ -108,10 +104,9 @@ class TagEditViewModel(
                                 TagNewDao(
                                     name = name.text,
                                     description = description.text.ifBlank { null },
-                                    color =
-                                        color.text.ifBlank { null }?.let {
-                                            "#$it"
-                                        },
+                                    color = color.text.ifBlank { null }?.let {
+                                        "#$it"
+                                    },
                                 )
                             },
                         ).isSuccess()

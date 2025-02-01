@@ -2,7 +2,13 @@ package com.takaotech.dashboard.ui.admin.tags.edit
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -15,11 +21,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.takaotech.dashboard.ui.utils.toColor
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
-import ttd.composeapp.generated.resources.*
+import ttd.composeapp.generated.resources.Res
+import ttd.composeapp.generated.resources.ghrepository_tag_edit_color_label
+import ttd.composeapp.generated.resources.ghrepository_tag_edit_description_label
+import ttd.composeapp.generated.resources.ghrepository_tag_edit_title_label
+import ttd.composeapp.generated.resources.save
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun TagEdit(
     titleTag: TextFieldValue,
@@ -28,15 +36,16 @@ fun TagEdit(
     onTitleTagChanged: (TextFieldValue) -> Unit,
     onDescriptionTagChanged: (TextFieldValue) -> Unit,
     onColorTagChanged: (TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier,
     onSaveClicked: () -> Unit,
 ) {
     Scaffold(
+        modifier = modifier,
         bottomBar = {
             Button(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 onClick = onSaveClicked,
             ) {
                 Text(stringResource(Res.string.save))
@@ -44,10 +53,9 @@ fun TagEdit(
         },
     ) {
         Column(
-            modifier =
-                Modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 8.dp),
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 8.dp),
         ) {
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
@@ -80,17 +88,16 @@ fun TagEdit(
                 },
                 leadingIcon = {
                     Box(
-                        modifier =
-                            Modifier
-                                .size(24.dp)
-                                .border(1.dp, Color.Black)
-                                .background(
-                                    try {
-                                        colorTag.text.toColor()
-                                    } catch (ex: Exception) {
-                                        Color.Transparent
-                                    },
-                                ),
+                        modifier = Modifier
+                            .size(24.dp)
+                            .border(1.dp, Color.Black)
+                            .background(
+                                try {
+                                    colorTag.text.toColor()
+                                } catch (ex: Exception) {
+                                    Color.Transparent
+                                },
+                            ),
                     )
                 },
                 value = colorTag,

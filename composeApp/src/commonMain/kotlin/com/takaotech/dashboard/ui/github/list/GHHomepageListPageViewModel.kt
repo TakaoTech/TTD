@@ -1,18 +1,17 @@
 package com.takaotech.dashboard.ui.github.list
 
-import cafe.adriel.voyager.core.model.ScreenModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import com.takaotech.dashboard.repository.usecase.GHRepositoryListUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
-import org.koin.core.annotation.Factory
 
-@Factory
 class GHHomepageListPageViewModel(
+    private val savedStateHandle: SavedStateHandle,
     ghRepositoryListUseCase: GHRepositoryListUseCase,
-    tagId: Int?,
-) : ScreenModel {
+) : ViewModel() {
     val repositoryList =
         ghRepositoryListUseCase
-            .getGhRepositoryList(tagId = tagId)
+            .getGhRepositoryList(tagId = savedStateHandle["tagId"])
             .flowOn(Dispatchers.IO)
 }

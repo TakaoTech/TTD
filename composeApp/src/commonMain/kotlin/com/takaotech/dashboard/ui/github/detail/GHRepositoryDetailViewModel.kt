@@ -1,7 +1,9 @@
 package com.takaotech.dashboard.ui.github.detail
 
-import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.github.kittinunf.result.isSuccess
 import com.takaotech.dashboard.model.github.GHRepositoryDao
 import com.takaotech.dashboard.repository.GHRepository
@@ -9,14 +11,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.Factory
-import org.koin.core.annotation.InjectedParam
 
-@Factory
 class GHRepositoryDetailViewModel(
-    @InjectedParam private val repositoryId: Long,
+    savedStateHandle: SavedStateHandle,
     private val ghRepository: GHRepository,
-) : ScreenModel {
+) : ViewModel() {
+    private val repositoryId: Long = savedStateHandle.toRoute<GHRepositoryDetail>().id
     private val mUiState = MutableStateFlow(GHRepositoryDetailUi())
     val uiState = mUiState.asStateFlow()
 
@@ -25,11 +25,15 @@ class GHRepositoryDetailViewModel(
     }
 
     private fun getRepository() {
-        screenModelScope.launch {
+        viewModelScope.launch {
             val repositoryResult = ghRepository.getRepository(repositoryId)
             mUiState.update {
                 if (repositoryResult.isSuccess()) {
-                    it.copy(repositoryUiState = GHRepositoryDetailUi.GHRepositoryDetailUiState.Success(repositoryResult.get()))
+                    it.copy(
+                        repositoryUiState = GHRepositoryDetailUi
+                            .GHRepositoryDetailUiState
+                            .Success(repositoryResult.get())
+                    )
                 } else {
                     it.copy(repositoryUiState = GHRepositoryDetailUi.GHRepositoryDetailUiState.Error)
                 }

@@ -97,7 +97,7 @@ kotlin {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.koin.android)
+//            implementation(libs.koin.android)
 
             implementation(libs.androidx.credentials)
             implementation(libs.androidx.credentials.googleid)
@@ -113,10 +113,16 @@ kotlin {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)
+                implementation(compose.material3AdaptiveNavigationSuite)
                 implementation(compose.ui)
+                implementation(libs.compose.ui.adaptive)
+                implementation(libs.compose.ui.adaptive.layout)
+                implementation(libs.compose.ui.adaptive.navigation)
+                implementation(libs.compose.ui.adaptive.windowSizeClass)
                 implementation(compose.components.uiToolingPreview)
                 implementation(compose.materialIconsExtended)
                 implementation(compose.components.resources)
+                implementation(libs.androidx.compose.navigation)
                 // https://github.com/DevSrSouza/compose-icons
                 implementation(projects.shared)
 
@@ -136,13 +142,9 @@ kotlin {
                 implementation(project.dependencies.platform(libs.koin.annotation.bom))
                 implementation(libs.koin.core)
                 implementation(libs.koin.annotation)
-
-                implementation(libs.voyager.navigator)
-                implementation(libs.voyager.screenmodel)
-                implementation(libs.voyager.navigator.bottomsheet)
-                implementation(libs.voyager.navigator.tab)
-                implementation(libs.voyager.transitions)
-                implementation(libs.voyager.koin)
+                implementation(libs.koin.compose)
+                implementation(libs.koin.compose.viewmodel)
+                implementation(libs.koin.compose.navigation)
 
                 implementation(libs.depscredit.core)
                 implementation(libs.depscredit.uim3)

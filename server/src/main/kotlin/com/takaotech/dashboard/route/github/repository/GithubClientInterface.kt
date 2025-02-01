@@ -13,22 +13,24 @@ import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import org.kohsuke.github.GitHub
+import org.koin.core.annotation.Factory
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 interface GithubClientInterface {
-    suspend fun getAllStarsRemote(): Flow<List<Result<GHRepositoryDao, GHExternalConversionException>>>
+    fun getAllStarsRemote(): Flow<List<Result<GHRepositoryDao, GHExternalConversionException>>>
 
     suspend fun getLanguagesByRepository(repositoryId: Long): Map<String, Long>
 }
 
+@Factory
 class GithubClientImpl(
     private val logger: Logger,
     private val githubClient: GitHub,
-) {
-    fun getAllStarsRemote(): Flow<List<Result<GHRepositoryDao, GHExternalConversionException>>> = flow {
+) : GithubClientInterface {
+    override fun getAllStarsRemote(): Flow<List<Result<GHRepositoryDao, GHExternalConversionException>>> = flow {
         val iterator = githubClient
             .myself
             .listStarredRepositories()
@@ -53,7 +55,7 @@ class GithubClientImpl(
             throw it
         }
 
-    suspend fun getLanguagesByRepository(repositoryId: Long): Map<String, Long> =
+    override suspend fun getLanguagesByRepository(repositoryId: Long): Map<String, Long> =
         suspendCoroutine {
             try {
                 val listLanguages =

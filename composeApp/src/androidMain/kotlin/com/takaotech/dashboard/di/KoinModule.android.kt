@@ -18,6 +18,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.ksp.generated.defaultModule
 
+@Suppress("SpreadOperator")
 actual fun KoinApplication.platformModules() {
     modules(
         defaultModule,

@@ -1,15 +1,13 @@
 package com.takaotech.dashboard.ui.github.list
 
-import cafe.adriel.voyager.core.model.ScreenModel
+import androidx.lifecycle.ViewModel
 import com.takaotech.dashboard.repository.usecase.GHTagsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
-import org.koin.core.annotation.Factory
 
-@Factory
 class GHHomepageTagsPageViewModel(
     ghTagsUseCase: GHTagsUseCase,
-) : ScreenModel {
+) : ViewModel() {
     val tagList =
         ghTagsUseCase
             .getGhTags()

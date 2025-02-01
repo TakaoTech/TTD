@@ -9,6 +9,7 @@ import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.isSuccess
 import com.github.kittinunf.result.map
 import com.takaotech.dashboard.model.jwt.TakaoSession
+import com.takaotech.dashboard.model.role.TakaoRole
 import com.takaotech.dashboard.model.session.RefreshTokenDao
 import com.takaotech.dashboard.model.session.TokenPairDao
 import com.takaotech.dashboard.repository.AuthApi
@@ -17,11 +18,15 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.minutes
 
@@ -193,5 +198,9 @@ abstract class SessionManager(
         } else {
             null
         }
+    }
+
+    fun isAdminFlow() = takaoSession.map { session ->
+        session != null && session.roles.contains(TakaoRole.ADMINISTRATOR)
     }
 }

@@ -1,10 +1,20 @@
 package com.takaotech.dashboard.repository.api
 
 import com.takaotech.dashboard.model.TakaoPaging
-import com.takaotech.dashboard.model.github.*
+import com.takaotech.dashboard.model.github.GHRefreshStatus
+import com.takaotech.dashboard.model.github.GHRepositoriesDao
+import com.takaotech.dashboard.model.github.GHRepositoryDao
+import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.model.github.TagNewDao
 import com.takaotech.dashboard.model.github.request.TagsUpdateRequest
 import com.takaotech.dashboard.repository.api.ApiConstant.ADMIN_URL_PREFIX
-import de.jensklingenberg.ktorfit.http.*
+import de.jensklingenberg.ktorfit.http.Body
+import de.jensklingenberg.ktorfit.http.GET
+import de.jensklingenberg.ktorfit.http.POST
+import de.jensklingenberg.ktorfit.http.PUT
+import de.jensklingenberg.ktorfit.http.Path
+import de.jensklingenberg.ktorfit.http.Query
 
 interface AdminGHApi {
     @GET("$ADMIN_URL_PREFIX/github/refresh")
