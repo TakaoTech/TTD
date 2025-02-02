@@ -63,7 +63,12 @@ fun Application.sessionRoute() {
         post<SessionRoute.Refresh> {
             val refreshToken = call.receive<RefreshTokenDao>().refreshToken
 
-            call.respond(sessionController.refreshToken(refreshToken))
+            val refreshResult = sessionController.refreshToken(refreshToken)
+            refreshResult.onSuccess {
+                call.respond(it)
+            }.onFailure {
+                call.respond(HttpStatusCode.Unauthorized)
+            }
         }
 
         route("/google") {

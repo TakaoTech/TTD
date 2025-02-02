@@ -142,6 +142,7 @@ faker-kotest-property = { module = "io.github.serpro69:kotlin-faker-kotest-prope
 faker-lorem = { module = "io.github.serpro69:kotlin-faker-lorem" }
 
 ktorfit-lib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
+ktorfit-converter = { module = "de.jensklingenberg.ktorfit:ktorfit-converters-call", version.ref = "ktorfit" }
 serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 ktor-client = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-test = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }

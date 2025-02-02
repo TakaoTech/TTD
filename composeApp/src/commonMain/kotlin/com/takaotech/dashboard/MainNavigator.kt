@@ -12,12 +12,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -45,7 +45,7 @@ fun HomePage(
     onCreditClicked: () -> Unit,
     onAdminClick: () -> Unit,
 ) {
-    val isAdmin by sessionManager.isAdminFlow().collectAsState(false)
+    val isAdmin by sessionManager.isAdminFlow().collectAsStateWithLifecycle(false)
 
     val topLevelRoute by remember(isAdmin) {
         derivedStateOf {

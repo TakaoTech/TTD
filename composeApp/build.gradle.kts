@@ -133,6 +133,7 @@ kotlin {
                 implementation(libs.kermit)
 
                 implementation(libs.ktorfit.lib)
+                implementation(libs.ktorfit.converter)
                 implementation(libs.ktor.client.contentnegotiation)
                 implementation(libs.ktor.client.serialization)
                 implementation(libs.ktor.client.logging)

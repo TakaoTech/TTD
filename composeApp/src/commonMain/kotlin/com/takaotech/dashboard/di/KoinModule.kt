@@ -4,8 +4,10 @@ import co.touchlab.kermit.loggerConfigInit
 import co.touchlab.kermit.platformLogWriter
 import com.takaotech.dashboard.AppBuildKonfig
 import com.takaotech.dashboard.repository.AuthApi
+import com.takaotech.dashboard.repository.AuthApi.Companion.SESSION_REFRESH_PATH
 import com.takaotech.dashboard.repository.api.AdminGHApi
 import com.takaotech.dashboard.repository.api.GHApi
+import com.takaotech.dashboard.repository.converter.UnsuccessResponseConverterFactory
 import com.takaotech.dashboard.ui.LoginViewModel
 import com.takaotech.dashboard.ui.admin.github.GHRepositoryListViewModel
 import com.takaotech.dashboard.ui.admin.tags.edit.TagEditViewModel
@@ -18,6 +20,7 @@ import com.takaotech.dashboard.ui.github.list.GHHomepageTagsPageViewModel
 import com.takaotech.dashboard.ui.login.SessionManager
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.engine.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
@@ -59,6 +62,7 @@ fun getApiModule(baseUrl: String) =
                 .Builder()
                 .baseUrl(baseUrl)
                 .httpClient(getBaseKtor(get<KermitLogger>()))
+                .converterFactories(UnsuccessResponseConverterFactory())
                 .build()
         }
 
@@ -87,6 +91,7 @@ fun getApiModule(baseUrl: String) =
                 .Builder()
                 .baseUrl(baseUrl)
                 .httpClient(get<HttpClient>())
+                .converterFactories(UnsuccessResponseConverterFactory())
                 .build()
         }
 
@@ -130,7 +135,13 @@ fun HttpClientConfig<out HttpClientEngineConfig>.configureCommonHttp(kermitLogge
 
     HttpResponseValidator {
         handleResponseExceptionWithRequest { exception, request ->
-            kermitLogger.e(exception) { "Http Client exception" }
+            if (request.url.encodedPath.endsWith(SESSION_REFRESH_PATH)) { // Controllo specifico sulla path
+                if (exception is NoTransformationFoundException) {
+//                throw SessionRefreshException("Session refresh failed: Invalid response format", exception)
+                }
+
+                kermitLogger.e(exception) { "Http Client exception" }
+            }
         }
     }
 }

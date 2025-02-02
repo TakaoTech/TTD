@@ -4,7 +4,9 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.Payload
+import com.github.kittinunf.result.Result
 import com.takaotech.dashboard.configuration.CredentialConfig
+import com.takaotech.dashboard.model.exception.SessionRefreshException
 import com.takaotech.dashboard.model.jwt.TAKAO_JWT_PERMISSION
 import com.takaotech.dashboard.model.jwt.TAKAO_JWT_USER
 import com.takaotech.dashboard.model.jwt.TAKAO_JWT_VERSION
@@ -91,18 +93,17 @@ class SessionController(
 
     fun checkJwtIsValid(tokenExpire: Instant): Boolean = tokenExpire > Clock.System.now()
 
-    suspend fun refreshToken(oldToken: String): TokenPairDao {
+    suspend fun refreshToken(oldToken: String): Result<TokenPairDao, SessionRefreshException> = Result.of {
         val isValid = sessionRepository.checkTokenIsValid(oldToken)
         if (isValid) {
             val user =
                 sessionRepository.getUserIdByToken(oldToken)?.let {
                     userController.getUserById(it)
-                } ?: throw Exception("User not found for refresh tokens")
+                } ?: throw SessionRefreshException("User not found for refresh tokens")
 
-            return generateTokenPairFromUser(user = user, oldToken = oldToken, update = true)
+            generateTokenPairFromUser(user = user, oldToken = oldToken, update = true)
         } else {
-            // TODO Token Not valid or exired
-            throw Exception()
+            throw SessionRefreshException("token expired")
         }
     }
 

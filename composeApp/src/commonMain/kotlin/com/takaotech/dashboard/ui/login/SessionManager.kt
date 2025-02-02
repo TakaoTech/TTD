@@ -13,16 +13,20 @@ import com.takaotech.dashboard.model.role.TakaoRole
 import com.takaotech.dashboard.model.session.RefreshTokenDao
 import com.takaotech.dashboard.model.session.TokenPairDao
 import com.takaotech.dashboard.repository.AuthApi
+import com.takaotech.dashboard.repository.converter.KtorfitHttpException
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -39,6 +43,8 @@ abstract class SessionManager(
     // https://github.com/android/kotlin-multiplatform-samples/tree/main/DiceRoller
 
     // https://github.com/philipplackner/AndroidCrypto
+    private val mSessionExpiredFlow = MutableSharedFlow<Unit>()
+    val sessionExpiredFlow = mSessionExpiredFlow.asSharedFlow()
     protected val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val SESSION_KEY = byteArrayPreferencesKey("SESSION_LOGIN")
     private lateinit var sessionDatastore: DataStore<Preferences>
@@ -59,6 +65,7 @@ abstract class SessionManager(
                             decryptTokens(sessionEncrypted)
                         } catch (ex: Exception) {
                             logger.e(ex) { "Error while decrypt session, logout executed" }
+                            logoutInternal()
                             null
                         }
                     } else {
@@ -74,7 +81,7 @@ abstract class SessionManager(
                             TakaoSession(json, it.accessToken)
                         } catch (ex: Exception) {
                             logger.e(ex) { "Error while loading session, logout executed" }
-                            logout()
+                            logoutInternal()
                             null
                         }
                     } else {
@@ -143,12 +150,26 @@ abstract class SessionManager(
         }
     }
 
+    private fun logoutWithEject() {
+        coroutineScope.launch {
+            mSessionExpiredFlow.emit(Unit)
+            logoutInternal()
+        }
+    }
+
+    /**
+     * Logout with explicit user action
+     */
     fun logout() {
         coroutineScope.launch {
-            uninstallBearer()
-            sessionDatastore.edit {
-                it.remove(SESSION_KEY)
-            }
+            logoutInternal()
+        }
+    }
+
+    private suspend fun logoutInternal() {
+        uninstallBearer()
+        sessionDatastore.edit {
+            it.remove(SESSION_KEY)
         }
     }
 
@@ -162,16 +183,8 @@ abstract class SessionManager(
 
     suspend fun getRefreshToken(oldTokens: BearerTokens?): BearerTokens? {
         val mOldToken = oldTokens ?: return null
-        // TODO Manage Error 500, execute logout
-        // Error getRepositories
-        // io.ktor.client.call.NoTransformationFoundException: Expected response body of the type 'class com.takaotech.dashboard.model.session.TokenPairDao (Kotlin reflection is not available)' but was 'class
-        // io.ktor.utils.io.ByteBufferChannel (Kotlin reflection is not available)'
-        // In response from `http://<IP>/session/refresh`
-        // Response status `500 `
-        // Response header `ContentType: null`
-        // Request header `Accept: application/json`
         return try {
-            withContext(coroutineScope.coroutineContext) {
+            withContext(coroutineScope.coroutineContext + SupervisorJob()) {
                 authApi
                     .refresh(
                         RefreshTokenDao(mOldToken.refreshToken!!),
@@ -185,8 +198,12 @@ abstract class SessionManager(
                         BearerTokens(it.accessToken, it.refreshToken)
                     }
             }
-        } catch (ex: Exception) {
-            logout()
+        } catch (ex: KtorfitHttpException) {
+            if (ex.response.status == HttpStatusCode.Unauthorized) {
+                logoutWithEject()
+            } else {
+                logger.e(ex) { "Error while refresh token, unmanaged error" }
+            }
             null
         }
     }
