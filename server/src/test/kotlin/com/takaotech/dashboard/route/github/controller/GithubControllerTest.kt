@@ -8,7 +8,11 @@ import com.takaotech.dashboard.route.github.repository.GithubRepository
 import com.takaotech.dashboard.route.github.repository.TagsRepository
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
-import io.mockk.*
+import io.mockk.Runs
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.just
+import io.mockk.mockk
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -97,13 +101,16 @@ class GithubControllerTest :
 
                 coEvery {
                     depository.saveRepositoriesToDB(any(), any())
-                } just Runs
+                } coAnswers {
+                    delay(5)
+                    Runs
+                }
 
                 val starAndStoreJob = launch {
                     controller.getStarsAndStore()
                 }
 
-                delay(1) // Simula un'esecuzione parziale
+                delay(1)
                 starAndStoreJob.cancelAndJoin()
 
                 starAndStoreJob.isCancelled shouldBe true
