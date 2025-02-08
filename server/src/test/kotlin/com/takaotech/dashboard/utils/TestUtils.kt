@@ -17,6 +17,7 @@ import org.testcontainers.Testcontainers
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.startupcheck.IsRunningStartupCheckStrategy
 import org.testcontainers.containers.wait.strategy.HostPortWaitStrategy
+import org.testcontainers.utility.DockerImageName
 
 const val GITHUB_TEST_RESOURCE_PATH = "/src/test/resources/github"
 const val POSTGRESQL_DRIVER = "org.postgresql.Driver"
@@ -25,7 +26,15 @@ val LOGGER = KtorSimpleLogger("TestLogger")
 
 fun Spec.installRedis() = install(
     ContainerExtension(
-        container = RedisContainer(RedisContainer.DEFAULT_IMAGE_NAME.withTag(RedisContainer.DEFAULT_TAG)),
+        container = RedisContainer(
+            DockerImageName.parse("redis/redis-stack").withTag(RedisContainer.DEFAULT_TAG)
+        ).apply {
+            withStartupCheckStrategy(
+                IsRunningStartupCheckStrategy()
+            )
+            setWaitStrategy(HostPortWaitStrategy())
+            withStartupAttempts(5)
+        },
         mode = ContainerLifecycleMode.Spec,
     ),
 ) {
