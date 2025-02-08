@@ -182,15 +182,19 @@ fun generateLanguages(
     }
 }
 
-fun getGHLanguagesColor(language: String): String {
+fun getGithubColorsFile(): String {
     return (Paths.get("").toAbsolutePath().toString() + GITHUB_TEST_RESOURCE_PATH).let {
-        Json.parseToJsonElement(File(it, "githubColors.json").readText()).let {
-            it.jsonObject[language]
-                ?.jsonObject
-                ?.get("color")
-                ?.jsonPrimitive
-                ?.contentOrNull ?: GithubColorControllerImpl.FALLBACK_COLOR
-        }
+        File(it, "githubColors.json").readText()
+    }
+}
+
+fun getGHLanguagesColor(language: String): String {
+    return getGithubColorsFile().let {
+        Json.parseToJsonElement(it).jsonObject[language]
+            ?.jsonObject
+            ?.get("color")
+            ?.jsonPrimitive
+            ?.contentOrNull ?: GithubColorControllerImpl.FALLBACK_COLOR
     }
 }
 

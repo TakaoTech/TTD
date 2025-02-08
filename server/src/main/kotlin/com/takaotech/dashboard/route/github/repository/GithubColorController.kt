@@ -1,66 +1,57 @@
 package com.takaotech.dashboard.route.github.repository
 
+import com.takaotech.dashboard.utils.RedisDatabase
+import eu.vendeli.rethis.commands.del
+import eu.vendeli.rethis.commands.exists
+import eu.vendeli.rethis.commands.get
+import eu.vendeli.rethis.commands.jsonGet
+import eu.vendeli.rethis.commands.jsonSet
+import eu.vendeli.rethis.commands.set
 import io.ktor.client.*
+import io.ktor.client.engine.java.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlinx.serialization.json.*
-import org.koin.core.annotation.Single
-import java.io.File
-import java.io.FileReader
-import java.io.FileWriter
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import kotlin.time.Duration.Companion.days
 
 interface GithubColorController {
-    suspend fun getColorLanguagesMapping(): JsonObject
 
     suspend fun getColorLanguageByName(language: String): String
 }
 
-@Single
 class GithubColorControllerImpl(
-    private var ghLanguagesColor: JsonObject? = null,
+    private val redisDatabase: RedisDatabase,
+    private val client: HttpClient = HttpClient(Java),
 ) : GithubColorController {
     private var mutex = Mutex()
+    lateinit var colorMapping: JsonObject
 
-    override suspend fun getColorLanguagesMapping(): JsonObject {
+    override suspend fun getColorLanguageByName(language: String): String {
         mutex.withLock {
-            val mGhLanguagesColor = ghLanguagesColor
-            if (mGhLanguagesColor == null) {
-                var localColor = getLocalColors()
-                if (localColor != null) {
-                    if (checkNeedUpdateColors(Instant.parse(localColor[LAST_UPDATE_FIELD]!!.jsonPrimitive.content))) {
-                        localColor = getColorLanguagesMappingRemote()
-                        saveColorsLocal(localColor)
+            if (!::colorMapping.isInitialized) {
+                colorMapping = if (checkNeedUpdate()) {
+                    getColorLanguagesMappingRemote().also {
+                        setColorLanguagesMappingLocal(it)
                     }
-                    ghLanguagesColor = localColor
-                    return localColor
                 } else {
-                    localColor = getColorLanguagesMappingRemote()
-                    saveColorsLocal(localColor)
-                    ghLanguagesColor = localColor
-                    // Mapping isn't null
-                    return localColor
+                    getColorLanguagesMappingLocal()
                 }
             } else {
-                if (checkNeedUpdateColors(Instant.parse(mGhLanguagesColor[LAST_UPDATE_FIELD]!!.jsonPrimitive.content))) {
-                    val newColorMapping = getColorLanguagesMappingRemote()
-                    saveColorsLocal(newColorMapping)
-                    ghLanguagesColor = newColorMapping
-                    // Mapping isn't null
-                    return newColorMapping
-                } else {
-                    return mGhLanguagesColor
+                if (checkNeedUpdate()) {
+                    colorMapping = getColorLanguagesMappingRemote().also {
+                        setColorLanguagesMappingLocal(it)
+                    }
                 }
             }
         }
-    }
-
-    override suspend fun getColorLanguageByName(language: String): String {
-        val colorMapping = getColorLanguagesMapping()
 
         return colorMapping[language]
             ?.jsonObject
@@ -70,55 +61,61 @@ class GithubColorControllerImpl(
     }
 
     private suspend fun getColorLanguagesMappingRemote(): JsonObject =
-        HttpClient()
-            .get("https://raw.githubusercontent.com/ozh/github-colors/master/colors.json")
+        client.get(COLOR_MAP_ENDPOINT)
             .bodyAsText()
-            .run<String, JsonObject> {
+            .run {
                 Json.decodeFromString(this)
-            }.toMutableMap()
-            .apply {
-                put(LAST_UPDATE_FIELD, JsonPrimitive(Clock.System.now().toString()))
-            }.run {
-                JsonObject(this)
             }
 
-    private fun checkNeedCreateFolder() {
-        // TODO Move to configuration
-        File("./ghAsset").let {
-            if (!it.exists()) {
-                it.mkdir()
+    private suspend fun checkNeedUpdate(): Boolean {
+        return if (existColorLanguagesMappingLocal()) {
+            val lastUpdate = getLastUpdateMapping()
+
+            if (lastUpdate != null) {
+                lastUpdate.plus(LAST_UPDATE_DELAY) < Clock.System.now()
+            } else {
+                true
             }
+        } else {
+            true
         }
     }
 
-    private fun getLocalColors(): JsonObject? {
-        checkNeedCreateFolder()
-        // TODO Move to configuration
-        val colorFile = File("./ghAsset/colors.json")
-        if (colorFile.exists()) {
-            return FileReader(colorFile)
-                .use {
-                    it.readText()
-                }.run {
-                    Json.decodeFromString(this)
-                }
-        }
-
-        return null
-    }
-
-    private fun saveColorsLocal(colorsObject: JsonObject) {
-        checkNeedCreateFolder()
-        // TODO Move to configuration
-        FileWriter(File("./ghAsset/colors.json")).use {
-            it.write(colorsObject.toString())
+    private suspend fun getLastUpdateMapping(): Instant? {
+        return redisDatabase.client.get(LAST_UPDATE_GH_COLOR_MAPPING)?.let {
+            Instant.parse(it)
         }
     }
 
-    private fun checkNeedUpdateColors(lastUpdate: Instant): Boolean = lastUpdate.plus(30.days) < Clock.System.now()
+    private suspend fun setLastUpdateMapping(lastUpdate: Instant?) {
+        if (lastUpdate != null) {
+            redisDatabase.client.set(LAST_UPDATE_GH_COLOR_MAPPING, lastUpdate.toString())
+        } else {
+            redisDatabase.client.del(LAST_UPDATE_GH_COLOR_MAPPING)
+        }
+    }
+
+    private suspend fun existColorLanguagesMappingLocal(): Boolean {
+        return redisDatabase.client.exists(LAST_UPDATE_GH_COLOR_MAPPING, GH_COLOR_MAPPING).toInt() == 2
+    }
+
+    private suspend fun getColorLanguagesMappingLocal(): JsonObject {
+        return redisDatabase.client.jsonGet<JsonObject>(GH_COLOR_MAPPING)!!
+    }
+
+    private suspend fun setColorLanguagesMappingLocal(colorMapping: JsonObject) {
+        redisDatabase.client.jsonSet(GH_COLOR_MAPPING, ".", colorMapping)
+        setLastUpdateMapping(Clock.System.now())
+    }
+
 
     companion object {
-        private const val LAST_UPDATE_FIELD = "lastUpdate"
+        private const val COLOR_MAP_ENDPOINT = "https://raw.githubusercontent.com/ozh/github-colors/master/colors.json"
+
+        private const val LAST_UPDATE_GH_COLOR_MAPPING = "LAST_UPDATE_GH_COLOR_MAPPING"
+        private val LAST_UPDATE_DELAY = 30.days
+        private const val GH_COLOR_MAPPING = "GH_COLOR_MAPPING"
+
         const val FALLBACK_COLOR = "#ededed"
     }
 }

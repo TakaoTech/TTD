@@ -100,7 +100,6 @@ dependencies {
     implementation(libs.ktor.client)
     implementation(libs.ktor.client.java)
     implementation(libs.ktor.client.contentnegotiation)
-    testImplementation(libs.ktor.client.test)
 
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
@@ -135,6 +134,8 @@ dependencies {
     testImplementation(libs.turbine)
     testImplementation(platform(libs.faker.bom))
     testImplementation(libs.bundles.faker)
+    testImplementation(libs.ktor.client.mock)
+    testImplementation(libs.kotlin.coroutines.test)
 
     detektPlugins(libs.detekt.formatting)
 
