@@ -20,6 +20,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import org.koin.core.annotation.Single
 import kotlin.time.Duration.Companion.days
 
 interface GithubColorController {
@@ -27,6 +28,7 @@ interface GithubColorController {
     suspend fun getColorLanguageByName(language: String): String
 }
 
+@Single(binds = [GithubColorController::class])
 class GithubColorControllerImpl(
     private val redisDatabase: RedisDatabase,
     private val client: HttpClient = HttpClient(Java),
