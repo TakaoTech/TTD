@@ -43,6 +43,8 @@ tasks.named<JavaExec>("run") {
             }.toMap(),
     )
 
+    args!!.add("-config=server/src/main/resources/application.conf")
+
 // 	doFirst {
 // 		println("Environment Variables:")
 // 		environment.forEach { (key, value) ->
@@ -64,6 +66,8 @@ tasks.withType<Test>().configureEach {
     environment(*propertiesMap)
 }
 
+
+
 kotlin {
     compilerOptions {
         println("Development mode : ${getEnvProperty("development", rootProject).toBoolean()}")
@@ -72,6 +76,30 @@ kotlin {
         }
     }
 }
+
+sourceSets {
+    create("integrationTest") {
+        kotlin.srcDir("src/integrationTest/kotlin")
+        resources.srcDir("src/integrationTest/resources")
+
+        compileClasspath += sourceSets["main"].output + configurations["integrationTestImplementation"]
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+
+configurations {
+    named("integrationTestImplementation") {
+        extendsFrom(configurations["testImplementation"]) // Estende testImplementation
+        isCanBeResolved = true // Ora possiamo risolvere questa configurazione
+    }
+    named("integrationTestRuntimeOnly") {
+        extendsFrom(configurations["testRuntimeOnly"]) // Estende testRuntimeOnly
+        isCanBeResolved = true
+    }
+}
+
+
 
 dependencies {
     implementation(projects.shared)
@@ -139,6 +167,8 @@ dependencies {
 
     detektPlugins(libs.detekt.formatting)
 
+    testImplementation("org.wiremock:wiremock:3.12.0")
+
 }
 
 ktor {
@@ -164,6 +194,16 @@ tasks.withType<Detekt>().configureEach {
         html.required.set(true)
         html.outputLocation.set(file("build/reports/detekt.html"))
     }
+}
+
+tasks.register<Test>("integrationTest") {
+    description = "Esegue i test di integrazione con Kotest"
+    group = "verification"
+
+    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+    classpath = sourceSets["integrationTest"].runtimeClasspath
+
+    useJUnitPlatform() // Kotest usa JUnit Platform
 }
 
 kover {

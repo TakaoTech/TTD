@@ -10,12 +10,24 @@ data class GoogleOauth2Config(
     val redirectEndpoint: String,
     val clientId: String,
     val clientSecret: String,
-)
+) {
+    object Keys {
+        const val REDIRECT = "authentication.google.oauth2.redirect"
+        const val CLIENT_ID = "authentication.google.oauth2.clientId"
+        const val CLIENT_SECRET = "authentication.google.oauth2.clientSecret"
+    }
+}
 
 data class GoogleJwtConfig(
     val issuer: String,
     val audience: Array<String>,
 ) {
+
+    object Keys {
+        const val ISSUER = "authentication.google.jwt.issuer"
+        const val AUDIENCE = "authentication.google.jwt.audience"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -43,4 +55,14 @@ data class TakaoJwtConfig(
     val realm: String,
     val accessLifetime: String,
     val refreshLifetime: String,
-)
+) {
+    object Keys {
+        const val VERSION = "authentication.ttd.tjwt.version"
+        const val SECRET = "authentication.ttd.tjwt.secret"
+        const val ISSUER = "authentication.ttd.tjwt.issuer"
+        const val AUDIENCE = "authentication.ttd.tjwt.audience"
+        const val REALM = "authentication.ttd.tjwt.realm"
+        const val ACCESS_LIFETIME = "authentication.ttd.tjwt.accessLifetime"
+        const val REFRESH_LIFETIME = "authentication.ttd.tjwt.refreshLifetime"
+    }
+}
