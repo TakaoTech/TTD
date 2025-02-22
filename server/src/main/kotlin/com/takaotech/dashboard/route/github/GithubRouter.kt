@@ -14,7 +14,12 @@ fun Route.githubRouter() {
         if (it.tagId != null) {
             call.respond(controller.getRepositoryByTag(it.page ?: 1, it.size ?: 1, it.tagId))
         } else {
-            call.respond(controller.getRepositoryMini(it.page!!, it.size!!))
+            call.respond(
+                controller.getRepositoryMini(
+                    it.page!!,
+                    it.size!!
+                )
+            )
         }
     }
 
