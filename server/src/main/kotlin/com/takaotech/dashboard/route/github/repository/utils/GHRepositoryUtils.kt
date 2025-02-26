@@ -1,7 +1,13 @@
 @file:JvmName("GHRepositoryUtilsKt")
+
 package com.takaotech.dashboard.route.github.repository.utils
 
-import com.takaotech.dashboard.model.github.*
+import com.takaotech.dashboard.model.github.GHLanguageDao
+import com.takaotech.dashboard.model.github.GHRepositoryDao
+import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
+import com.takaotech.dashboard.model.github.GHUser
+import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.model.github.exception.GHExternalConversionException
 import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.route.github.data.GithubDepositoryMiniEntity
@@ -25,29 +31,26 @@ internal suspend fun GithubDepositoryEntity.convertToGHRepository(
         url = url,
         license = license,
         licenseUrl = licenseUrl,
-        user =
-            database.dbExec {
-                with(user) {
-                    GHUser(
-                        id = id.value,
-                        name = name,
-                        url = url,
-                        avatarUrl = user.avatarUrl,
-                    )
-                }
-            },
-        languages =
-            languages.map {
-                it.copy(
-                    colorCode = colorController.getColorLanguageByName(it.name),
+        user = database.dbExec {
+            with(user) {
+                GHUser(
+                    id = id.value,
+                    name = name,
+                    url = url,
+                    avatarUrl = user.avatarUrl,
                 )
-            },
-        tags =
-            database.dbExec {
-                tags.map { entity ->
-                    entity.convertToTagDao()
-                }
-            },
+            }
+        },
+        languages = languages.map {
+            it.copy(
+                colorCode = colorController.getColorLanguageByName(it.name),
+            )
+        },
+        tags = database.dbExec {
+            tags.map { entity ->
+                entity.convertToTagDao()
+            }
+        },
         mainCategory = category,
         updatedAt = updatedAt,
     )
@@ -69,26 +72,24 @@ internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(
 // 				)
 // 			}
 // 		},
-        languages =
-            languages
-                .map {
-                    it.copy(
-                        colorCode = colorController.getColorLanguageByName(it.name),
-                    )
-                }.sortedByDescending {
-                    // Kotlin First
-                    if (it.name == "Kotlin") {
-                        Float.MAX_VALUE
-                    } else {
-                        it.weight
-                    }
-                },
-        tags =
-            database.dbExec {
-                tags.map { entity ->
-                    entity.convertToTagDao()
+        languages = languages
+            .map {
+                it.copy(
+                    colorCode = colorController.getColorLanguageByName(it.name),
+                )
+            }.sortedByDescending {
+                // Kotlin First
+                if (it.name == "Kotlin") {
+                    Float.MAX_VALUE
+                } else {
+                    it.weight
                 }
             },
+        tags = database.dbExec {
+            tags.map { entity ->
+                entity.convertToTagDao()
+            }
+        },
         updatedAt = updatedAt,
     )
 
