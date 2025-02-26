@@ -78,17 +78,35 @@ kotlin {
 }
 
 sourceSets {
+    create("testShared") {
+        kotlin.srcDir("src/testShared/kotlin")
+
+        compileClasspath += sourceSets["main"].output
+    }
+
     create("integrationTest") {
         kotlin.srcDir("src/integrationTest/kotlin")
         resources.srcDir("src/integrationTest/resources")
 
-        compileClasspath += sourceSets["main"].output + configurations["integrationTestImplementation"]
+        compileClasspath += sourceSets["main"].output +
+                sourceSets["testShared"].output +
+                configurations["integrationTestImplementation"]
         runtimeClasspath += output + compileClasspath
+    }
+
+    test {
+        compileClasspath += sourceSets["testShared"].output
+        runtimeClasspath += sourceSets["testShared"].output
     }
 }
 
 
 configurations {
+    named("testSharedImplementation") {
+        extendsFrom(configurations["testImplementation"]) // Estende testImplementation
+        isCanBeResolved = true // Ora possiamo risolvere questa configurazione
+    }
+
     named("integrationTestImplementation") {
         extendsFrom(configurations["testImplementation"]) // Estende testImplementation
         isCanBeResolved = true // Ora possiamo risolvere questa configurazione
