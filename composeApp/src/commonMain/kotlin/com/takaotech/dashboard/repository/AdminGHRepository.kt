@@ -3,10 +3,10 @@ package com.takaotech.dashboard.repository
 import co.touchlab.kermit.Logger
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.onFailure
-import com.takaotech.dashboard.model.github.GHRepositoryDao
-import com.takaotech.dashboard.model.github.MainCategory
-import com.takaotech.dashboard.model.github.TagDao
-import com.takaotech.dashboard.model.github.TagNewDao
+import com.takaotech.dashboard.model.github.GHRepositoryDto
+import com.takaotech.dashboard.model.github.MainCategoryDto
+import com.takaotech.dashboard.model.github.TagDto
+import com.takaotech.dashboard.model.github.TagNewDto
 import com.takaotech.dashboard.model.github.request.TagsUpdateRequest
 import com.takaotech.dashboard.repository.api.AdminGHApi
 import org.koin.core.annotation.Single
@@ -32,9 +32,9 @@ class AdminGHRepository(
                 logger.e(it) { "Error getStatusOfRefreshRepositories" }
             }
 
-    suspend fun getRepositories(mainCategory: MainCategory? = null): Result<List<GHRepositoryDao>, Throwable> =
+    suspend fun getRepositories(mainCategory: MainCategoryDto? = null): Result<List<GHRepositoryDto>, Throwable> =
         Result
-            .of<List<GHRepositoryDao>, Throwable> {
+            .of<List<GHRepositoryDto>, Throwable> {
                 githubApi
                     .getRepositories(
                         category = mainCategory,
@@ -43,9 +43,9 @@ class AdminGHRepository(
                 logger.e(it) { "Error getRepositories" }
             }
 
-    suspend fun getRepositoryById(repositoryId: Long): Result<GHRepositoryDao, Throwable> =
+    suspend fun getRepositoryById(repositoryId: Long): Result<GHRepositoryDto, Throwable> =
         Result
-            .of<GHRepositoryDao, Throwable> {
+            .of<GHRepositoryDto, Throwable> {
                 githubApi.getRepository(repositoryId)
             }.onFailure {
                 logger.e(it) { "Error getRepositoryById" }
@@ -53,7 +53,7 @@ class AdminGHRepository(
 
     suspend fun updateCategoryRepository(
         id: Long,
-        newCategory: MainCategory,
+        newCategory: MainCategoryDto,
     ) {
         githubApi.updateRepositoryCategory(
             id,
@@ -61,17 +61,17 @@ class AdminGHRepository(
         )
     }
 
-    suspend fun getTags(): Result<List<TagDao>, Throwable> =
-        Result.of<List<TagDao>, Throwable> {
+    suspend fun getTags(): Result<List<TagDto>, Throwable> =
+        Result.of<List<TagDto>, Throwable> {
             githubApi.getTags().data
         }
 
-    suspend fun getTagById(tagId: Int): Result<TagDao, Throwable> =
-        Result.of<TagDao, Throwable> {
+    suspend fun getTagById(tagId: Int): Result<TagDto, Throwable> =
+        Result.of<TagDto, Throwable> {
             githubApi.getTagById(tagId)
         }
 
-    suspend fun addTag(tag: TagNewDao): Result<Unit, Throwable> =
+    suspend fun addTag(tag: TagNewDto): Result<Unit, Throwable> =
         Result
             .of<Unit, Throwable> {
                 githubApi.addTag(tag)
@@ -79,7 +79,7 @@ class AdminGHRepository(
                 logger.e(it) { "Error Save Tag" }
             }
 
-    suspend fun updateTag(tag: TagDao): Result<Unit, Throwable> =
+    suspend fun updateTag(tag: TagDto): Result<Unit, Throwable> =
         Result
             .of<Unit, Throwable> {
                 githubApi.updateTag(tag)

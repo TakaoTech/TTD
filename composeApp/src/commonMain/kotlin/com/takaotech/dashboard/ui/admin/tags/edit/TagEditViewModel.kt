@@ -6,8 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.kittinunf.result.isSuccess
-import com.takaotech.dashboard.model.github.TagDao
-import com.takaotech.dashboard.model.github.TagNewDao
+import com.takaotech.dashboard.model.github.TagDto
+import com.takaotech.dashboard.model.github.TagNewDto
 import com.takaotech.dashboard.repository.AdminGHRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -87,7 +87,7 @@ class TagEditViewModel(
                     adminGhRepository
                         .updateTag(
                             with(uiState.value) {
-                                TagDao(
+                                TagDto(
                                     id = tagId!!,
                                     name = name.text,
                                     description = description.text.ifBlank { null },
@@ -101,7 +101,7 @@ class TagEditViewModel(
                     adminGhRepository
                         .addTag(
                             with(uiState.value) {
-                                TagNewDao(
+                                TagNewDto(
                                     name = name.text,
                                     description = description.text.ifBlank { null },
                                     color = color.text.ifBlank { null }?.let {

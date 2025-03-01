@@ -3,7 +3,7 @@ package com.takaotech.dashboard.ui.admin.tags.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.kittinunf.result.isSuccess
-import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.model.github.TagDto
 import com.takaotech.dashboard.repository.AdminGHRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +41,7 @@ data class TagListUiState(
 ) {
     sealed interface TagListUi {
         data class Success(
-            val tagList: List<TagDao> = listOf(),
+            val tagList: List<TagDto> = listOf(),
         ) : TagListUi
 
         data object Error : TagListUi

@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.isSuccess
 import com.github.kittinunf.result.map
-import com.takaotech.dashboard.model.github.GHLanguageDao
-import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
-import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.model.github.GHLanguageDto
+import com.takaotech.dashboard.model.github.GHRepositoryMiniDto
+import com.takaotech.dashboard.model.github.TagDto
 import com.takaotech.dashboard.repository.GHRepository
 import com.takaotech.dashboard.ui.utils.NetworkResult
 import kotlinx.coroutines.Dispatchers
@@ -66,13 +66,13 @@ class HomePageViewModel(
         }
     }
 
-    private suspend fun getGHRepository(): Result<List<GHRepositoryMiniDao>, Throwable> =
+    private suspend fun getGHRepository(): Result<List<GHRepositoryMiniDto>, Throwable> =
         ghRepository
             .getRepositories(1, 10)
             .map {
                 it.data.map {
-                    val languagesGrouped = mutableListOf<GHLanguageDao>()
-                    var languageGrouped = GHLanguageDao("Other", 0)
+                    val languagesGrouped = mutableListOf<GHLanguageDto>()
+                    var languageGrouped = GHLanguageDto("Other", 0)
 
                     it.languages.forEach {
                         if (it.weight > 1) {
@@ -125,7 +125,7 @@ class HomePageViewModel(
 }
 
 data class HomePageUi(
-    val tags: List<TagDao> = listOf(),
-    val repositoryList: NetworkResult<List<GHRepositoryMiniDao>> = NetworkResult.Loading(),
+    val tags: List<TagDto> = listOf(),
+    val repositoryList: NetworkResult<List<GHRepositoryMiniDto>> = NetworkResult.Loading(),
     val refreshing: Boolean = false,
 )

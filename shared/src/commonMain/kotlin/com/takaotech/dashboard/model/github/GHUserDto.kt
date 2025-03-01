@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GHUser(
+data class GHUserDto(
     @SerialName("id")
     val id: Long,
     @SerialName("name")

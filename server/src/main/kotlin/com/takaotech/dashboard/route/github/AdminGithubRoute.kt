@@ -1,11 +1,11 @@
 package com.takaotech.dashboard.route.github
 
-import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.model.github.MainCategoryDto
 import io.ktor.resources.*
 
 @Resource("/github")
 class AdminGithubRoute(
-    val category: MainCategory? = null,
+    val category: MainCategoryDto? = null,
 ) {
     @Resource("{id}")
     class Id(
@@ -16,7 +16,7 @@ class AdminGithubRoute(
         @Resource("updateCategory")
         class UpdateCategory(
             val parent: Id = Id(),
-            val newCategory: MainCategory,
+            val newCategory: MainCategoryDto,
         )
 
         // TODO newCategory as query param?

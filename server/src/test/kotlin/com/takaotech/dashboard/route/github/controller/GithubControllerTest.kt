@@ -1,8 +1,8 @@
 package com.takaotech.dashboard.route.github.controller
 
 import com.github.kittinunf.result.Result
-import com.takaotech.dashboard.model.github.GHRepositoryDao
 import com.takaotech.dashboard.model.github.exception.GHExternalConversionException
+import com.takaotech.dashboard.models.GHRepositoryDao
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
 import com.takaotech.dashboard.route.github.repository.TagsRepository

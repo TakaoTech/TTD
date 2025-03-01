@@ -2,8 +2,8 @@ package com.takaotech.dashboard.route.github.repository
 
 import app.cash.turbine.test
 import com.github.kittinunf.result.Result
-import com.takaotech.dashboard.model.github.GHRepositoryDao
 import com.takaotech.dashboard.model.github.exception.GHExternalConversionException
+import com.takaotech.dashboard.models.GHRepositoryDao
 import io.kotest.core.spec.style.FunSpec
 import io.mockk.coEvery
 import io.mockk.coVerify

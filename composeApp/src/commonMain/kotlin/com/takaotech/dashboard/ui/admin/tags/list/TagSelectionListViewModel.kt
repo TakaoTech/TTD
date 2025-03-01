@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.kittinunf.result.isSuccess
 import com.github.kittinunf.result.onFailure
 import com.github.kittinunf.result.onSuccess
-import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.model.github.TagDto
 import com.takaotech.dashboard.repository.AdminGHRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -22,7 +22,7 @@ class TagSelectionListViewModel(
 
     val refreshRepositoryChannel = Channel<Unit?>()
 
-    fun init(tagListSelected: List<TagDao>) {
+    fun init(tagListSelected: List<TagDto>) {
         viewModelScope.launch(Dispatchers.IO) {
             // TODO Loading init
             adminGhRepository

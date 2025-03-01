@@ -1,10 +1,10 @@
 package com.takaotech.dashboard.route.github.repository
 
 import com.takaotech.dashboard.model.TakaoPaging
-import com.takaotech.dashboard.model.github.TagDao
-import com.takaotech.dashboard.model.github.TagNewDao
+import com.takaotech.dashboard.models.TagDao
+import com.takaotech.dashboard.models.TagNewDao
 import com.takaotech.dashboard.route.github.data.TagsEntity
-import com.takaotech.dashboard.route.github.repository.utils.convertToTagDao
+import com.takaotech.dashboard.route.github.repository.utils.convertToTagServerDao
 import com.takaotech.dashboard.utils.HikariDatabase
 import org.koin.core.annotation.Singleton
 
@@ -60,7 +60,7 @@ class TagsRepository(
                     }
                 }.run {
                     TakaoPaging(
-                        data = second.map { it.convertToTagDao() },
+                        data = second.map { it.convertToTagServerDao() },
                         page = page ?: 1,
                         totalPage = first,
                     )
@@ -75,7 +75,7 @@ class TagsRepository(
 
     suspend fun getTagById(id: Int): TagDao? =
         database.dbExec {
-            TagsEntity.findById(id)?.convertToTagDao()
+            TagsEntity.findById(id)?.convertToTagServerDao()
         }
 
     internal suspend fun getTagByIdInternal(id: Int): TagsEntity? =

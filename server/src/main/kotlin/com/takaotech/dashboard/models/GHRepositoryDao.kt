@@ -1,4 +1,4 @@
-package com.takaotech.dashboard.model.github
+package com.takaotech.dashboard.models
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
@@ -26,9 +26,8 @@ data class GHRepositoryDao(
     override val license: String?,
     @SerialName("licenseUrl")
     val licenseUrl: String?,
-    // TODO In teoria è obbligatorio,
     @SerialName("user")
-    val user: GHUser,
+    val user: GHUserDao,
     @SerialName("languages")
     override val languages: List<GHLanguageDao>,
     @SerialName("updatedAt")

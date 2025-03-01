@@ -1,7 +1,17 @@
 package com.takaotech.dashboard.ui.github
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,8 +27,8 @@ import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
-import com.takaotech.dashboard.model.github.GHLanguageDao
-import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.model.github.GHLanguageDto
+import com.takaotech.dashboard.model.github.TagDto
 import com.takaotech.dashboard.ui.utils.toColor
 import net.sergeych.sprintf.sprintf
 
@@ -26,8 +36,8 @@ import net.sergeych.sprintf.sprintf
 @Composable
 internal fun GHRepositoryCard(
     fullName: String,
-    tags: List<TagDao>,
-    languages: List<GHLanguageDao>,
+    tags: List<TagDto>,
+    languages: List<GHLanguageDto>,
     modifier: Modifier = Modifier,
     onTagClicked: (tagId: Int) -> Unit,
     onCardClicked: () -> Unit,
@@ -84,9 +94,9 @@ internal fun GHRepositoryCard(
                     var start = 0f
                     // https://github.com/ozh/github-colors/blob/master/colors.json
 
-                    languages.forEachIndexed { index, ghLanguageDao ->
-                        val k = start + (((maxWidth.toPx()) * (ghLanguageDao.weight)) / 100)
-                        val color = ghLanguageDao.colorCode?.replace("#", "")?.toColor() ?: Color.Gray
+                    languages.forEachIndexed { index, ghLanguageDto ->
+                        val k = start + (((maxWidth.toPx()) * (ghLanguageDto.weight)) / 100)
+                        val color = ghLanguageDto.colorCode?.replace("#", "")?.toColor() ?: Color.Gray
 
                         when {
                             index == 0 -> {

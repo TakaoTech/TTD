@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TagDao(
+data class TagDto(
     @SerialName("id")
     val id: Int,
     @SerialName("name")
@@ -16,7 +16,7 @@ data class TagDao(
 )
 
 @Serializable
-data class TagNewDao(
+data class TagNewDto(
     @SerialName("name")
     val name: String,
     @SerialName("description")

@@ -2,8 +2,9 @@ package com.takaotech.dashboard.route.github
 
 import com.github.kittinunf.result.onFailure
 import com.github.kittinunf.result.onSuccess
-import com.takaotech.dashboard.model.github.GHRefreshStatus
+import com.takaotech.dashboard.model.github.GHRefreshStatusDto
 import com.takaotech.dashboard.model.github.request.TagsUpdateRequest
+import com.takaotech.dashboard.models.toMainCategory
 import com.takaotech.dashboard.route.github.controller.GithubController
 import io.ktor.http.*
 import io.ktor.server.request.*
@@ -32,7 +33,7 @@ fun Route.adminGithubRouter(coroutineScope: CoroutineScope) {
 
     get<AdminGithubRoute> {
         try {
-            call.respond(controller.getRepository(it.category))
+            call.respond(controller.getRepository(it.category?.toMainCategory()))
         } catch (ex: Exception) {
             call.respond(HttpStatusCode.BadRequest)
         }
@@ -90,9 +91,9 @@ fun Route.adminGithubRouter(coroutineScope: CoroutineScope) {
         jobGithubRefreshMutex.withLock {
             val mJobGithubRefresh = jobGithubRefresh
             if (mJobGithubRefresh != null) {
-                call.respond(GHRefreshStatus(mJobGithubRefresh.isActive))
+                call.respond(GHRefreshStatusDto(mJobGithubRefresh.isActive))
             } else {
-                call.respond(GHRefreshStatus(null))
+                call.respond(GHRefreshStatusDto(null))
             }
         }
     }
@@ -122,7 +123,7 @@ fun Route.adminGithubRouter(coroutineScope: CoroutineScope) {
         if (id == null) {
             call.respond(HttpStatusCode.BadRequest)
         } else {
-            controller.updateMainCategoryAtRepository(it.parent.id, it.newCategory)
+            controller.updateMainCategoryAtRepository(it.parent.id, it.newCategory.toMainCategory())
             call.respond(HttpStatusCode.OK)
         }
     }

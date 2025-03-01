@@ -3,13 +3,13 @@ package com.takaotech.dashboard.route.github.repository
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.onFailure
 import com.takaotech.dashboard.model.TakaoPaging
-import com.takaotech.dashboard.model.github.GHRepositoryDao
-import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
-import com.takaotech.dashboard.model.github.GHUser
-import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.models.GHRepositoryDao
+import com.takaotech.dashboard.models.GHRepositoryMiniDao
+import com.takaotech.dashboard.models.GHUserDao
+import com.takaotech.dashboard.models.MainCategory
 import com.takaotech.dashboard.route.github.data.*
-import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepository
-import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryMini
+import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryMiniServerDao
+import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryServerDao
 import com.takaotech.dashboard.utils.HikariDatabase
 import com.takaotech.dashboard.utils.RedisDatabase
 import eu.vendeli.rethis.commands.get
@@ -64,7 +64,7 @@ class DepositoryRepository(
         }
     }
 
-    internal suspend fun updateOrCreateGHUser(user: GHUser): GithubUserEntity {
+    internal suspend fun updateOrCreateGHUser(user: GHUserDao): GithubUserEntity {
         return database.dbExec {
             val updateLambda: GithubUserEntity.() -> Unit = {
                 name = user.name
@@ -164,14 +164,14 @@ class DepositoryRepository(
                         }
                     }.toList()
             }.map {
-                it.convertToGHRepository(database, colorController)
+                it.convertToGHRepositoryServerDao(database, colorController)
             }
 
     suspend fun getGHRepositoryById(id: Long): GHRepositoryDao? =
         database.dbExec {
             GithubDepositoryEntity
                 .findById(id)
-                ?.convertToGHRepository(database, colorController)
+                ?.convertToGHRepositoryServerDao(database, colorController)
         }
 
     /**
@@ -210,7 +210,7 @@ class DepositoryRepository(
                     totalPages to limit(offset = skip.toLong(), n = limit)
                 }.run {
                     TakaoPaging(
-                        data = second.map { it.convertToGHRepositoryMini(database, colorController) },
+                        data = second.map { it.convertToGHRepositoryMiniServerDao(database, colorController) },
                         page = page,
                         totalPage = first,
                     )
@@ -239,7 +239,7 @@ class DepositoryRepository(
                     totalPages to limit(offset = skip.toLong(), n = limit)
                 }.run {
                     TakaoPaging(
-                        data = second.map { it.convertToGHRepositoryMini(database, colorController) },
+                        data = second.map { it.convertToGHRepositoryMiniServerDao(database, colorController) },
                         page = page,
                         totalPage = first,
                     )

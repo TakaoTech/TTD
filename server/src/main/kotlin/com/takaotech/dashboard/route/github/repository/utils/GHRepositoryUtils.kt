@@ -2,13 +2,13 @@
 
 package com.takaotech.dashboard.route.github.repository.utils
 
-import com.takaotech.dashboard.model.github.GHLanguageDao
-import com.takaotech.dashboard.model.github.GHRepositoryDao
-import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
-import com.takaotech.dashboard.model.github.GHUser
-import com.takaotech.dashboard.model.github.MainCategory
-import com.takaotech.dashboard.model.github.TagDao
 import com.takaotech.dashboard.model.github.exception.GHExternalConversionException
+import com.takaotech.dashboard.models.GHLanguageDao
+import com.takaotech.dashboard.models.GHRepositoryDao
+import com.takaotech.dashboard.models.GHRepositoryMiniDao
+import com.takaotech.dashboard.models.GHUserDao
+import com.takaotech.dashboard.models.MainCategory
+import com.takaotech.dashboard.models.TagDao
 import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.route.github.data.GithubDepositoryMiniEntity
 import com.takaotech.dashboard.route.github.data.TagsEntity
@@ -19,7 +19,8 @@ import okio.IOException
 import org.kohsuke.github.GHRepository as GHRepositoryExternal
 import org.kohsuke.github.GHUser as GHUserExternal
 
-internal suspend fun GithubDepositoryEntity.convertToGHRepository(
+//TODO Change to server model
+internal suspend fun GithubDepositoryEntity.convertToGHRepositoryServerDao(
     database: HikariDatabase,
     colorController: GithubColorController,
 ): GHRepositoryDao =
@@ -33,7 +34,7 @@ internal suspend fun GithubDepositoryEntity.convertToGHRepository(
         licenseUrl = licenseUrl,
         user = database.dbExec {
             with(user) {
-                GHUser(
+                GHUserDao(
                     id = id.value,
                     name = name,
                     url = url,
@@ -42,20 +43,24 @@ internal suspend fun GithubDepositoryEntity.convertToGHRepository(
             }
         },
         languages = languages.map {
-            it.copy(
-                colorCode = colorController.getColorLanguageByName(it.name),
+            GHLanguageDao(
+                name = it.name,
+                lines = it.lines,
+                weight = it.weight,
+                colorCode = colorController.getColorLanguageByName(it.name)
             )
         },
         tags = database.dbExec {
             tags.map { entity ->
-                entity.convertToTagDao()
+                entity.convertToTagServerDao()
             }
         },
         mainCategory = category,
         updatedAt = updatedAt,
     )
 
-internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(
+//TODO Change to server model
+internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMiniServerDao(
     database: HikariDatabase,
     colorController: GithubColorController,
 ): GHRepositoryMiniDao =
@@ -74,8 +79,11 @@ internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(
 // 		},
         languages = languages
             .map {
-                it.copy(
-                    colorCode = colorController.getColorLanguageByName(it.name),
+                GHLanguageDao(
+                    name = it.name,
+                    lines = it.lines,
+                    weight = it.weight,
+                    colorCode = colorController.getColorLanguageByName(it.name)
                 )
             }.sortedByDescending {
                 // Kotlin First
@@ -87,7 +95,7 @@ internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(
             },
         tags = database.dbExec {
             tags.map { entity ->
-                entity.convertToTagDao()
+                entity.convertToTagServerDao()
             }
         },
         updatedAt = updatedAt,
@@ -95,7 +103,7 @@ internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMini(
 
 internal fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): GHRepositoryDao {
     val repoOwner = try {
-        owner.convertToGHUser()
+        owner.convertToGHUserServerDao()
     } catch (ex: Exception) {
         when (ex) {
             is NullPointerException, is IOException -> {
@@ -144,7 +152,7 @@ internal fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): GHReposit
         licenseUrl = mLicenseUrl,
         user = repoOwner,
         languages = try {
-            listLanguages().mapToLanguageDao()
+            listLanguages().mapToLanguageServerDao()
         } catch (ex: Exception) {
             when (ex) {
                 is NullPointerException, is IOException -> {
@@ -168,15 +176,16 @@ internal fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): GHReposit
     )
 }
 
-private fun GHUserExternal.convertToGHUser() =
-    GHUser(
+//TODO Change to server model
+private fun GHUserExternal.convertToGHUserServerDao() =
+    GHUserDao(
         id = id,
         name = login,
         url = url.toString(),
         avatarUrl = avatarUrl,
     )
 
-internal fun Map<String, Long>.mapToLanguageDao(): List<GHLanguageDao> {
+internal fun Map<String, Long>.mapToLanguageServerDao(): List<GHLanguageDao> {
     val totalLines = values.sumOf { it }.toFloat()
 
     return map {
@@ -185,7 +194,8 @@ internal fun Map<String, Long>.mapToLanguageDao(): List<GHLanguageDao> {
     }.sortedByDescending { it.weight }
 }
 
-internal fun TagsEntity.convertToTagDao(): TagDao =
+//TODO Change to server model
+internal fun TagsEntity.convertToTagServerDao(): TagDao =
     TagDao(
         id = id.value,
         name = name,

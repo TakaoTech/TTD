@@ -1,11 +1,11 @@
 package com.takaotech.dashboard.utils
 
-import com.takaotech.dashboard.model.github.GHLanguageDao
-import com.takaotech.dashboard.model.github.GHRepositoryDao
-import com.takaotech.dashboard.model.github.GHUser
-import com.takaotech.dashboard.model.github.MainCategory
-import com.takaotech.dashboard.model.github.TagDao
-import com.takaotech.dashboard.model.github.TagNewDao
+import com.takaotech.dashboard.models.GHLanguageDao
+import com.takaotech.dashboard.models.GHRepositoryDao
+import com.takaotech.dashboard.models.GHUserDao
+import com.takaotech.dashboard.models.MainCategory
+import com.takaotech.dashboard.models.TagDao
+import com.takaotech.dashboard.models.TagNewDao
 import com.takaotech.dashboard.route.github.repository.GithubColorControllerImpl
 import io.github.serpro69.kfaker.Faker
 import io.github.serpro69.kfaker.lorem.LoremFaker
@@ -34,7 +34,7 @@ import kotlin.math.abs
 import org.kohsuke.github.GHUser as GHUserExternal
 
 fun getGHRepositoryGenerator(
-    ghUsers: List<GHUser>,
+    ghUserDaos: List<GHUserDao>,
     languages: List<GHLanguageDao>,
     updatedAt: Instant,
     tags: List<TagDao>,
@@ -51,7 +51,7 @@ fun getGHRepositoryGenerator(
             url = "https://${faker.internet.domain()}",
             license = faker.name.nameWithMiddle(),
             licenseUrl = "https://${faker.internet.domain()}",
-            user = ghUsers.random(),
+            user = ghUserDaos.random(),
             languages = languages,
             updatedAt = updatedAt,
             tags = tags,
@@ -222,10 +222,10 @@ fun getGHLanguagesGenerator(
     }
 }
 
-fun getGHUserGenerator(): Arb<GHUser> {
+fun getGHUserGenerator(): Arb<GHUserDao> {
     val faker = Faker()
     return arbitrary { rs ->
-        GHUser(
+        GHUserDao(
             id = abs(faker.random.nextLong()),
             name = faker.name.nameWithMiddle(),
             url = "https://${faker.internet.domain()}",

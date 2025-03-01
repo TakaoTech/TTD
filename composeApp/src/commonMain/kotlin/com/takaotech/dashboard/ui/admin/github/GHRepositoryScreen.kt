@@ -32,7 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.model.github.MainCategoryDto
 import com.takaotech.dashboard.ui.platform.LocalTTDUriHandler
 import kotlinx.coroutines.launch
 
@@ -174,7 +174,7 @@ internal fun GHRepositoryScreen(
             modifier = Modifier.fillMaxWidth(),
             ghRepositoryState = uiState.ghRepositoryListState,
             onCardClicked = onCardClicked,
-            onCategoryChangeClicked = { id: Long, newCategory: MainCategory ->
+            onCategoryChangeClicked = { id: Long, newCategory: MainCategoryDto ->
                 viewModel.updateGHRepositoryCategory(id, newCategory)
             },
             onTagEditClicked = onTagEditClicked,

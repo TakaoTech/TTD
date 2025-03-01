@@ -38,8 +38,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.takaotech.dashboard.model.github.GHRepositoryMiniDao
-import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.model.github.GHRepositoryMiniDto
+import com.takaotech.dashboard.model.github.TagDto
 import com.takaotech.dashboard.ui.platform.components.TagChip
 import com.takaotech.dashboard.ui.utils.NetworkResult
 import org.jetbrains.compose.resources.stringResource
@@ -51,8 +51,8 @@ import ttd.composeapp.generated.resources.homepage_title_label
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePageScreen(
-    tags: List<TagDao>,
-    repositories: NetworkResult<List<GHRepositoryMiniDao>>,
+    tags: List<TagDto>,
+    repositories: NetworkResult<List<GHRepositoryMiniDto>>,
     isRefreshing: Boolean,
     onTagClicked: (tagId: Int) -> Unit,
     onMoreTagClicked: () -> Unit,

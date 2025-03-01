@@ -34,10 +34,10 @@ import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.takaotech.dashboard.model.github.GHRepositoryDao
-import com.takaotech.dashboard.model.github.GHUser
-import com.takaotech.dashboard.model.github.MainCategory
-import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.model.github.GHRepositoryDto
+import com.takaotech.dashboard.model.github.GHUserDto
+import com.takaotech.dashboard.model.github.MainCategoryDto
+import com.takaotech.dashboard.model.github.TagDto
 import com.takaotech.dashboard.ui.utils.assistChipColors
 import com.takaotech.dashboard.ui.utils.toColor
 import kotlinx.datetime.Clock
@@ -54,7 +54,7 @@ fun AdminGHRepositoryList(
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     onCardClicked: (url: String) -> Unit,
     onTagEditClicked: (repoId: Long) -> Unit,
-    onCategoryChangeClicked: (repoId: Long, newCategory: MainCategory) -> Unit,
+    onCategoryChangeClicked: (repoId: Long, newCategory: MainCategoryDto) -> Unit,
 ) {
     when (ghRepositoryState) {
         GHRepositoryListUiState.GhRepositoryListState.Error -> {
@@ -102,7 +102,7 @@ fun AdminGHRepositoryList(
 
                     if (openBottomSheet) {
                         MainCategoryBottomSheet(
-                            categoryList = MainCategory.entries,
+                            categoryList = MainCategoryDto.entries,
                             onDismissRequest = {
                                 openBottomSheet = false
                             },
@@ -137,8 +137,8 @@ fun AdminGHRepositoryList(
 @Composable
 internal fun AdminGHRepositoryCard(
     fullName: String,
-    mainCategory: MainCategory,
-    tags: List<TagDao>,
+    mainCategory: MainCategoryDto,
+    tags: List<TagDto>,
     onMainCategoryClicked: () -> Unit,
     onTagEditClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -206,7 +206,7 @@ internal fun AdminGHRepositoryCard(
 private fun AdminGHRepositoryListPreview() {
     val state = GHRepositoryListUiState.GhRepositoryListState.Success(
         List(15) {
-            GHRepositoryDao(
+            GHRepositoryDto(
                 id = Random.nextLong(),
                 name = LoremIpsum().values.first(),
                 fullName = LoremIpsum().values.first().substring(0..25),
@@ -214,7 +214,7 @@ private fun AdminGHRepositoryListPreview() {
                 url = LoremIpsum().values.first(),
                 license = LoremIpsum().values.first(),
                 licenseUrl = LoremIpsum().values.first(),
-                user = GHUser(
+                user = GHUserDto(
                     id = Random.nextLong(),
                     name = LoremIpsum().values.first(),
                     url = LoremIpsum().values.first(),
@@ -223,7 +223,7 @@ private fun AdminGHRepositoryListPreview() {
                 languages = listOf(),
                 updatedAt = Clock.System.now(),
                 tags = listOf(),
-                mainCategory = MainCategory.NONE
+                mainCategory = MainCategoryDto.NONE
             )
         }
     )

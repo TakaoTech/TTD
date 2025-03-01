@@ -3,7 +3,12 @@ package com.takaotech.dashboard.route.github.controller
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.getOrNull
 import com.takaotech.dashboard.model.TakaoPaging
-import com.takaotech.dashboard.model.github.*
+import com.takaotech.dashboard.models.GHRepositoriesDao
+import com.takaotech.dashboard.models.GHRepositoryDao
+import com.takaotech.dashboard.models.GHRepositoryMiniDao
+import com.takaotech.dashboard.models.MainCategory
+import com.takaotech.dashboard.models.TagDao
+import com.takaotech.dashboard.models.TagNewDao
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
 import com.takaotech.dashboard.route.github.repository.TagsRepository

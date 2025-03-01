@@ -11,14 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.model.github.MainCategoryDto
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainCategoryBottomSheet(
-    categoryList: List<MainCategory?>,
+    categoryList: List<MainCategoryDto?>,
     onDismissRequest: () -> Unit,
-    onCategoryClicked: (MainCategory?) -> Unit,
+    onCategoryClicked: (MainCategoryDto?) -> Unit,
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,

@@ -1,9 +1,9 @@
 package com.takaotech.dashboard.route.github.repository
 
 import com.takaotech.dashboard.configuration.DbConfiguration
-import com.takaotech.dashboard.model.github.GHLanguageDao
-import com.takaotech.dashboard.model.github.GHRepositoryDao
-import com.takaotech.dashboard.model.github.MainCategory
+import com.takaotech.dashboard.models.GHLanguageDao
+import com.takaotech.dashboard.models.GHRepositoryDao
+import com.takaotech.dashboard.models.MainCategory
 import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.utils.GHLanguageLinesModifier
 import com.takaotech.dashboard.utils.GHLanguageNameModifier
@@ -132,7 +132,7 @@ class DepositoryRepositoryTest : FunSpec() {
                 ghUserGenerator.next()
             }.toMutableList()
             val ghRepositoryGenerator: Arb<GHRepositoryDao> = getGHRepositoryGenerator(
-                ghUsers = users,
+                ghUserDaos = users,
                 languages = languages,
                 updatedAt = timestamp,
                 tags = listOf(),
@@ -314,7 +314,7 @@ class DepositoryRepositoryTest : FunSpec() {
         context("Categories") {
             val ghUser = ghUserGenerator.next()
             var ghRepository = getGHRepositoryGenerator(
-                ghUsers = listOf(ghUser),
+                ghUserDaos = listOf(ghUser),
                 languages = listOf(),
                 updatedAt = timestamp,
                 tags = listOf(),
@@ -344,7 +344,7 @@ class DepositoryRepositoryTest : FunSpec() {
         context("Tags") {
             val ghUser = ghUserGenerator.next()
             val ghRepository = getGHRepositoryGenerator(
-                ghUsers = listOf(ghUser),
+                ghUserDaos = listOf(ghUser),
                 languages = listOf(),
                 updatedAt = timestamp,
                 tags = listOf(),

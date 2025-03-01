@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.github.kittinunf.result.isSuccess
 import com.github.kittinunf.result.onFailure
 import com.github.kittinunf.result.onSuccess
-import com.takaotech.dashboard.model.github.GHRepositoryDao
-import com.takaotech.dashboard.model.github.MainCategory
-import com.takaotech.dashboard.model.github.TagDao
+import com.takaotech.dashboard.model.github.GHRepositoryDto
+import com.takaotech.dashboard.model.github.MainCategoryDto
+import com.takaotech.dashboard.model.github.TagDto
 import com.takaotech.dashboard.repository.AdminGHRepository
 import com.takaotech.dashboard.ui.utils.tickerCounterFlow
 import kotlinx.coroutines.CancellationException
@@ -46,7 +46,7 @@ class GHRepositoryListViewModel(
         startCheckRepositoryRefresh()
     }
 
-    fun updateFilterMainCategory(mainCategory: MainCategory?) {
+    fun updateFilterMainCategory(mainCategory: MainCategoryDto?) {
         viewModelScope.launch {
             mUiState.update {
                 it.copy(
@@ -65,14 +65,14 @@ class GHRepositoryListViewModel(
 
     fun updateGHRepositoryCategory(
         id: Long,
-        newCategory: MainCategory,
+        newCategory: MainCategoryDto,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             adminGhRepository.updateCategoryRepository(id, newCategory)
         }
     }
 
-    fun getAssignedTags(repositoryId: Long): List<TagDao> =
+    fun getAssignedTags(repositoryId: Long): List<TagDto> =
         (uiState.value.ghRepositoryListState as GHRepositoryListUiState.GhRepositoryListState.Success)
             .ghRepositoryData
             .find { it.id == repositoryId }
@@ -184,28 +184,28 @@ class GHRepositoryListViewModel(
 data class GHRepositoryListUiState(
     val mainCategoryUi: MainCategoryUi = MainCategoryUi(),
     val ghRepositoryListState: GhRepositoryListState = GhRepositoryListState.Loading,
-    val mainCategorySelected: MainCategory? = null,
+    val mainCategorySelected: MainCategoryDto? = null,
 ) {
     enum class SnackbarType {
         TAG_UPDATE,
     }
 
     data class MainCategoryUi(
-        val categoryList: List<MainCategory?> =
-            MainCategory.entries
+        val categoryList: List<MainCategoryDto?> =
+            MainCategoryDto.entries
                 .toMutableList()
                 .let {
-                    it as MutableList<MainCategory?>
+                    it as MutableList<MainCategoryDto?>
                 }.let {
                     it.add(0, null)
                     it
                 },
-        val selectedCategory: MainCategory? = null,
+        val selectedCategory: MainCategoryDto? = null,
     )
 
     sealed interface GhRepositoryListState {
         data class Success(
-            val ghRepositoryData: List<GHRepositoryDao> = listOf(),
+            val ghRepositoryData: List<GHRepositoryDto> = listOf(),
         ) : GhRepositoryListState
 
         data object Error : GhRepositoryListState

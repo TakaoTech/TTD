@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GHLanguageDao(
+data class GHLanguageDto(
     @SerialName("name")
     val name: String,
     @SerialName("lines")

@@ -2,8 +2,8 @@ package com.takaotech.dashboard.route.github.repository
 
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.onFailure
-import com.takaotech.dashboard.model.github.GHRepositoryDao
 import com.takaotech.dashboard.model.github.exception.GHExternalConversionException
+import com.takaotech.dashboard.models.GHRepositoryDao
 import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryWithDefaults
 import io.ktor.util.logging.*
 import kotlinx.coroutines.currentCoroutineContext

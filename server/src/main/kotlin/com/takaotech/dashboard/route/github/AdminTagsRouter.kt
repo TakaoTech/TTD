@@ -1,7 +1,9 @@
 package com.takaotech.dashboard.route.github
 
-import com.takaotech.dashboard.model.github.TagDao
-import com.takaotech.dashboard.model.github.TagNewDao
+import com.takaotech.dashboard.model.github.TagDto
+import com.takaotech.dashboard.model.github.TagNewDto
+import com.takaotech.dashboard.models.TagDao
+import com.takaotech.dashboard.models.TagNewDao
 import com.takaotech.dashboard.route.github.controller.GithubController
 import io.ktor.http.*
 import io.ktor.server.request.*
@@ -28,10 +30,10 @@ fun Route.adminTagsRoute() {
     }
 
     put<AdminGithubRoute.Tags> {
-        val newTag = call.receive<TagNewDao>()
+        val newTag = call.receive<TagNewDto>()
 
         try {
-            controller.addTag(newTag)
+            controller.addTag(TagNewDao.fromTagDto(newTag))
             call.respond(HttpStatusCode.Created)
         } catch (ex: Exception) {
             call.respond(HttpStatusCode.InternalServerError)
@@ -39,10 +41,10 @@ fun Route.adminTagsRoute() {
     }
 
     post<AdminGithubRoute.Tags> {
-        val tag = call.receive<TagDao>()
+        val tag = call.receive<TagDto>()
 
         try {
-            controller.updateTag(tag)
+            controller.updateTag(TagDao.fromTagDto(tag))
             call.respond(HttpStatusCode.OK)
         } catch (ex: Exception) {
             call.respond(HttpStatusCode.InternalServerError)
