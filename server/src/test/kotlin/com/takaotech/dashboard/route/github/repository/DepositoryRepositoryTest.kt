@@ -4,6 +4,7 @@ import com.takaotech.dashboard.configuration.DbConfiguration
 import com.takaotech.dashboard.models.GHLanguageDao
 import com.takaotech.dashboard.models.GHRepositoryDao
 import com.takaotech.dashboard.models.MainCategory
+import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
 import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.utils.GHLanguageLinesModifier
 import com.takaotech.dashboard.utils.GHLanguageNameModifier
@@ -43,6 +44,7 @@ import io.mockk.unmockkObject
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import kotlin.math.abs
@@ -399,6 +401,167 @@ class DepositoryRepositoryTest : FunSpec() {
 
             test("Get") {
                 depositoryRepository.getUpdateTimestamp() shouldBe timestamp
+            }
+        }
+
+        context("getGHRepositoryByTag") {
+            beforeTest {
+                database.dbExec {
+                    addLogger(StdOutSqlLogger)
+                    SchemaUtils.drop(*dbTables)
+                    SchemaUtils.create(*dbTables)
+                    commit()
+                }
+            }
+
+            test("should return empty list when tag does not exist") {
+                val result = depositoryRepository.getGHRepositoryByTag(
+                    tagId = -1,
+                    page = 1,
+                    size = 10
+                )
+
+                result.data.shouldBe(emptyList())
+                result.page.shouldBe(1)
+                result.totalPage.shouldBe(0)
+            }
+
+            test("should return empty list when tag exists but has no repositories") {
+                val tag = getTagsEntityGenerator().next()
+                database.dbExec {
+                    TagsEntity.new {
+                        name = tag.name
+                        description = tag.description
+                    }
+                }
+
+                val result = depositoryRepository.getGHRepositoryByTag(
+                    tagId = 1,
+                    page = 1,
+                    size = 10
+                )
+
+                result.data.shouldBe(emptyList())
+                result.page.shouldBe(1)
+                result.totalPage.shouldBe(0)
+            }
+
+            test("should handle empty repository list") {
+                val tag = getTagsEntityGenerator().next()
+                val tagId = database.dbExec {
+                    val createdTag = TagsEntity.new {
+                        name = tag.name
+                        description = tag.description
+                    }
+                    createdTag.id.value
+                }
+
+                val result = depositoryRepository.getGHRepositoryByTag(
+                    tagId = tagId,
+                    page = 1,
+                    size = 10
+                )
+
+                result.data.shouldBe(emptyList())
+                result.page.shouldBe(1)
+                result.totalPage.shouldBe(0)
+            }
+
+            test("should handle invalid page number") {
+                val users = MutableList(3) { ghUserGenerator.next() }
+                val ghRepositoryGenerator = getGHRepositoryGenerator(
+                    ghUserDaos = users,
+                    languages = emptyList(),
+                    updatedAt = timestamp,
+                    tags = listOf(),
+                    mainCategory = MainCategory.KOTLIN
+                ).distinct()
+
+                val repositories = MutableList(5) { ghRepositoryGenerator.next() }
+                val tag = getTagsEntityGenerator().next()
+
+                // Save repositories to DB
+                depositoryRepository.saveRepositoriesToDB(timestamp, repositories)
+
+                // Create and associate tag
+                val tagId = database.dbExec {
+                    val createdTag = TagsEntity.new {
+                        name = tag.name
+                        description = tag.description
+                    }
+
+                    GithubDepositoryEntity.all().forEach { repo ->
+                        repo.tags = SizedCollection(listOf(createdTag))
+                    }
+
+                    createdTag.id.value
+                }
+
+                val result = depositoryRepository.getGHRepositoryByTag(
+                    tagId = tagId,
+                    page = 999,
+                    size = 10
+                )
+
+                result.data.shouldBe(emptyList())
+                result.page.shouldBe(999)
+                // Total page calculation is 0
+                result.totalPage.shouldBe(1)
+            }
+
+            test("should return repositories associated with tag") {
+                val users = MutableList(3) { ghUserGenerator.next() }
+                val ghRepositoryGenerator = getGHRepositoryGenerator(
+                    ghUserDaos = users,
+                    languages = emptyList(),
+                    updatedAt = timestamp,
+                    tags = listOf(),
+                    mainCategory = MainCategory.KOTLIN
+                ).distinct()
+
+                val repositories = MutableList(5) { ghRepositoryGenerator.next() }
+                val tag = getTagsEntityGenerator().next()
+
+                // Save repositories to DB
+                depositoryRepository.saveRepositoriesToDB(timestamp, repositories)
+
+                // Create tag and associate repositories
+                val tagId = database.dbExec {
+                    // Create tag
+                    val createdTag = TagsEntity.new {
+                        name = tag.name
+                        description = tag.description
+                    }
+
+                    // Associate repositories with tag through the join table
+                    GithubDepositoryEntity.all().forEach { repo ->
+                        repo.tags = SizedCollection(listOf(createdTag))
+                    }
+
+                    createdTag.id.value
+                }
+
+                // Test first page
+                val result = depositoryRepository.getGHRepositoryByTag(
+                    tagId = tagId,
+                    page = 1,
+                    size = 3
+                )
+
+                result.data.size.shouldBe(3)
+                result.page.shouldBe(1)
+                result.totalPage.shouldBe(2)
+
+                // Test second page
+                val secondPageResult = depositoryRepository.getGHRepositoryByTag(
+                    tagId = 1,
+                    page = 2,
+                    size = 3
+                )
+
+                secondPageResult.data.size.shouldBe(2)
+                secondPageResult.page.shouldBe(2)
+                secondPageResult.totalPage.shouldBe(2)
             }
         }
     }

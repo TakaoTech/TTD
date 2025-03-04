@@ -30,10 +30,10 @@ postgresql = "42.7.3"
 serialization = "1.5.1"
 ksp = "2.1.0-1.0.29"
 
-ktor = "3.0.3"
+ktor = "3.1.1"
 logback = "1.4.14"
 prometeus = "1.6.3"
-exposed = "0.45.0"
+exposed = "0.59.0"
 ktorfit = "2.2.0"
 okhttp = "4.12.0"
 voyager = "1.1.0-beta03"
@@ -95,6 +95,7 @@ exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exp
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 exposed-json = { module = "org.jetbrains.exposed:exposed-json", version.ref = "exposed" }
 exposed-datetime = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
+exposed-paging = { module = "io.github.perracodex:exposed-pagination", version = "1.0.10" }
 
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "prometeus" }
 

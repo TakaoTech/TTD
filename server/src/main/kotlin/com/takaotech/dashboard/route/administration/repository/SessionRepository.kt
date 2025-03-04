@@ -6,7 +6,7 @@ import com.takaotech.dashboard.route.administration.data.session.toToken
 import com.takaotech.dashboard.utils.HikariDatabase
 import kotlinx.datetime.Clock
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
 import org.koin.core.annotation.Factory
 import kotlin.time.Duration
@@ -34,7 +34,10 @@ class SessionRepository(
     suspend fun getUserIdByToken(token: String): String? =
         database.dbExec {
             TokenTable
-                .select { TokenTable.refreshToken eq token }
+                .selectAll()
+                .where {
+                    TokenTable.refreshToken eq token
+                }
                 .firstOrNull()
                 ?.let {
                     it[TokenTable.userId]
@@ -57,7 +60,10 @@ class SessionRepository(
         val token =
             database.dbExec {
                 TokenTable
-                    .select { TokenTable.refreshToken eq refreshToken }
+                    .selectAll()
+                    .where {
+                        TokenTable.refreshToken eq refreshToken
+                    }
                     .map { it.toToken() }
                     .first()
             }

@@ -54,7 +54,7 @@ class TagsRepository(
                                 }
                             }
 
-                        totalPages to limit(offset = skip.toLong(), n = limit)
+                        totalPages to limit(count = limit).offset(start = skip.toLong())
                     } else {
                         1L to this
                     }

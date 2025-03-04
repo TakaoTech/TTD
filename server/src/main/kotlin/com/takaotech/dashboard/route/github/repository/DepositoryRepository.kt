@@ -22,6 +22,7 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.EmptySizedIterable
 import org.jetbrains.exposed.sql.SizedCollection
 import org.koin.core.annotation.Singleton
+import kotlin.math.ceil
 
 @Singleton
 class DepositoryRepository(
@@ -207,7 +208,7 @@ class DepositoryRepository(
                     GithubDepositoryTable.category eq mainCategory
                 }.run {
                     val totalPages = (count() / pageSize)
-                    totalPages to limit(offset = skip.toLong(), n = limit)
+                    totalPages to limit(count = limit).offset(start = skip.toLong())
                 }.run {
                     TakaoPaging(
                         data = second.map { it.convertToGHRepositoryMiniServerDao(database, colorController) },
@@ -235,13 +236,13 @@ class DepositoryRepository(
                         .findById(tagId)
                         ?.repositories ?: EmptySizedIterable()
                     ).run {
-                    val totalPages = (count() / pageSize)
-                    totalPages to limit(offset = skip.toLong(), n = limit)
+                    val totalPages = ceil(count().toDouble() / pageSize)
+                    totalPages to limit(count = limit).offset(start = skip.toLong())
                 }.run {
                     TakaoPaging(
                         data = second.map { it.convertToGHRepositoryMiniServerDao(database, colorController) },
                         page = page,
-                        totalPage = first,
+                        totalPage = first.toLong(),
                     )
                 }
         }

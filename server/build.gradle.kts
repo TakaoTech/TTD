@@ -134,6 +134,7 @@ dependencies {
     implementation(libs.exposed.jdbc)
     implementation(libs.exposed.json)
     implementation(libs.exposed.datetime)
+    implementation(libs.exposed.paging)
     implementation(libs.db.h2)
     implementation(libs.db.postgresql)
     implementation(libs.db.redis)
