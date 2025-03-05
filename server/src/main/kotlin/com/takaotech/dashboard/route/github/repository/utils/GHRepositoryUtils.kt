@@ -19,7 +19,6 @@ import okio.IOException
 import org.kohsuke.github.GHRepository as GHRepositoryExternal
 import org.kohsuke.github.GHUser as GHUserExternal
 
-//TODO Change to server model
 internal suspend fun GithubDepositoryEntity.convertToGHRepositoryServerDao(
     database: HikariDatabase,
     colorController: GithubColorController,
@@ -59,7 +58,6 @@ internal suspend fun GithubDepositoryEntity.convertToGHRepositoryServerDao(
         updatedAt = updatedAt,
     )
 
-//TODO Change to server model
 internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMiniServerDao(
     database: HikariDatabase,
     colorController: GithubColorController,
@@ -176,7 +174,6 @@ internal fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): GHReposit
     )
 }
 
-//TODO Change to server model
 private fun GHUserExternal.convertToGHUserServerDao() =
     GHUserDao(
         id = id,
@@ -194,7 +191,6 @@ internal fun Map<String, Long>.mapToLanguageServerDao(): List<GHLanguageDao> {
     }.sortedByDescending { it.weight }
 }
 
-//TODO Change to server model
 internal fun TagsEntity.convertToTagServerDao(): TagDao =
     TagDao(
         id = id.value,

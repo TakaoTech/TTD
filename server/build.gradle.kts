@@ -213,7 +213,11 @@ kover {
             excludes {
                 // TODO Not Work this exclusion
                 classes("com.takaotech.dashboard.route.github.repository.GithubClientImpl")
-                packages("org.koin.ksp.generated", "com.takaotech.dashboard.di")
+                packages(
+                    "org.koin.ksp.generated",
+                    "com.takaotech.dashboard.di",
+                    "com.takaotech.dashboard.configuration"
+                )
             }
         }
 
