@@ -207,7 +207,7 @@ class DepositoryRepository(
                 .find {
                     GithubDepositoryTable.category eq mainCategory
                 }.run {
-                    val totalPages = (count() / pageSize)
+                    val totalPages = ceil(count().toDouble() / pageSize).toLong()
                     totalPages to limit(count = limit).offset(start = skip.toLong())
                 }.run {
                     TakaoPaging(
@@ -236,13 +236,13 @@ class DepositoryRepository(
                         .findById(tagId)
                         ?.repositories ?: EmptySizedIterable()
                     ).run {
-                    val totalPages = ceil(count().toDouble() / pageSize)
+                    val totalPages = ceil(count().toDouble() / pageSize).toLong()
                     totalPages to limit(count = limit).offset(start = skip.toLong())
                 }.run {
                     TakaoPaging(
                         data = second.map { it.convertToGHRepositoryMiniServerDao(database, colorController) },
                         page = page,
-                        totalPage = first.toLong(),
+                        totalPage = first,
                     )
                 }
         }

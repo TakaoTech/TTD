@@ -7,6 +7,7 @@ import com.takaotech.dashboard.route.github.data.TagsEntity
 import com.takaotech.dashboard.route.github.repository.utils.convertToTagServerDao
 import com.takaotech.dashboard.utils.HikariDatabase
 import org.koin.core.annotation.Singleton
+import kotlin.math.ceil
 
 @Singleton
 class TagsRepository(
@@ -45,14 +46,7 @@ class TagsRepository(
                         val pageSize: Int = size
                         val skip: Int = (page - 1) * pageSize
 
-                        val totalPages =
-                            (count() / pageSize).let {
-                                if (it == 0L) {
-                                    1
-                                } else {
-                                    it
-                                }
-                            }
+                        val totalPages = ceil(count().toDouble() / pageSize).toLong()
 
                         totalPages to limit(count = limit).offset(start = skip.toLong())
                     } else {
