@@ -1,13 +1,15 @@
 package com.takaotech.dashboard.route.administration.controller
 
 import com.auth0.jwt.interfaces.Payload
+import com.takaotech.dashboard.model.exception.SignUpException
 import com.takaotech.dashboard.model.role.TakaoRole
+import com.takaotech.dashboard.models.GoogleSignUpData
 import com.takaotech.dashboard.route.administration.data.user.UserEntity
 import com.takaotech.dashboard.route.administration.repository.UserRepository
 import com.takaotech.dashboard.utils.sha256
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.boolean
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.decodeFromJsonElement
 import org.koin.core.annotation.Factory
 
 @Factory
@@ -22,46 +24,27 @@ class UserController(
         userRepository.getUserRolesById(id)?.map { it.id.value }?.toSet()
 
     suspend fun signUpByGoogle(payload: Payload) {
-        // sub
-        // email
-        // email_verified
-        // name (as display name)
-        // picture
-        with(payload) {
-            if (getClaim("email_verified").asBoolean() == true) {
-                // Email not found
-                val email = getEmail() ?: throw Exception()
-
-                if (getUserByGoogle(email) == null) {
-                    val name = getClaim("name").asString()
-                    val picture = getClaim("picture").asString()
-
-                    userRepository.createUser(email, name, picture)
-                } else {
-                    // TODO User Exist, use signin flow
-                    throw Exception()
-                }
-            } else {
-                // TODO Email not verified
-                throw Exception()
-            }
+        if (payload.getClaim("email_verified").asBoolean() != true) {
+            throw SignUpException.EmailNotVerified()
         }
+
+        val email = payload.getClaim("email").asString() ?: throw SignUpException.EmailNotFound()
+        if (getUserByGoogle(email) != null) throw SignUpException.UserAlreadyExists()
+
+        val name = payload.getClaim("name").asString() ?: throw SignUpException.InvalidUserData("name")
+        val picture = payload.getClaim("picture").asString() ?: throw SignUpException.InvalidUserData("picture")
+
+        userRepository.createUser(email, name, picture)
     }
 
-    @Suppress("UnsafeCallOnNullableType")
     suspend fun signUpByGoogle(json: JsonObject) {
-        if (json["verified_email"]!!.jsonPrimitive.boolean) {
-            val email = json["email"]?.jsonPrimitive?.content ?: throw Exception()
+        val data = runCatching {
+            Json.decodeFromJsonElement<GoogleSignUpData>(json)
+        }.getOrElse { throw SignUpException.InvalidUserData("malformed data") }
 
-            if (getUserByGoogle(email) == null) {
-                val name = json["name"]!!.jsonPrimitive.content
-                val picture = json["picture"]!!.jsonPrimitive.content
+        if (!data.verifiedEmail) throw SignUpException.EmailNotVerified()
+        if (getUserByGoogle(data.email) != null) throw SignUpException.UserAlreadyExists()
 
-                userRepository.createUser(email, name, picture)
-            } else {
-                // TODO User Exist, use signin flow
-                throw Exception()
-            }
-        }
+        userRepository.createUser(data.email, data.name, data.picture)
     }
 }
