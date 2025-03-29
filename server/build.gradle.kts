@@ -129,12 +129,7 @@ dependencies {
     implementation(libs.ktor.client.java)
     implementation(libs.ktor.client.contentnegotiation)
 
-    implementation(libs.exposed.core)
-    implementation(libs.exposed.dao)
-    implementation(libs.exposed.jdbc)
-    implementation(libs.exposed.json)
-    implementation(libs.exposed.datetime)
-    implementation(libs.exposed.paging)
+    implementation(libs.bundles.exposed)
     implementation(libs.db.h2)
     implementation(libs.db.postgresql)
     implementation(libs.db.redis)
