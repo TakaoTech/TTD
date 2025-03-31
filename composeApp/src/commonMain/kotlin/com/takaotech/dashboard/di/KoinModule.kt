@@ -3,11 +3,11 @@ package com.takaotech.dashboard.di
 import co.touchlab.kermit.loggerConfigInit
 import co.touchlab.kermit.platformLogWriter
 import com.takaotech.dashboard.AppBuildKonfig
-import com.takaotech.dashboard.repository.AuthApi
 import com.takaotech.dashboard.repository.AuthApi.Companion.SESSION_REFRESH_PATH
-import com.takaotech.dashboard.repository.api.AdminGHApi
-import com.takaotech.dashboard.repository.api.GHApi
-import com.takaotech.dashboard.repository.converter.UnsuccessResponseConverterFactory
+import com.takaotech.dashboard.repository.api.createAdminGHApi
+import com.takaotech.dashboard.repository.api.createGHApi
+import com.takaotech.dashboard.repository.converter.getUnsuccessResponseConverterFactory
+import com.takaotech.dashboard.repository.createAuthApi
 import com.takaotech.dashboard.ui.LoginViewModel
 import com.takaotech.dashboard.ui.admin.github.GHRepositoryListViewModel
 import com.takaotech.dashboard.ui.admin.tags.edit.TagEditViewModel
@@ -62,7 +62,7 @@ fun getApiModule(baseUrl: String) =
                 .Builder()
                 .baseUrl(baseUrl)
                 .httpClient(getBaseKtor(get<KermitLogger>()))
-                .converterFactories(UnsuccessResponseConverterFactory())
+                .converterFactories(getUnsuccessResponseConverterFactory())
                 .build()
         }
 
@@ -91,20 +91,20 @@ fun getApiModule(baseUrl: String) =
                 .Builder()
                 .baseUrl(baseUrl)
                 .httpClient(get<HttpClient>())
-                .converterFactories(UnsuccessResponseConverterFactory())
+                .converterFactories(getUnsuccessResponseConverterFactory())
                 .build()
         }
 
         single {
-            get<Ktorfit>(named("AuthKtor")).create<AuthApi>()
+            get<Ktorfit>(named("AuthKtor")).createAuthApi()
         }
 
         single {
-            get<Ktorfit>().create<AdminGHApi>()
+            get<Ktorfit>().createAdminGHApi()
         }
 
         single {
-            get<Ktorfit>().create<GHApi>()
+            get<Ktorfit>().createGHApi()
         }
     }
 

@@ -28,24 +28,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.takaotech.dashboard.model.github.GHRepositoryDto
-import com.takaotech.dashboard.model.github.GHUserDto
 import com.takaotech.dashboard.model.github.MainCategoryDto
 import com.takaotech.dashboard.model.github.TagDto
 import com.takaotech.dashboard.ui.utils.assistChipColors
 import com.takaotech.dashboard.ui.utils.toColor
-import kotlinx.datetime.Clock
 import org.jetbrains.compose.resources.stringResource
 import ttd.composeapp.generated.resources.Res
 import ttd.composeapp.generated.resources.ghrepository_no_tags
 import ttd.composeapp.generated.resources.ghrepository_tags_label
-import kotlin.random.Random
 
 @Composable
 fun AdminGHRepositoryList(
@@ -199,39 +192,39 @@ internal fun AdminGHRepositoryCard(
     }
 }
 
-@Preview(
-    device = Devices.PIXEL_TABLET,
-)
-@Composable
-private fun AdminGHRepositoryListPreview() {
-    val state = GHRepositoryListUiState.GhRepositoryListState.Success(
-        List(15) {
-            GHRepositoryDto(
-                id = Random.nextLong(),
-                name = LoremIpsum().values.first(),
-                fullName = LoremIpsum().values.first().substring(0..25),
-                description = LoremIpsum().values.first(),
-                url = LoremIpsum().values.first(),
-                license = LoremIpsum().values.first(),
-                licenseUrl = LoremIpsum().values.first(),
-                user = GHUserDto(
-                    id = Random.nextLong(),
-                    name = LoremIpsum().values.first(),
-                    url = LoremIpsum().values.first(),
-                    avatarUrl = null
-                ),
-                languages = listOf(),
-                updatedAt = Clock.System.now(),
-                tags = listOf(),
-                mainCategory = MainCategoryDto.NONE
-            )
-        }
-    )
-
-    AdminGHRepositoryList(
-        ghRepositoryState = state,
-        onCardClicked = {},
-        onTagEditClicked = {},
-        onCategoryChangeClicked = { _, _ -> }
-    )
-}
+//@Preview(
+//    device = Devices.PIXEL_TABLET,
+//)
+//@Composable
+//private fun AdminGHRepositoryListPreview() {
+//    val state = GHRepositoryListUiState.GhRepositoryListState.Success(
+//        List(15) {
+//            GHRepositoryDto(
+//                id = Random.nextLong(),
+//                name = LoremIpsum().values.first(),
+//                fullName = LoremIpsum().values.first().substring(0..25),
+//                description = LoremIpsum().values.first(),
+//                url = LoremIpsum().values.first(),
+//                license = LoremIpsum().values.first(),
+//                licenseUrl = LoremIpsum().values.first(),
+//                user = GHUserDto(
+//                    id = Random.nextLong(),
+//                    name = LoremIpsum().values.first(),
+//                    url = LoremIpsum().values.first(),
+//                    avatarUrl = null
+//                ),
+//                languages = listOf(),
+//                updatedAt = Clock.System.now(),
+//                tags = listOf(),
+//                mainCategory = MainCategoryDto.NONE
+//            )
+//        }
+//    )
+//
+//    AdminGHRepositoryList(
+//        ghRepositoryState = state,
+//        onCardClicked = {},
+//        onTagEditClicked = {},
+//        onCategoryChangeClicked = { _, _ -> }
+//    )
+//}

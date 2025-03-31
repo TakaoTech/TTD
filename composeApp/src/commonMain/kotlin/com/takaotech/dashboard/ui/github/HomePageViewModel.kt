@@ -11,6 +11,7 @@ import com.takaotech.dashboard.model.github.TagDto
 import com.takaotech.dashboard.repository.GHRepository
 import com.takaotech.dashboard.ui.utils.NetworkResult
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

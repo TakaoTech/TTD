@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.takaotech.dashboard.repository.usecase.GHRepositoryListUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.flowOn
 
 class GHHomepageListPageViewModel(

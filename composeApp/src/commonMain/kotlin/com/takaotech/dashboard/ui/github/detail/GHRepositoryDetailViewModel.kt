@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.github.kittinunf.result.isSuccess
-import com.takaotech.dashboard.model.github.GHRepositoryDao
+import com.takaotech.dashboard.model.github.GHRepositoryDto
 import com.takaotech.dashboard.repository.GHRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,7 +51,7 @@ data class GHRepositoryDetailUi(
         data object Error : GHRepositoryDetailUiState
 
         class Success(
-            val repository: GHRepositoryDao,
+            val repository: GHRepositoryDto,
         ) : GHRepositoryDetailUiState
     }
 }

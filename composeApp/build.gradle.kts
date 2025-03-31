@@ -3,6 +3,7 @@ import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
 import org.apache.http.client.utils.URIBuilder
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import java.net.URI
 import java.net.URL
 
@@ -11,6 +12,7 @@ val projectPackage: String by project
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
+    alias(libs.plugins.cocoaPods)
     alias(libs.plugins.compose.jetbrains)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
@@ -80,19 +82,40 @@ kotlin {
         }
     }
 
-//    listOf(
-//        iosX64(),
-//        iosArm64(),
-//        iosSimulatorArm64()
-//    ).forEach { iosTarget ->
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    )
+//        .forEach { iosTarget ->
 //        iosTarget.binaries.framework {
 //            baseName = "ComposeApp"
 //            isStatic = true
 //        }
 //    }
 
-    sourceSets {
+    cocoapods {
+        version = "1.0"
+        summary = "Some description for a Kotlin/Native module"
+        homepage = "Link to a Kotlin/Native module homepage"
+        ios.deploymentTarget = "16.0"
 
+        // Optional properties
+        // Configure the Pod name here instead of changing the Gradle project name
+        name = "ComposeAppPod"
+
+        framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+
+        xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
+        xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
+
+        pod("RNCryptor-objc")
+    }
+
+    sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
@@ -106,6 +129,11 @@ kotlin {
             implementation(libs.androidx.browser)
             implementation(libs.ktor.client.okhttp)
         }
+
+        appleMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+
         val commonMain by getting {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
 
