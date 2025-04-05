@@ -16,8 +16,8 @@ androidx-espresso-core = "3.6.1"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.1.5"
 compose = "1.7.6"
-compose-adaptive = "1.0.0-alpha03"
-compose-plugin = "1.7.3"
+compose-adaptive = "1.1.0-beta01"
+compose-plugin = "1.8.0-beta01"
 junit = "4.13.2"
 kermit = "2.0.3"
 
@@ -25,20 +25,20 @@ kotest = "5.9.0"
 mockk = "1.13.9"
 faker = "2.0.0-rc.7"
 
-kotlin = "2.1.0"
+kotlin = "2.1.20"
 postgresql = "42.7.3"
 serialization = "1.5.1"
-ksp = "2.1.0-1.0.29"
+ksp = "2.1.20-1.0.32"
 
 ktor = "3.1.1"
 logback = "1.4.14"
 prometeus = "1.6.3"
 exposed = "0.59.0"
-ktorfit = "2.2.0"
+ktorfit = "2.5.0"
 okhttp = "4.12.0"
 voyager = "1.1.0-beta03"
 
-depscredit = "11.4.0"
+depscredit = "11.6.3"
 haze = "1.1.1"
 coil = "3.0.0-alpha06"
 
@@ -100,9 +100,9 @@ exposed-paging = { module = "io.github.perracodex:exposed-pagination", version =
 
 micrometer-registry-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "prometeus" }
 
-koin-bom = { module = "io.insert-koin:koin-bom", version = "4.1.0-Beta5" }
-koin-annotation-bom = { module = "io.insert-koin:koin-annotations-bom", version = "2.0.0-Beta3" }
-koin-compilerksp = { module = "io.insert-koin:koin-ksp-compiler", version = "2.0.0-Beta3" }
+koin-bom = { module = "io.insert-koin:koin-bom", version = "4.1.0-Beta6" }
+koin-annotation-bom = { module = "io.insert-koin:koin-annotations-bom", version = "2.0.0" }
+koin-compilerksp = { module = "io.insert-koin:koin-ksp-compiler", version = "2.0.0" }
 koin-annotation = { module = "io.insert-koin:koin-annotations" }
 koin-ktor = { module = "io.insert-koin:koin-ktor3" }
 koin-logger = { module = "io.insert-koin:koin-logger-slf4j" }

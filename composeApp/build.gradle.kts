@@ -3,7 +3,6 @@ import com.google.firebase.appdistribution.gradle.firebaseAppDistribution
 import org.apache.http.client.utils.URIBuilder
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 import java.net.URI
 import java.net.URL
 
@@ -12,7 +11,7 @@ val projectPackage: String by project
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.cocoaPods)
+//    alias(libs.plugins.cocoaPods)
     alias(libs.plugins.compose.jetbrains)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
@@ -86,34 +85,31 @@ kotlin {
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
-    )
-//        .forEach { iosTarget ->
-//        iosTarget.binaries.framework {
-//            baseName = "ComposeApp"
-//            isStatic = true
-//        }
-//    }
-
-    cocoapods {
-        version = "1.0"
-        summary = "Some description for a Kotlin/Native module"
-        homepage = "Link to a Kotlin/Native module homepage"
-        ios.deploymentTarget = "16.0"
-
-        // Optional properties
-        // Configure the Pod name here instead of changing the Gradle project name
-        name = "ComposeAppPod"
-
-        framework {
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
         }
-
-        xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
-        xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
-
-        pod("RNCryptor-objc")
     }
+//
+//    cocoapods {
+//        version = "1.0"
+//        summary = "Some description for a Kotlin/Native module"
+//        homepage = "Link to a Kotlin/Native module homepage"
+//        ios.deploymentTarget = "16.0"
+//
+//        // Optional properties
+//        // Configure the Pod name here instead of changing the Gradle project name
+//        name = "ComposeAppPod"
+//
+//        framework {
+//            baseName = "ComposeApp"
+//            isStatic = true
+//        }
+//
+//        xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
+//        xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
+//    }
 
     sourceSets {
         androidMain.dependencies {
@@ -140,7 +136,8 @@ kotlin {
             dependencies {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
-                implementation(compose.material3)
+//                implementation(compose.material3)
+                implementation("org.jetbrains.compose.material3:material3:1.8.0-alpha03")
                 implementation(compose.material3AdaptiveNavigationSuite)
                 implementation(compose.ui)
                 implementation(libs.compose.ui.adaptive)
