@@ -2,6 +2,7 @@ package com.takaotech.dashboard.ui.github
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.isSuccess
 import com.github.kittinunf.result.map
@@ -19,11 +20,13 @@ import kotlinx.coroutines.launch
 
 class HomePageViewModel(
     private val ghRepository: GHRepository,
+    private val logger: Logger
 ) : ViewModel() {
     private val mUiState = MutableStateFlow(HomePageUi())
     val uiState = mUiState.asStateFlow()
 
     init {
+        logger.i(tag = "HomePageViewModel") { "Init HomePageViewModel" }
         initGHRepository()
         getTags()
     }

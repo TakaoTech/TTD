@@ -1,18 +1,22 @@
 package com.takaotech.dashboard.repository.converter
 
+import co.touchlab.kermit.Logger
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.converter.Converter
 import de.jensklingenberg.ktorfit.converter.KtorfitResult
 import de.jensklingenberg.ktorfit.converter.TypeData
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import platform.Foundation.NSURLResponse
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 internal actual fun getUnsuccessResponseConverterFactory(): Converter.Factory {
     return UnsuccessResponseConverterFactoryImpl()
 }
 
-internal class UnsuccessResponseConverterFactoryImpl : Converter.Factory {
+internal class UnsuccessResponseConverterFactoryImpl : Converter.Factory, KoinComponent {
+    private val logger: Logger by inject()
+
     class UnsuccessResponseSuspendConverter(
         val typeData: TypeData,
         val ktorfit: Ktorfit
@@ -37,9 +41,14 @@ internal class UnsuccessResponseConverterFactoryImpl : Converter.Factory {
         typeData: TypeData,
         ktorfit: Ktorfit
     ): Converter.SuspendResponseConverter<HttpResponse, Any?>? {
-        if (typeData.typeInfo.type != NSURLResponse::class) {
-            return UnsuccessResponseSuspendConverter(typeData, ktorfit)
-        }
+        logger.i(tag = "UnsuccessResponseConverterFactoryImpl") { "Response Type $typeData" }
+//        if (typeData.typeInfo.type == DarwinHttpRequestException::class) {
+//
+//        }
+//        https://developer.apple.com/documentation/foundation/nsurlresponse
+//        if (typeData.typeInfo.type != NSURLResponse::class) {
+//            return UnsuccessResponseSuspendConverter(typeData, ktorfit)
+//        }
         return null
     }
 }

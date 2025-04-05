@@ -5,6 +5,7 @@ import org.koin.core.context.startKoin
 
 fun startTakaoApplicationKoin() {
     startKoin {
+        printLogger()
         platformModules()
     }
 }

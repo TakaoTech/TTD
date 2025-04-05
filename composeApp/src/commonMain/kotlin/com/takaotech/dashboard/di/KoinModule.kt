@@ -6,7 +6,6 @@ import com.takaotech.dashboard.AppBuildKonfig
 import com.takaotech.dashboard.repository.AuthApi.Companion.SESSION_REFRESH_PATH
 import com.takaotech.dashboard.repository.api.createAdminGHApi
 import com.takaotech.dashboard.repository.api.createGHApi
-import com.takaotech.dashboard.repository.converter.getUnsuccessResponseConverterFactory
 import com.takaotech.dashboard.repository.createAuthApi
 import com.takaotech.dashboard.ui.LoginViewModel
 import com.takaotech.dashboard.ui.admin.github.GHRepositoryListViewModel
@@ -62,7 +61,8 @@ fun getApiModule(baseUrl: String) =
                 .Builder()
                 .baseUrl(baseUrl)
                 .httpClient(getBaseKtor(get<KermitLogger>()))
-                .converterFactories(getUnsuccessResponseConverterFactory())
+                //TODO Restore
+//                .converterFactories(getUnsuccessResponseConverterFactory())
                 .build()
         }
 
@@ -91,7 +91,8 @@ fun getApiModule(baseUrl: String) =
                 .Builder()
                 .baseUrl(baseUrl)
                 .httpClient(get<HttpClient>())
-                .converterFactories(getUnsuccessResponseConverterFactory())
+                //TODO Restore
+//                .converterFactories(getUnsuccessResponseConverterFactory())
                 .build()
         }
 
@@ -120,7 +121,9 @@ fun HttpClientConfig<out HttpClientEngineConfig>.configureCommonHttp(kermitLogge
         logger =
             object : Logger {
                 override fun log(message: String) {
-                    kermitLogger.largeLog(message)
+                    kermitLogger
+                        .withTag("KtorClient")
+                        .largeLog(message)
                 }
             }
 
