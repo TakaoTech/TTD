@@ -27,6 +27,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.takaotech.dashboard.model.github.GHRepositoryMiniDto
@@ -44,6 +46,7 @@ import com.takaotech.dashboard.ui.platform.components.TagChip
 import com.takaotech.dashboard.ui.utils.NetworkResult
 import org.jetbrains.compose.resources.stringResource
 import ttd.composeapp.generated.resources.Res
+import ttd.composeapp.generated.resources.ghrepository_empty
 import ttd.composeapp.generated.resources.homepage_ghrepository_more_tags_label
 import ttd.composeapp.generated.resources.homepage_ghrepository_tags_label
 import ttd.composeapp.generated.resources.homepage_title_label
@@ -77,90 +80,110 @@ fun HomePageScreen(
             )
         },
     ) {
-        PullToRefreshBox(
-            modifier = Modifier.padding(top = it.calculateTopPadding()),
-            state = pullToRefreshState,
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-        ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
-                state = listState,
+        if (repositories is NetworkResult.Success && repositories.data.isNullOrEmpty()) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(it.calculateBottomPadding())
+                    .pullToRefresh(
+                        isRefreshing = isRefreshing,
+                        state = pullToRefreshState,
+                        onRefresh = onRefresh,
+                    )
             ) {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = stringResource(Res.string.ghrepository_empty),
+                    style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            PullToRefreshBox(
+                modifier = Modifier.padding(top = it.calculateTopPadding()),
+                state = pullToRefreshState,
+                isRefreshing = isRefreshing,
+                onRefresh = onRefresh,
+            ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    state = listState,
+                ) {
 // 				item { ExpandedTopBar() }
-                if (tags.isNotEmpty()) {
-                    item {
-                        LazyRow(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            contentPadding = PaddingValues(8.dp),
-                        ) {
-                            item {
-                                Text(stringResource(Res.string.homepage_ghrepository_tags_label))
-                            }
-
-                            items(tags) {
-                                TagChip(
-                                    text = it.name,
-                                    color = it.color,
-                                ) {
-                                    onTagClicked(it.id)
-                                }
-                            }
-
-                            item {
-                                TextButton(
-                                    onClick = onMoreTagClicked,
-                                ) {
-                                    Text(stringResource(Res.string.homepage_ghrepository_more_tags_label))
-                                    Icon(Icons.AutoMirrored.Filled.ArrowForward, "")
-                                }
-                            }
-                        }
-                    }
-                }
-
-                when (repositories) {
-                    is NetworkResult.Error -> {
-                        // TODO Show error
-                    }
-
-                    is NetworkResult.Loading -> {
+                    if (tags.isNotEmpty()) {
                         item {
-                            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                        }
-                    }
+                            LazyRow(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                contentPadding = PaddingValues(8.dp),
+                            ) {
+                                item {
+                                    Text(stringResource(Res.string.homepage_ghrepository_tags_label))
+                                }
 
-                    is NetworkResult.Success -> {
-                        repositories.data?.let { repositories ->
-                            items(repositories) {
-                                GHRepositoryCard(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                                    fullName = it.fullName,
-                                    tags = it.tags,
-                                    languages = it.languages,
-                                    onTagClicked = {
-                                        onTagClicked(it)
-                                    },
-                                    onCardClicked = {
-                                        onCardClicked(it.id)
-                                    },
-                                )
-                            }
+                                items(tags) {
+                                    TagChip(
+                                        text = it.name,
+                                        color = it.color,
+                                    ) {
+                                        onTagClicked(it.id)
+                                    }
+                                }
 
-                            if (repositories.isNotEmpty()) {
                                 item {
                                     TextButton(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        onClick = onMoreRepositoriesClicked,
+                                        onClick = onMoreTagClicked,
                                     ) {
-                                        Text("Show More Repositories")
-
+                                        Text(stringResource(Res.string.homepage_ghrepository_more_tags_label))
                                         Icon(Icons.AutoMirrored.Filled.ArrowForward, "")
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    when (repositories) {
+                        is NetworkResult.Error -> {
+                            // TODO Show error
+                        }
+
+                        is NetworkResult.Loading -> {
+                            item {
+                                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                            }
+                        }
+
+                        is NetworkResult.Success -> {
+                            repositories.data?.let { repositories ->
+                                items(repositories) {
+                                    GHRepositoryCard(
+                                        modifier =
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                        fullName = it.fullName,
+                                        tags = it.tags,
+                                        languages = it.languages,
+                                        onTagClicked = {
+                                            onTagClicked(it)
+                                        },
+                                        onCardClicked = {
+                                            onCardClicked(it.id)
+                                        },
+                                    )
+                                }
+
+                                if (repositories.isNotEmpty()) {
+                                    item {
+                                        TextButton(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            onClick = onMoreRepositoriesClicked,
+                                        ) {
+                                            Text("Show More Repositories")
+
+                                            Icon(Icons.AutoMirrored.Filled.ArrowForward, "")
+                                        }
                                     }
                                 }
                             }
@@ -169,6 +192,8 @@ fun HomePageScreen(
                 }
             }
         }
+
+
     }
 }
 

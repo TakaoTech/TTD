@@ -6,6 +6,8 @@
 
     <string name="credit_opensource_licence_label">Show Library Licenses</string>
 
+    <string name="ghrepository_empty">I have no memory\nof this place</string>
+
     <string name="ghrepository_no_tags">No Tags</string>
     <string name="ghrepository_tags_label">Tags</string>
     <string name="ghrepository_add_new_tag">Add new Tag</string>
@@ -22,5 +24,6 @@
     <string name="logout">Logout</string>
 
     <string name="save">Save</string>
+
 
 </resources>
