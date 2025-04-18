@@ -14,6 +14,7 @@ plugins {
 //    alias(libs.plugins.cocoaPods)
     alias(libs.plugins.compose.jetbrains)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.skie)
     alias(libs.plugins.ksp)
     alias(libs.plugins.ktorfit)
     alias(libs.plugins.buildkonfig)

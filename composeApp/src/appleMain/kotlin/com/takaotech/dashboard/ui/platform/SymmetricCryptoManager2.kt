@@ -8,7 +8,7 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 @OptIn(ExperimentalEncodingApi::class)
-class SymmetricCryptoManager(
+class SymmetricCryptoManager2(
     private val aliasKey: String,
 ) : KoinComponent {
     private val logger by inject<Logger>()

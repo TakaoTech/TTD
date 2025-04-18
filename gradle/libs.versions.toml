@@ -198,6 +198,7 @@ cfu = { id = "org.jetbrains.kotlinx.atomicfu", version = "0.27.0" }
 gms = { id = "com.google.gms.google-services", version = "4.4.2" }
 firebase-appdistribution = { id = "com.google.firebase.appdistribution", version = "5.0.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+skie = { id = "co.touchlab.skie", version = "0.10.2-preview.2.1.20" }
 
 [bundles]
 kotest-server = [

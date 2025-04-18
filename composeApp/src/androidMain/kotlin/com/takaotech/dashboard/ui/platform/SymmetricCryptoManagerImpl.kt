@@ -21,9 +21,9 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 // https://github.com/ClarkStoro/AndroidEncryptionExamples/blob/main/app/src/main/java/com/clarkstoro/androidencryptionexamples/utils/SymmetricCryptoManager.kt
 @OptIn(ExperimentalEncodingApi::class)
-class SymmetricCryptoManager(
+class SymmetricCryptoManagerImpl(
     private val aliasKey: String,
-) : KoinComponent {
+) : SymmetricCryptoManager, KoinComponent {
     private val logger by inject<Logger>()
 
     companion object {
@@ -150,7 +150,7 @@ class SymmetricCryptoManager(
         }
 
     @OptIn(ExperimentalEncodingApi::class)
-    fun encryptFromByteArrayToByteArray(bytes: ByteArray): ByteArray =
+    override fun encryptFromByteArrayToByteArray(bytes: ByteArray): ByteArray =
         try {
             val encryptCipher = getEncryptCipher()
             val cipherText = encryptCipher.doFinal(bytes)
@@ -195,7 +195,7 @@ class SymmetricCryptoManager(
             null
         }
 
-    fun decryptFromByteArray(bytes: ByteArray): ByteArray =
+    override fun decryptFromByteArrayToByteArray(bytes: ByteArray): ByteArray =
         try {
             val inputStream = ByteArrayInputStream(bytes)
             inputStream.use {
