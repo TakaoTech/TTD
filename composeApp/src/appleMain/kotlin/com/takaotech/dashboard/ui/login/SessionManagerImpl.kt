@@ -6,7 +6,7 @@ import co.touchlab.kermit.Logger
 import com.takaotech.dashboard.AppBuildKonfig
 import com.takaotech.dashboard.model.session.TokenPairDao
 import com.takaotech.dashboard.repository.AuthApi
-import com.takaotech.dashboard.ui.platform.SymmetricCryptoManager2
+import com.takaotech.dashboard.ui.platform.SymmetricCryptoManager
 import com.takaotech.dashboard.ui.utils.getSessionDatastore
 import com.takaotech.dashboard.ui.utils.sessionDataStoreFileName
 import kotlinx.serialization.json.Json
@@ -22,8 +22,8 @@ class SessionManagerImpl(
     logger: Logger,
     googleLogin: GoogleLogin,
     authApi: AuthApi,
+    private val cryptoManager: SymmetricCryptoManager,
 ) : SessionManager(json, logger, googleLogin, authApi) {
-    private val cryptoManager = SymmetricCryptoManager2(AppBuildKonfig.SESSION_KEY_ALIAS)
 
     override fun initSessionDatastore(): DataStore<Preferences> =
         getSessionDatastore {
@@ -38,13 +38,17 @@ class SessionManagerImpl(
 
     override fun decryptTokens(sessionEncrypted: ByteArray): TokenPairDao {
         val base = Base64.decode(sessionEncrypted)
-        val decoded = cryptoManager.decryptFromByteArray(base)
+        val decoded = cryptoManager.decryptFromByteArrayToByteArray(
+            AppBuildKonfig.SESSION_KEY_ALIAS,
+            base
+        )
 
         return TokenPairDao.parse(decoded.decodeToString())
     }
 
     override fun encryptTokens(tokenPair: TokenPairDao): ByteArray =
         cryptoManager.encryptFromByteArrayToByteArray(
-            tokenPair.toString().encodeToByteArray(),
+            AppBuildKonfig.SESSION_KEY_ALIAS,
+            tokenPair.toString().encodeToByteArray()
         )
 }

@@ -6,6 +6,8 @@ import com.takaotech.dashboard.ui.login.GoogleLogin
 import com.takaotech.dashboard.ui.login.GoogleLoginImpl
 import com.takaotech.dashboard.ui.login.SessionManager
 import com.takaotech.dashboard.ui.login.SessionManagerImpl
+import com.takaotech.dashboard.ui.platform.SymmetricCryptoManager
+import com.takaotech.dashboard.ui.platform.SymmetricCryptoManagerImpl
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.http.*
@@ -31,12 +33,14 @@ actual fun KoinApplication.platformModules() {
                     googleLogin = get(),
                     authApi = get(),
                     context = get(),
+                    cryptoManager = get(),
                 ).apply {
                     init()
                 }
             } bind SessionManager::class withOptions {
                 createdAtStart()
             }
+            single { SymmetricCryptoManagerImpl() } bind SymmetricCryptoManager::class
         },
         *appModules(),
     )

@@ -13,13 +13,8 @@ import Security
 import CryptoSwift
 
 public class SymmetricCryptoManagerImpl: SymmetricCryptoManager {
-    let aliasKey: String
-
-    init(aliasKey: String){
-        self.aliasKey = aliasKey
-    }
-
-    public func decryptFromByteArrayToByteArray(bytes: KotlinByteArray) -> KotlinByteArray {
+    
+    public func decryptFromByteArrayToByteArray(key: String, bytes: KotlinByteArray) -> KotlinByteArray {
         do {
             // Convert KotlinByteArray to Swift [UInt8]
             let inputBytes = kotlinByteArrayToUInt8Array(bytes: bytes)
@@ -47,7 +42,7 @@ public class SymmetricCryptoManagerImpl: SymmetricCryptoManager {
             let ciphertext = Array(inputBytes[index..<(index + ciphertextSize)])
 
             // Get symmetric key from Keychain
-            let key = try getOrCreateSymmetricKey()
+            let key = try getOrCreateSymmetricKey(key: key)
 
             // In GCM mode, the tag is included in the ciphertext when using CryptoSwift
             // We need to extract it for decryption
@@ -67,13 +62,13 @@ public class SymmetricCryptoManagerImpl: SymmetricCryptoManager {
     }
 
 
-    public func encryptFromByteArrayToByteArray(bytes: KotlinByteArray) -> KotlinByteArray {
+    public func encryptFromByteArrayToByteArray(key: String, bytes: KotlinByteArray) -> KotlinByteArray {
         do {
             // Convert KotlinByteArray to Swift [UInt8]
             let plaintext = kotlinByteArrayToUInt8Array(bytes: bytes)
 
             // Get or create symmetric key from Keychain
-            let key = try getOrCreateSymmetricKey()
+            let key = try getOrCreateSymmetricKey(key: key)
 
             // Encrypt data using AES/GCM
             let (ciphertext, nonce, _) = try encrypt(plaintext: plaintext, key: key)
@@ -107,12 +102,12 @@ public class SymmetricCryptoManagerImpl: SymmetricCryptoManager {
         }
     }
 
-    func getOrCreateSymmetricKey() throws -> [UInt8] {
-        let tag = aliasKey.data(using: .utf8)!
+    func getOrCreateSymmetricKey(key: String) throws -> [UInt8] {
+        let tag = key.data(using: .utf8)!
 
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: aliasKey,
+            kSecAttrAccount as String: key,
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
@@ -130,7 +125,7 @@ public class SymmetricCryptoManagerImpl: SymmetricCryptoManager {
 
         let addQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: aliasKey,
+            kSecAttrAccount as String: key,
             kSecValueData as String: keyData,
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked
         ]

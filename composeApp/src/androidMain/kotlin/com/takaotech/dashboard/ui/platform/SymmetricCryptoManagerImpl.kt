@@ -21,9 +21,7 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 // https://github.com/ClarkStoro/AndroidEncryptionExamples/blob/main/app/src/main/java/com/clarkstoro/androidencryptionexamples/utils/SymmetricCryptoManager.kt
 @OptIn(ExperimentalEncodingApi::class)
-class SymmetricCryptoManagerImpl(
-    private val aliasKey: String,
-) : SymmetricCryptoManager, KoinComponent {
+class SymmetricCryptoManagerImpl : SymmetricCryptoManager, KoinComponent {
     private val logger by inject<Logger>()
 
     companion object {
@@ -51,17 +49,17 @@ class SymmetricCryptoManagerImpl(
             load(null)
         }
 
-    private fun getEncryptCipher(): Cipher =
+    private fun getEncryptCipher(aliasKey: String): Cipher =
         Cipher.getInstance(TRANSFORMATION).apply {
-            init(Cipher.ENCRYPT_MODE, getKey())
+            init(Cipher.ENCRYPT_MODE, getKey(aliasKey))
         }
 
-    private fun getDecryptCipherForIv(initializationVector: ByteArray): Cipher =
+    private fun getDecryptCipherForIv(aliasKey: String, initializationVector: ByteArray): Cipher =
         Cipher.getInstance(TRANSFORMATION).apply {
             when (CURRENT_BLOCK_MODE) {
                 GCM_BLOCK_MODE -> {
                     val gcmParameterSpec = GCMParameterSpec(GCM_TAG_LENGTH, initializationVector)
-                    init(Cipher.DECRYPT_MODE, getKey(), gcmParameterSpec)
+                    init(Cipher.DECRYPT_MODE, getKey(aliasKey), gcmParameterSpec)
                 }
 
                 else -> {
@@ -70,9 +68,9 @@ class SymmetricCryptoManagerImpl(
             }
         }
 
-    private fun getKey(): SecretKey = getValidKeyOrNull() ?: generateKey()
+    private fun getKey(aliasKey: String): SecretKey = getValidKeyOrNull(aliasKey) ?: generateKey(aliasKey)
 
-    private fun getValidKeyOrNull(): SecretKey? =
+    private fun getValidKeyOrNull(aliasKey: String): SecretKey? =
         try {
             val existingKey = keystore.getEntry(aliasKey, null) as? SecretKeyEntry
             existingKey?.secretKey?.also { sk ->
@@ -84,9 +82,9 @@ class SymmetricCryptoManagerImpl(
             null
         }
 
-    private fun isKeyValid(): Boolean = getValidKeyOrNull() != null
+    private fun isKeyValid(aliasKey: String): Boolean = getValidKeyOrNull(aliasKey) != null
 
-    private fun generateKey(): SecretKey =
+    private fun generateKey(aliasKey: String): SecretKey =
         KeyGenerator
             .getInstance(ALGORITHM)
             .apply {
@@ -102,9 +100,9 @@ class SymmetricCryptoManagerImpl(
                 )
             }.generateKey()
 
-    fun encryptStringAppendMode(plainText: String): String? {
+    fun encryptStringAppendMode(key: String, plainText: String): String? {
         return try {
-            val encryptCipher = getEncryptCipher()
+            val encryptCipher = getEncryptCipher(key)
             val cipherText = encryptCipher.doFinal(plainText.toByteArray())
             val cipherTextBase64 = Base64.encode(cipherText)
             val ivBase64 = Base64.encode(encryptCipher.iv)
@@ -116,13 +114,13 @@ class SymmetricCryptoManagerImpl(
         }
     }
 
-    fun decryptStringAppendMode(strToDecode: String): String? {
+    fun decryptStringAppendMode(key: String, strToDecode: String): String? {
         return try {
             val ivAndCipherTextSplit = strToDecode.split(APPEND_SEPARATOR)
             val iv = Base64.decode(ivAndCipherTextSplit[0])
             val cipherText = Base64.decode(ivAndCipherTextSplit[1])
 
-            val plainText = getDecryptCipherForIv(initializationVector = iv).doFinal(cipherText)
+            val plainText = getDecryptCipherForIv(aliasKey = key, initializationVector = iv).doFinal(cipherText)
 
             return String(plainText, StandardCharsets.UTF_8)
         } catch (e: Exception) {
@@ -131,9 +129,9 @@ class SymmetricCryptoManagerImpl(
         }
     }
 
-    fun encryptToStringByteArrayMode(bytes: ByteArray): String? =
+    fun encryptToStringByteArrayMode(key: String, bytes: ByteArray): String? =
         try {
-            val encryptCipher = getEncryptCipher()
+            val encryptCipher = getEncryptCipher(key)
             val cipherText = encryptCipher.doFinal(bytes)
             val outputStream = ByteArrayOutputStream()
             outputStream.use {
@@ -150,9 +148,9 @@ class SymmetricCryptoManagerImpl(
         }
 
     @OptIn(ExperimentalEncodingApi::class)
-    override fun encryptFromByteArrayToByteArray(bytes: ByteArray): ByteArray =
+    override fun encryptFromByteArrayToByteArray(key: String, bytes: ByteArray): ByteArray =
         try {
-            val encryptCipher = getEncryptCipher()
+            val encryptCipher = getEncryptCipher(key)
             val cipherText = encryptCipher.doFinal(bytes)
             val outputStream = ByteArrayOutputStream()
             outputStream.use {
@@ -175,7 +173,7 @@ class SymmetricCryptoManagerImpl(
 //            null
         }
 
-    fun decryptFromStringByteArrayMode(stringToDecode: String): ByteArray? =
+    fun decryptFromStringByteArrayMode(key: String, stringToDecode: String): ByteArray? =
         try {
             val decodedString = Base64.decode(stringToDecode)
             val inputStream = ByteArrayInputStream(decodedString)
@@ -188,14 +186,14 @@ class SymmetricCryptoManagerImpl(
                 val cipherTextBytes = ByteArray(cipherTextBytesSize)
                 it.read(cipherTextBytes)
 
-                getDecryptCipherForIv(initializationVector = iv).doFinal(cipherTextBytes)
+                getDecryptCipherForIv(aliasKey = key, initializationVector = iv).doFinal(cipherTextBytes)
             }
         } catch (e: Exception) {
             logger.e(e) { "Error: failed to decrypt string - Byte Array Mode " }
             null
         }
 
-    override fun decryptFromByteArrayToByteArray(bytes: ByteArray): ByteArray =
+    override fun decryptFromByteArrayToByteArray(key: String, bytes: ByteArray): ByteArray =
         try {
             val inputStream = ByteArrayInputStream(bytes)
             inputStream.use {
@@ -216,7 +214,7 @@ class SymmetricCryptoManagerImpl(
                 val cipherTextBytes = ByteArray(cipherTextBytesSize)
                 it.read(cipherTextBytes)
 
-                getDecryptCipherForIv(initializationVector = iv).doFinal(cipherTextBytes)
+                getDecryptCipherForIv(aliasKey = key, initializationVector = iv).doFinal(cipherTextBytes)
             }
         } catch (e: Exception) {
             logger.e(e) { "Error: failed to decrypt string - Byte Array Mode " }

@@ -14,6 +14,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.ksp.generated.defaultModule
 
+@Suppress("SpreadOperator")
 actual fun KoinApplication.platformModules() {
     modules(
         defaultModule,
@@ -24,7 +25,8 @@ actual fun KoinApplication.platformModules() {
                     json = get(),
                     logger = get(),
                     googleLogin = get(),
-                    authApi = get()
+                    authApi = get(),
+                    cryptoManager = get()
                 ).apply {
                     init()
                 }
