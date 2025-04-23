@@ -2,10 +2,12 @@ package com.takaotech.dashboard.di
 
 import com.takaotech.dashboard.configuration.GithubConfiguration
 import com.takaotech.dashboard.utils.GithubClientLoggerAdapter
+import com.takaotech.dashboard.utils.OkHttpRequestResponseFileLogInterceptor
 import io.ktor.client.*
 import io.ktor.client.engine.java.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.server.application.*
 import io.ktor.util.logging.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -15,7 +17,7 @@ import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-fun getGeneralModule(log: Logger): Module =
+fun Application.getGeneralModule(log: Logger): Module =
     module {
         single<Logger> {
             log
@@ -29,7 +31,11 @@ fun getGeneralModule(log: Logger): Module =
                     withConnector(
                         OkHttpGitHubConnector(
                             OkHttpClient
-                                .Builder()
+                                .Builder().apply {
+                                    if (developmentMode) {
+                                        addInterceptor(OkHttpRequestResponseFileLogInterceptor())
+                                    }
+                                }
                                 .addInterceptor(
                                     HttpLoggingInterceptor(
                                         GithubClientLoggerAdapter(get()),
