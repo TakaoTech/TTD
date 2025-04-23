@@ -106,8 +106,7 @@ class GithubColorControllerImpl(
     }
 
     private suspend fun setColorLanguagesMappingLocal(colorMapping: JsonObject) {
-        // TODO if pr accepted remove path https://github.com/vendelieu/re.this/pull/52
-        redisDatabase.client.jsonSet(GH_COLOR_MAPPING, "$", colorMapping)
+        redisDatabase.client.jsonSet(GH_COLOR_MAPPING, colorMapping)
         setLastUpdateMapping(Clock.System.now())
     }
 

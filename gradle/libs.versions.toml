@@ -118,7 +118,7 @@ okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor" }
 
 db-h2 = { module = "com.h2database:h2", version = "2.2.224" }
 db-postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
-db-redis = { module = "eu.vendeli:rethis", version = "0.2.8" }
+db-redis = { module = "eu.vendeli:rethis", version = "0.2.9" }
 hikari = { module = "com.zaxxer:HikariCP", version = "5.1.0" }
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

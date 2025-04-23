@@ -2,7 +2,7 @@ package com.takaotech.dashboard.utils
 
 import com.takaotech.dashboard.configuration.RedisConfiguration
 import eu.vendeli.rethis.ReThis
-import eu.vendeli.rethis.types.core.Url
+import eu.vendeli.rethis.types.common.Url
 import org.koin.core.annotation.Singleton
 
 @Singleton
@@ -18,7 +18,7 @@ class RedisDatabase(
         }
     }
 
-    fun disconnect() {
+    suspend fun disconnect() {
         client.disconnect()
     }
 }
