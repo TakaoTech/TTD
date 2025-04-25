@@ -36,12 +36,12 @@ data class GHListPage(val tagId: Int? = null)
 @Composable
 fun GHHomepageListPage(
     viewModel: GHHomepageListPageViewModel,
+    modifier: Modifier = Modifier,
     onRepositoryClicked: (repositoryId: Long) -> Unit,
 ) {
     val repoList = viewModel.repositoryList.collectAsLazyPagingItems()
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = modifier,
         contentPadding = with(WindowInsets.systemBars.asPaddingValues()) {
             PaddingValues(
                 top = calculateTopPadding(),

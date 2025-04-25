@@ -1,6 +1,12 @@
 package com.takaotech.dashboard
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -86,22 +92,58 @@ fun App() {
 
                 navigation<GHListDestination>(startDestination = GHListPage()) {
                     composable<GHListPage> {
-                        val backStackEntry = remember { navController.getBackStackEntry(GHListDestination) }
-                        val viewModel = koinViewModel<GHHomepageListPageViewModel>(viewModelStoreOwner = backStackEntry)
-                        GHHomepageListPage(
-                            viewModel,
-                            onRepositoryClicked = {
-                                navController.navigate(GHRepositoryDetail(it))
+                        val backStackEntry =
+                            remember { navController.getBackStackEntry(GHListDestination) }
+                        val viewModel =
+                            koinViewModel<GHHomepageListPageViewModel>(viewModelStoreOwner = backStackEntry)
+                        Scaffold(
+                            topBar = {
+                                IconButton(
+                                    onClick = {
+                                        navController.navigateUp()
+                                    }
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = null
+                                    )
+                                }
                             }
-                        )
+                        ) {
+                            GHHomepageListPage(
+                                modifier = Modifier.fillMaxSize()
+                                    .padding(it),
+                                viewModel = viewModel,
+                                onRepositoryClicked = {
+                                    navController.navigate(GHRepositoryDetail(it))
+                                }
+                            )
+                        }
                     }
 
                     composable<GHRepositoryDetail> {
                         val viewModel = koinViewModel<GHRepositoryDetailViewModel>()
 
-                        GHRepositoryDetailPage(
-                            viewModel = viewModel
-                        )
+                        Scaffold(
+                            topBar = {
+                                IconButton(
+                                    onClick = {
+                                        navController.navigateUp()
+                                    }
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        ) {
+                            GHRepositoryDetailPage(
+                                modifier = Modifier.fillMaxSize()
+                                    .padding(it),
+                                viewModel = viewModel
+                            )
+                        }
                     }
 
                     composable<GHTagsList> {

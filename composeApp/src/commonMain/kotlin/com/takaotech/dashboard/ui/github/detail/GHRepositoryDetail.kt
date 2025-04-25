@@ -40,7 +40,10 @@ data class GHRepositoryDetail(@SerialName("repositoryId") val id: Long)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GHRepositoryDetailPage(viewModel: GHRepositoryDetailViewModel) {
+fun GHRepositoryDetailPage(
+    viewModel: GHRepositoryDetailViewModel,
+    modifier: Modifier = Modifier
+) {
     val uriHandler = LocalTTDUriHandler.current
 
     val logger = koinInject<Logger>()
@@ -48,7 +51,7 @@ fun GHRepositoryDetailPage(viewModel: GHRepositoryDetailViewModel) {
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         topBar = {
             when (val repositoryUiState = uiState.repositoryUiState) {
                 is GHRepositoryDetailUi.GHRepositoryDetailUiState.Success -> {
