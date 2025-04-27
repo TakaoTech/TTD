@@ -7,7 +7,7 @@ import com.takaotech.dashboard.utils.TestCustomException
 import com.takaotech.dashboard.utils.getGHRepositoryExternalGenerator
 import com.takaotech.dashboard.utils.getGHUserExternalGenerator
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.core.spec.style.FunSpec
+import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldMatch
 import io.kotest.property.arbitrary.next
@@ -15,26 +15,26 @@ import kotlinx.datetime.toKotlinInstant
 import java.util.*
 import org.kohsuke.github.GHUser as GHUserExternal
 
-class GithubRepositoryUtilsTest : FunSpec() {
-    private val domainRegex = Regex("^(https?://)([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(:\\d+)?(/.*)?$")
-    private val mDateMock = Date()
+class GithubRepositoryUtilsTest : BehaviorSpec({
+    val domainRegex = Regex("^(https?://)([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}(:\\d+)?(/.*)?$")
+    val mDateMock = Date()
 
-    private val ghUsers: List<GHUserExternal> = getGHUserExternalGenerator().let {
+    val ghUsers: List<GHUserExternal> = getGHUserExternalGenerator().let {
         List(10) { _ ->
             it.next()
         }
     }
 
-    init {
-        context("convertToGHRepositoryWithDefaults") {
-            test("Happy flow") {
-                val repoTest = getGHRepositoryExternalGenerator(
-                    ghUsers = ghUsers,
-                    mDateMock = mDateMock
-                ).next()
+    Given("convertToGHRepositoryWithDefaults function") {
+        When("converting a repository with all fields populated") {
+            val repoTest = getGHRepositoryExternalGenerator(
+                ghUsers = ghUsers,
+                mDateMock = mDateMock
+            ).next()
 
-                val repoResult = repoTest.convertToGHRepositoryWithDefaults()
+            val repoResult = repoTest.convertToGHRepositoryWithDefaults()
 
+            Then("should correctly map all repository properties") {
                 repoResult.id shouldBe repoTest.id
                 repoResult.name shouldBe repoTest.name
                 repoResult.fullName shouldBe repoTest.fullName
@@ -59,99 +59,133 @@ class GithubRepositoryUtilsTest : FunSpec() {
                     user.avatarUrl shouldBe repoTest.owner.avatarUrl
                 }
             }
+        }
 
-            test("licence null") {
-                val repoTest = getGHRepositoryExternalGenerator(
-                    ghUsers = ghUsers,
-                    mDateMock = mDateMock,
-                    licenseModifier = GHFieldModifier.AS_NULL
-                ).next()
+        When("converting a repository with null license") {
+            val repoTest = getGHRepositoryExternalGenerator(
+                ghUsers = ghUsers,
+                mDateMock = mDateMock,
+                licenseModifier = GHFieldModifier.AS_NULL
+            ).next()
 
-                val repoResult = repoTest.convertToGHRepositoryWithDefaults()
+            val repoResult = repoTest.convertToGHRepositoryWithDefaults()
 
+            Then("should handle null license fields properly") {
                 repoResult.license shouldBe null
                 repoResult.licenseUrl shouldBe null
             }
+        }
 
-            test("licence IOException throw GHExternalConversionException") {
-                val repoTest = getGHRepositoryExternalGenerator(
-                    ghUsers = ghUsers,
-                    mDateMock = mDateMock,
-                    licenseModifier = GHFieldModifier.IOEXCEPTION
-                ).next()
+        When("license access throws IOException") {
+            val repoTest = getGHRepositoryExternalGenerator(
+                ghUsers = ghUsers,
+                mDateMock = mDateMock,
+                licenseModifier = GHFieldModifier.IOEXCEPTION
+            ).next()
 
-                shouldThrow<GHExternalConversionException> { repoTest.convertToGHRepositoryWithDefaults() }
+            Then("should throw GHExternalConversionException") {
+                shouldThrow<GHExternalConversionException> {
+                    repoTest.convertToGHRepositoryWithDefaults()
+                }
             }
+        }
 
-            test("licence other Exception throw Exception") {
-                val repoTest = getGHRepositoryExternalGenerator(
-                    ghUsers = ghUsers,
-                    mDateMock = mDateMock,
-                    licenseModifier = GHFieldModifier.OTHER_EXCEPTION
-                ).next()
+        When("license access throws other exception") {
+            val repoTest = getGHRepositoryExternalGenerator(
+                ghUsers = ghUsers,
+                mDateMock = mDateMock,
+                licenseModifier = GHFieldModifier.OTHER_EXCEPTION
+            ).next()
 
-                shouldThrow<TestCustomException> { repoTest.convertToGHRepositoryWithDefaults() }
+            Then("should propagate the original exception") {
+                shouldThrow<TestCustomException> {
+                    repoTest.convertToGHRepositoryWithDefaults()
+                }
             }
+        }
 
-            test("owner null NPE throw GHExternalConversionException") {
-                val repoTest = getGHRepositoryExternalGenerator(
-                    ghUsers = ghUsers,
-                    mDateMock = mDateMock,
-                    ownerModifier = GHFieldModifier.AS_NULL
-                ).next()
+        When("owner is null") {
+            val repoTest = getGHRepositoryExternalGenerator(
+                ghUsers = ghUsers,
+                mDateMock = mDateMock,
+                ownerModifier = GHFieldModifier.AS_NULL
+            ).next()
 
-                shouldThrow<GHExternalConversionException> { repoTest.convertToGHRepositoryWithDefaults() }
+            Then("should throw GHExternalConversionException for NPE") {
+                shouldThrow<GHExternalConversionException> {
+                    repoTest.convertToGHRepositoryWithDefaults()
+                }
             }
+        }
 
-            test("owner IOException throw GHExternalConversionException") {
-                val repoTest = getGHRepositoryExternalGenerator(
-                    ghUsers = ghUsers,
-                    mDateMock = mDateMock,
-                    ownerModifier = GHFieldModifier.IOEXCEPTION
-                ).next()
+        When("owner access throws IOException") {
+            val repoTest = getGHRepositoryExternalGenerator(
+                ghUsers = ghUsers,
+                mDateMock = mDateMock,
+                ownerModifier = GHFieldModifier.IOEXCEPTION
+            ).next()
 
-                shouldThrow<GHExternalConversionException> { repoTest.convertToGHRepositoryWithDefaults() }
+            Then("should throw GHExternalConversionException") {
+                shouldThrow<GHExternalConversionException> {
+                    repoTest.convertToGHRepositoryWithDefaults()
+                }
             }
+        }
 
-            test("owner throw other Exception") {
-                val repoTest = getGHRepositoryExternalGenerator(
-                    ghUsers = ghUsers,
-                    mDateMock = mDateMock,
-                    ownerModifier = GHFieldModifier.OTHER_EXCEPTION
-                ).next()
+        When("owner access throws other exception") {
+            val repoTest = getGHRepositoryExternalGenerator(
+                ghUsers = ghUsers,
+                mDateMock = mDateMock,
+                ownerModifier = GHFieldModifier.OTHER_EXCEPTION
+            ).next()
 
-                shouldThrow<TestCustomException> { repoTest.convertToGHRepositoryWithDefaults() }
+            Then("should propagate the original exception") {
+                shouldThrow<TestCustomException> {
+                    repoTest.convertToGHRepositoryWithDefaults()
+                }
             }
+        }
 
-            test("listLanguages() null NPE throw GHExternalConversionException") {
-                val repoTest = getGHRepositoryExternalGenerator(
-                    ghUsers = ghUsers,
-                    mDateMock = mDateMock,
-                    languagesModifier = GHFieldModifier.AS_NULL
-                ).next()
+        When("listLanguages() returns null") {
+            val repoTest = getGHRepositoryExternalGenerator(
+                ghUsers = ghUsers,
+                mDateMock = mDateMock,
+                languagesModifier = GHFieldModifier.AS_NULL
+            ).next()
 
-                shouldThrow<GHExternalConversionException> { repoTest.convertToGHRepositoryWithDefaults() }
+            Then("should throw GHExternalConversionException for NPE") {
+                shouldThrow<GHExternalConversionException> {
+                    repoTest.convertToGHRepositoryWithDefaults()
+                }
             }
+        }
 
-            test("listLanguages() IOException throw GHExternalConversionException") {
-                val repoTest = getGHRepositoryExternalGenerator(
-                    ghUsers = ghUsers,
-                    mDateMock = mDateMock,
-                    languagesModifier = GHFieldModifier.IOEXCEPTION
-                ).next()
+        When("listLanguages() throws IOException") {
+            val repoTest = getGHRepositoryExternalGenerator(
+                ghUsers = ghUsers,
+                mDateMock = mDateMock,
+                languagesModifier = GHFieldModifier.IOEXCEPTION
+            ).next()
 
-                shouldThrow<GHExternalConversionException> { repoTest.convertToGHRepositoryWithDefaults() }
+            Then("should throw GHExternalConversionException") {
+                shouldThrow<GHExternalConversionException> {
+                    repoTest.convertToGHRepositoryWithDefaults()
+                }
             }
+        }
 
-            test("listLanguages() throw other exception") {
-                val repoTest = getGHRepositoryExternalGenerator(
-                    ghUsers = ghUsers,
-                    mDateMock = mDateMock,
-                    languagesModifier = GHFieldModifier.OTHER_EXCEPTION
-                ).next()
+        When("listLanguages() throws other exception") {
+            val repoTest = getGHRepositoryExternalGenerator(
+                ghUsers = ghUsers,
+                mDateMock = mDateMock,
+                languagesModifier = GHFieldModifier.OTHER_EXCEPTION
+            ).next()
 
-                shouldThrow<TestCustomException> { repoTest.convertToGHRepositoryWithDefaults() }
+            Then("should propagate the original exception") {
+                shouldThrow<TestCustomException> {
+                    repoTest.convertToGHRepositoryWithDefaults()
+                }
             }
         }
     }
-}
+})

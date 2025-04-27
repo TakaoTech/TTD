@@ -6,116 +6,114 @@ import com.takaotech.dashboard.utils.HikariDatabase
 import com.takaotech.dashboard.utils.dbTables
 import com.takaotech.dashboard.utils.getSqlDbConfiguration
 import com.takaotech.dashboard.utils.installPostgres
-import io.kotest.core.spec.style.FunSpec
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.ktor.util.logging.*
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import kotlin.reflect.jvm.jvmName
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
 
-class TagsRepositoryTest : FunSpec() {
-    init {
-        val logger = KtorSimpleLogger(this::class.jvmName)
+class TagsRepositoryTest : BehaviorSpec({
+    val logger = KtorSimpleLogger(TagsRepositoryTest::class.jvmName)
+    val postgres = installPostgres()
+    val dbConfiguration = getSqlDbConfiguration(postgres)
+    val database = HikariDatabase(
+        dbConfiguration,
+        logger,
+    ).also {
+        it.connect()
+    }
 
-        val postgres = installPostgres()
+    val tagsRepository = TagsRepository(database)
 
-        val dbConfiguration = getSqlDbConfiguration(postgres)
-        val database = HikariDatabase(
-            dbConfiguration,
-            logger,
-        ).also {
-            it.connect()
+    beforeContainer {
+        database.dbExec {
+            addLogger(StdOutSqlLogger)
+            SchemaUtils.drop(*dbTables)
+            SchemaUtils.create(*dbTables)
+            commit()
         }
+    }
 
-        val tagsRepository = TagsRepository(database)
-
-        beforeEach {
-            database.dbExec {
-                addLogger(StdOutSqlLogger)
-                SchemaUtils.drop(*dbTables)
-                SchemaUtils.create(*dbTables)
-                commit()
-            }
-        }
-
-        test("Title only") {
+    Given("tag repository operations") {
+        When("adding a tag with only a name") {
             val tagInput = TagNewDao(name = "Kotlin Official")
             tagsRepository.addTag(tagInput)
 
-            val tagListOutput =
-                database.dbExec {
+            Then("tag should be saved with correct properties") {
+                val tagListOutput = database.dbExec {
                     TagsEntity.all().toList()
                 }
 
-            assertTrue(tagListOutput.isNotEmpty())
-            val tagOutput = tagListOutput.first()
-            assertEquals(tagInput.name, tagOutput.name)
-            assertEquals(tagInput.description, tagOutput.description)
-            assertEquals(tagInput.color, tagOutput.color)
+                tagListOutput.isEmpty() shouldBe false
+                val tagOutput = tagListOutput.first()
+                tagOutput.name shouldBe tagInput.name
+                tagOutput.description shouldBe tagInput.description
+                tagOutput.color shouldBe tagInput.color
+            }
         }
 
-        test("Add&Get Tag No Paging") {
-            val testList =
-                listOf(
-                    TagNewDao("Kotlin Official"),
-                    TagNewDao("Recommended", "Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
-                    TagNewDao(
-                        "Strange",
-                        "Proident obcaecat ea in duis ut consequat laoreet aliquip eum excepteur",
-                        "#123456",
-                    ),
-                )
+        When("adding multiple tags and retrieving without pagination") {
+            val testList = listOf(
+                TagNewDao("Kotlin Official"),
+                TagNewDao("Recommended", "Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
+                TagNewDao(
+                    "Strange",
+                    "Proident obcaecat ea in duis ut consequat laoreet aliquip eum excepteur",
+                    "#123456",
+                ),
+            )
 
             testList.forEach {
                 tagsRepository.addTag(it)
             }
 
-            val outputTags = tagsRepository.getTags(null, null).data
+            Then("all tags should be retrieved with correct properties") {
+                val outputTags = tagsRepository.getTags(null, null).data
 
-            outputTags.forEachIndexed { index, outputTag ->
-                val inputTag = testList[index]
-                assertEquals(inputTag.name, outputTag.name)
-                assertEquals(inputTag.description, outputTag.description)
-                assertEquals(inputTag.color, outputTag.color)
+                outputTags.forEachIndexed { index, outputTag ->
+                    val inputTag = testList[index]
+                    outputTag.name shouldBe inputTag.name
+                    outputTag.description shouldBe inputTag.description
+                    outputTag.color shouldBe inputTag.color
+                }
             }
         }
 
-        test("Add&Get Tag Paging") {
+        When("adding multiple tags and retrieving with pagination") {
             val pageSize = 2
-
-            val testList =
-                listOf(
-                    TagNewDao("Kotlin Official"),
-                    TagNewDao("Recommended", "Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
-                    TagNewDao(
-                        "Strange",
-                        "Proident obcaecat ea in duis ut consequat laoreet aliquip eum excepteur",
-                        "#123456",
-                    ),
-                )
+            val testList = listOf(
+                TagNewDao("Kotlin Official"),
+                TagNewDao("Recommended", "Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
+                TagNewDao(
+                    "Strange",
+                    "Proident obcaecat ea in duis ut consequat laoreet aliquip eum excepteur",
+                    "#123456",
+                ),
+            )
 
             testList.forEach {
                 tagsRepository.addTag(it)
             }
 
-            val outputTags = tagsRepository.getTags(1, pageSize).data
+            Then("should return correct number of tags for the specified page") {
+                val outputTags = tagsRepository.getTags(1, pageSize).data
 
-            outputTags.forEachIndexed { index, outputTag ->
-                val inputTag = testList[index]
-                assertEquals(inputTag.name, outputTag.name)
-                assertEquals(inputTag.description, outputTag.description)
-                assertEquals(inputTag.color, outputTag.color)
+                outputTags.forEachIndexed { index, outputTag ->
+                    val inputTag = testList[index]
+                    outputTag.name shouldBe inputTag.name
+                    outputTag.description shouldBe inputTag.description
+                    outputTag.color shouldBe inputTag.color
+                }
+
+                outputTags.size shouldBe pageSize
             }
-
-            assertEquals(pageSize, outputTags.size)
         }
 
-        test("Add&Get&Remove Tag") {
+        When("removing a tag") {
             val tagRemovedTest = TagNewDao("Recommended")
-
             val testList = listOf(TagNewDao("Kotlin Official"), tagRemovedTest)
 
             testList.forEach {
@@ -123,24 +121,30 @@ class TagsRepositoryTest : FunSpec() {
             }
 
             val tags = tagsRepository.getTags(null, null).data
-
             tags.forEachIndexed { index, outputTag ->
                 val inputTag = testList[index]
-                assertEquals(inputTag.name, outputTag.name)
-                assertEquals(inputTag.description, outputTag.description)
-                assertEquals(inputTag.color, outputTag.color)
+                outputTag.name shouldBe inputTag.name
+                outputTag.description shouldBe inputTag.description
+                outputTag.color shouldBe inputTag.color
             }
 
-            tagsRepository.removeTag(tags.find { it.name == tagRemovedTest.name }!!.id)
+            val tagToRemove = tags.find { it.name == tagRemovedTest.name }!!
+            tagsRepository.removeTag(tagToRemove.id)
 
-            val tags2 = tagsRepository.getTags(null, null).data
-
-            assertTrue { tags2.find { it.name == tagRemovedTest.name } == null }
+            Then("removed tag should no longer be present") {
+                val tags2 = tagsRepository.getTags(null, null).data
+                tags2.find { it.name == tagRemovedTest.name } shouldBe null
+            }
         }
+    }
 
-        test("getTagById") {
-            val tagForNew =
-                TagNewDao("Recommended", "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", color = "#123456")
+    Given("tag retrieval operations") {
+        When("retrieving a tag by ID") {
+            val tagForNew = TagNewDao(
+                "Recommended",
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                color = "#123456"
+            )
 
             database.dbExec {
                 TagsEntity.new(123) {
@@ -150,17 +154,22 @@ class TagsRepositoryTest : FunSpec() {
                 }
             }
 
-            val tagOutput = tagsRepository.getTagById(123)
+            Then("should return the correct tag") {
+                val tagOutput = tagsRepository.getTagById(123)
 
-            assertTrue { tagOutput != null }
-            assertEquals(tagForNew.name, tagOutput?.name)
-            assertEquals(tagForNew.description, tagOutput?.description)
-            assertEquals(tagForNew.color, tagOutput?.color)
+                tagOutput shouldNotBe null
+                tagOutput?.name shouldBe tagForNew.name
+                tagOutput?.description shouldBe tagForNew.description
+                tagOutput?.color shouldBe tagForNew.color
+            }
         }
 
-        test("getTagByIdInternal") {
-            val tagForNew =
-                TagNewDao("Recommended", "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", color = "#123456")
+        When("retrieving a tag by ID using internal method") {
+            val tagForNew = TagNewDao(
+                "Recommended",
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                color = "#123456"
+            )
 
             database.dbExec {
                 TagsEntity.new(123) {
@@ -170,27 +179,30 @@ class TagsRepositoryTest : FunSpec() {
                 }
             }
 
-            val tagOutput = tagsRepository.getTagByIdInternal(123)
+            Then("should return the correct tag") {
+                val tagOutput = tagsRepository.getTagByIdInternal(123)
 
-            assertTrue { tagOutput != null }
-            assertEquals(tagForNew.name, tagOutput?.name)
-            assertEquals(tagForNew.description, tagOutput?.description)
-            assertEquals(tagForNew.color, tagOutput?.color)
+                tagOutput shouldNotBe null
+                tagOutput?.name shouldBe tagForNew.name
+                tagOutput?.description shouldBe tagForNew.description
+                tagOutput?.color shouldBe tagForNew.color
+            }
         }
+    }
 
-        test("Update Tag") {
+    Given("tag update operations") {
+        When("updating a tag's description") {
             val tagForUpdate = TagNewDao("Recommended", "Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
 
-            val testList =
-                listOf(
-                    TagNewDao("Kotlin Official"),
-                    tagForUpdate,
-                    TagNewDao(
-                        "Strange",
-                        "Proident obcaecat ea in duis ut consequat laoreet aliquip eum excepteur",
-                        "#123456",
-                    ),
-                )
+            val testList = listOf(
+                TagNewDao("Kotlin Official"),
+                tagForUpdate,
+                TagNewDao(
+                    "Strange",
+                    "Proident obcaecat ea in duis ut consequat laoreet aliquip eum excepteur",
+                    "#123456",
+                ),
+            )
 
             testList.forEach {
                 tagsRepository.addTag(it)
@@ -200,27 +212,25 @@ class TagsRepositoryTest : FunSpec() {
 
             outputTags.forEachIndexed { index, outputTag ->
                 val inputTag = testList[index]
-                assertEquals(inputTag.name, outputTag.name)
-                assertEquals(inputTag.description, outputTag.description)
-                assertEquals(inputTag.color, outputTag.color)
+                outputTag.name shouldBe inputTag.name
+                outputTag.description shouldBe inputTag.description
+                outputTag.color shouldBe inputTag.color
             }
 
-            tagsRepository
-                .getTags(null, null)
-                .data
-                .find {
-                    it.name == tagForUpdate.name
-                }?.let {
-                    val updatedTag = it.copy(description = "Description Updated")
-                    tagsRepository.updateTag(updatedTag)
-                    updatedTag to tagsRepository.getTags(null, null).data.find { it.name == updatedTag.name }
-                }?.let {
-                    assertEquals(it.first.id, it.second?.id)
-                    assertEquals(it.first.name, it.second?.name)
-                    assertEquals(tagForUpdate.name, it.second?.name)
-                    assertEquals(it.first.description, it.second?.description)
-                    assertNotEquals(tagForUpdate.description, it.second?.description)
-                }
+            val tagToUpdate = outputTags.find { it.name == tagForUpdate.name }!!
+            val updatedTag = tagToUpdate.copy(description = "Description Updated")
+            tagsRepository.updateTag(updatedTag)
+
+            Then("tag should be updated with new description") {
+                val retrievedTag = tagsRepository.getTags(null, null).data.find { it.name == updatedTag.name }
+
+                retrievedTag shouldNotBe null
+                retrievedTag?.id shouldBe updatedTag.id
+                retrievedTag?.name shouldBe updatedTag.name
+                retrievedTag?.name shouldBe tagForUpdate.name
+                retrievedTag?.description shouldBe updatedTag.description
+                retrievedTag?.description shouldNotBe tagForUpdate.description
+            }
         }
     }
-}
+})

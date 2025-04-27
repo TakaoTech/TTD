@@ -4,8 +4,7 @@ import com.takaotech.dashboard.utils.RedisDatabase
 import com.takaotech.dashboard.utils.getGithubColorsFile
 import com.takaotech.dashboard.utils.getRedisConfiguration
 import com.takaotech.dashboard.utils.installRedis
-import io.kotest.core.spec.style.FunSpec
-import io.kotest.core.test.TestCaseOrder
+import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.extensions.clock.TestClock
 import io.kotest.matchers.shouldBe
 import io.ktor.client.*
@@ -28,105 +27,96 @@ import kotlinx.serialization.json.JsonObject
 import java.time.ZoneOffset
 import kotlin.time.Duration.Companion.days
 
-class GithubColorControllerTest : FunSpec() {
-
-    override fun testCaseOrder(): TestCaseOrder = TestCaseOrder.Sequential
-
+class GithubColorControllerTest : BehaviorSpec({
     lateinit var colorController: GithubColorControllerImpl
     lateinit var redisDatabase: RedisDatabase
 
-    init {
-        coroutineTestScope = true
-        val githubColorsFile = getGithubColorsFile()
-        val redis = installRedis()
+    val githubColorsFile = getGithubColorsFile()
+    val redis = installRedis()
 
-        var callCounter = 0
+    var callCounter = 0
 
-        val mockEngine = MockEngine {
-            it.url.toString() shouldBe "https://raw.githubusercontent.com/ozh/github-colors/master/colors.json"
-            callCounter++
+    val mockEngine = MockEngine {
+        it.url.toString() shouldBe "https://raw.githubusercontent.com/ozh/github-colors/master/colors.json"
+        callCounter++
 
-            respond(
-                content = ByteReadChannel(githubColorsFile),
-                status = HttpStatusCode.OK,
-                headers = headersOf(HttpHeaders.ContentType, "application/json")
-            )
-        }
+        respond(
+            content = ByteReadChannel(githubColorsFile),
+            status = HttpStatusCode.OK,
+            headers = headersOf(HttpHeaders.ContentType, "application/json")
+        )
+    }
 
-        val httpClient = HttpClient(mockEngine)
+    val httpClient = HttpClient(mockEngine)
 
-        val clock = TestClock(Clock.System.now().toJavaInstant(), ZoneOffset.UTC)
+    val clock = TestClock(Clock.System.now().toJavaInstant(), ZoneOffset.UTC)
 
-        beforeSpec {
-            val redisConfiguration = getRedisConfiguration(
-                redis.redisURI
-            )
+    beforeSpec {
+        val redisConfiguration = getRedisConfiguration(
+            redis.redisURI
+        )
 
-            redisDatabase = RedisDatabase(
-                redisConfiguration
-            ).also {
-                runBlocking {
-                    it.connect()
-                }
+        redisDatabase = RedisDatabase(
+            redisConfiguration
+        ).also {
+            runBlocking {
+                it.connect()
             }
-
         }
+    }
 
-        beforeTest {
-            callCounter = 0
-        }
+    beforeContainer {
+        callCounter = 0
+        colorController = spyk(
+            GithubColorControllerImpl(redisDatabase, httpClient),
+            recordPrivateCalls = true
+        )
+    }
 
-        beforeContainer {
-            colorController = spyk(
-                GithubColorControllerImpl(redisDatabase, httpClient),
-                recordPrivateCalls = true
-            )
-        }
+    beforeContainer {
+        clearMocks(
+            colorController,
+            answers = false,
+            recordedCalls = true,
+            childMocks = false,
+            verificationMarks = false,
+            exclusionRules = false
+        )
+    }
 
-        afterTest {
-            clearMocks(
-                colorController,
-                answers = false,
-                recordedCalls = true,
-                childMocks = false,
-                verificationMarks = false,
-                exclusionRules = false
-            )
-        }
+    afterContainer {
+        unmockkObject(Clock.System)
+    }
 
-        context("Data Colors start from remote") {
-            test("Color from remote and get Kotlin") {
-                colorController.getColorLanguageByName("Kotlin") shouldBe "#A97BFF"
+    Given("GitHub color controller with empty cache") {
+        When("requesting Kotlin language color for the first time") {
+            val color = colorController.getColorLanguageByName("Kotlin")
+
+            Then("should fetch color from remote and return correct value") {
+                color shouldBe "#A97BFF"
 
                 // This is bugged, method called multiple times https://github.com/mockk/mockk/issues/554
                 coVerify {
-                    colorController["checkNeedUpdate"]()
-                    colorController["getColorLanguagesMappingRemote"]()
-                    colorController["setColorLanguagesMappingLocal"](any<JsonObject>())
+                    colorController invokeNoArgs "checkNeedUpdate"
+                    colorController invokeNoArgs "getColorLanguagesMappingRemote"
+                    colorController invoke "setColorLanguagesMappingLocal" withArguments listOf(any<JsonObject>())
                     colorController["setLastUpdateMapping"](any<Instant>())
                 }
 
                 callCounter shouldBe 1
             }
+        }
 
-            test("Color from local and get Kotlin") {
-                colorController.getColorLanguageByName("Kotlin") shouldBe "#A97BFF"
+        When("requesting Kotlin language color after it's cached") {
+            // First call to cache the data
+            colorController.getColorLanguageByName("Kotlin")
+            callCounter = 0
 
-                verify {
-                    colorController["checkNeedUpdate"]()
-                }
+            // Second call should use cache
+            val color = colorController.getColorLanguageByName("Kotlin")
 
-                verify(exactly = 0) {
-                    colorController["setColorLanguagesMappingLocal"](any<JsonObject>())
-                    colorController["setLastUpdateMapping"](any<Instant>())
-                }
-
-
-                callCounter shouldBe 0
-            }
-
-            test("Color from local and get NotExisted language and get default color") {
-                colorController.getColorLanguageByName("NotExisted") shouldBe "#ededed"
+            Then("should use cached value without remote call") {
+                color shouldBe "#A97BFF"
 
                 verify {
                     colorController["checkNeedUpdate"]()
@@ -141,25 +131,11 @@ class GithubColorControllerTest : FunSpec() {
             }
         }
 
-        context("Data color start from local") {
-            test("Color from local and get Kotlin") {
-                colorController.getColorLanguageByName("Kotlin") shouldBe "#A97BFF"
+        When("requesting a non-existent language color") {
+            val color = colorController.getColorLanguageByName("NotExisted")
 
-                verify {
-                    colorController["checkNeedUpdate"]()
-                    colorController["getColorLanguagesMappingLocal"]()
-                }
-
-                verify(exactly = 0) {
-                    colorController["setColorLanguagesMappingLocal"](any<JsonObject>())
-                    colorController["setLastUpdateMapping"](any<Instant>())
-                }
-
-                callCounter shouldBe 0
-            }
-
-            test("Color from local and get NotExisted language and get default color") {
-                colorController.getColorLanguageByName("NotExisted") shouldBe "#ededed"
+            Then("should return default color") {
+                color shouldBe "#ededed"
 
                 verify {
                     colorController["checkNeedUpdate"]()
@@ -173,24 +149,84 @@ class GithubColorControllerTest : FunSpec() {
                 callCounter shouldBe 0
             }
         }
+    }
 
-        context("Data color Refresh") {
-            test("Data Colors updated after coutdown date") {
-                mockkObject(Clock.System)
-                every { Clock.System.now() } answers {
-                    clock.instant().toKotlinInstant()
-                }
+    Given("GitHub color controller with populated cache") {
+        // Ensure cache is populated
+        colorController.getColorLanguageByName("Kotlin")
+        callCounter = 0
+        clearMocks(
+            colorController,
+            answers = false,
+            recordedCalls = true,
+            childMocks = false,
+            verificationMarks = false,
+            exclusionRules = false
+        )
 
-                colorController.getColorLanguageByName("Kotlin") shouldBe "#A97BFF"
+        When("requesting Kotlin language color") {
+            val color = colorController.getColorLanguageByName("Kotlin")
+
+            Then("should use cached value") {
+                color shouldBe "#A97BFF"
 
                 verify {
                     colorController["checkNeedUpdate"]()
                     colorController["getColorLanguagesMappingLocal"]()
                 }
 
-                clock.plus(35.days)
+                verify(exactly = 0) {
+                    colorController["setColorLanguagesMappingLocal"](any<JsonObject>())
+                    colorController["setLastUpdateMapping"](any<Instant>())
+                }
 
-                colorController.getColorLanguageByName("Kotlin") shouldBe "#A97BFF"
+                callCounter shouldBe 0
+            }
+        }
+
+        When("requesting a non-existent language color") {
+            val color = colorController.getColorLanguageByName("NotExisted")
+
+            Then("should return default color") {
+                color shouldBe "#ededed"
+
+                verify {
+                    colorController["checkNeedUpdate"]()
+                }
+
+                verify(exactly = 0) {
+                    colorController["setColorLanguagesMappingLocal"](any<JsonObject>())
+                    colorController["setLastUpdateMapping"](any<Instant>())
+                }
+
+                callCounter shouldBe 0
+            }
+        }
+    }
+
+    Given("GitHub color controller with cache that needs refresh") {
+        mockkObject(Clock.System)
+        every { Clock.System.now() } answers {
+            clock.instant().toKotlinInstant()
+        }
+
+        When("requesting color after cache expiration period") {
+            // First call to populate cache
+            colorController.getColorLanguageByName("Kotlin") shouldBe "#A97BFF"
+
+            verify {
+                colorController["checkNeedUpdate"]()
+                colorController["getColorLanguagesMappingLocal"]()
+            }
+
+            // Advance time to trigger cache refresh
+            clock.plus(35.days)
+
+            // Second call should refresh cache
+            val color = colorController.getColorLanguageByName("Kotlin")
+
+            Then("should refresh cache and return correct value") {
+                color shouldBe "#A97BFF"
 
                 verify {
                     colorController["checkNeedUpdate"]()
@@ -198,10 +234,7 @@ class GithubColorControllerTest : FunSpec() {
                     colorController["setColorLanguagesMappingLocal"](any<JsonObject>())
                     colorController["setLastUpdateMapping"](any<Instant>())
                 }
-
-                unmockkObject(Clock.System)
-
             }
         }
     }
-}
+})

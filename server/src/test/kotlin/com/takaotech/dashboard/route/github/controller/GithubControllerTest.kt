@@ -6,7 +6,7 @@ import com.takaotech.dashboard.models.GHRepositoryDao
 import com.takaotech.dashboard.route.github.repository.DepositoryRepository
 import com.takaotech.dashboard.route.github.repository.GithubRepository
 import com.takaotech.dashboard.route.github.repository.TagsRepository
-import io.kotest.core.spec.style.FunSpec
+import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.Runs
 import io.mockk.coEvery
@@ -19,29 +19,57 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
-class GithubControllerTest :
-    FunSpec({
-        var githubRepository = mockk<GithubRepository>()
-        var depository = mockk<DepositoryRepository>()
-        var tagsRepository = mockk<TagsRepository>()
-        var controller = GithubController(githubRepository, depository, tagsRepository)
+class GithubControllerTest : BehaviorSpec({
+    val refreshAt = Clock.System.now()
 
-        val refreshAt = Clock.System.now()
+    Given("getStarsAndStore method") {
+        val githubRepository = mockk<GithubRepository>()
+        val depository = mockk<DepositoryRepository>()
+        val tagsRepository = mockk<TagsRepository>()
+        val controller = GithubController(githubRepository, depository, tagsRepository)
 
-        beforeEach {
-            githubRepository = mockk<GithubRepository>()
-            depository = mockk<DepositoryRepository>()
-            tagsRepository = mockk<TagsRepository>()
-            controller = GithubController(githubRepository, depository, tagsRepository)
+        coEvery {
+            depository.detachUpdateTimestamp()
+        } returns refreshAt
+
+        When("repository list contains both successful and failed items") {
+            val mockedRepoList = listOf(
+                Result.success(mockk<GHRepositoryDao>()),
+                Result.success(mockk<GHRepositoryDao>()),
+                Result.failure(
+                    GHExternalConversionException(
+                        "Test id",
+                        "Test name",
+                        "Test property",
+                        Exception()
+                    )
+                )
+            )
+
+            val mockFlow = flow {
+                emit(mockedRepoList)
+            }
 
             coEvery {
-                depository.detachUpdateTimestamp()
-            } returns refreshAt
+                githubRepository.getAllStars()
+            } returns mockFlow
+
+            coEvery {
+                depository.saveRepositoriesToDB(any(), any())
+            } just Runs
+
+            Then("should filter out failed repositories and save only successful ones") {
+                controller.getStarsAndStore()
+
+                coVerify(exactly = 1) {
+                    depository.saveRepositoriesToDB(eq(refreshAt), match { it.size == 2 })
+                }
+            }
         }
 
-        context("getStarsAndStore") {
-            test("Happy flow with some errors") {
-                val mockedRepoList = listOf(
+        When("flow collection is cancelled during processing") {
+            val mockedRepoList = List(2) {
+                listOf(
                     Result.success(mockk<GHRepositoryDao>()),
                     Result.success(mockk<GHRepositoryDao>()),
                     Result.failure(
@@ -53,59 +81,26 @@ class GithubControllerTest :
                         )
                     )
                 )
-
-                val mockFlow = flow {
-                    emit(mockedRepoList)
-                }
-
-                coEvery {
-                    githubRepository.getAllStars()
-                } returns mockFlow
-
-                coEvery {
-                    depository.saveRepositoriesToDB(any(), any())
-                } just Runs
-
-                controller.getStarsAndStore()
-
-                coVerify(exactly = 1) {
-                    depository.saveRepositoriesToDB(eq(refreshAt), match { it.size == 2 })
-                }
             }
 
-            test("Flow cancelled") {
-                val mockedRepoList = List(2) {
-                    listOf(
-                        Result.success(mockk<GHRepositoryDao>()),
-                        Result.success(mockk<GHRepositoryDao>()),
-                        Result.failure(
-                            GHExternalConversionException(
-                                "Test id",
-                                "Test name",
-                                "Test property",
-                                Exception()
-                            )
-                        )
-                    )
-                }
+            val mockFlow = flow {
+                emit(mockedRepoList[0])
+                delay(10)
+                emit(mockedRepoList[1])
+            }
 
-                val mockFlow = flow {
-                    emit(mockedRepoList[0])
-                    delay(10)
-                    emit(mockedRepoList[1])
-                }
+            coEvery {
+                githubRepository.getAllStars()
+            } returns mockFlow
 
-                coEvery {
-                    githubRepository.getAllStars()
-                } returns mockFlow
+            coEvery {
+                depository.saveRepositoriesToDB(any(), any())
+            } coAnswers {
+                delay(5)
+                Runs
+            }
 
-                coEvery {
-                    depository.saveRepositoriesToDB(any(), any())
-                } coAnswers {
-                    delay(5)
-                    Runs
-                }
-
+            Then("should process only the first batch of repositories before cancellation") {
                 val starAndStoreJob = launch {
                     controller.getStarsAndStore()
                 }
@@ -124,4 +119,5 @@ class GithubControllerTest :
                 }
             }
         }
-    })
+    }
+})
