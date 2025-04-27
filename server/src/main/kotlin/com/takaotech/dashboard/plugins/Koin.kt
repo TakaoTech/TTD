@@ -13,7 +13,7 @@ fun Application.configureKoin() {
         modules(
             defaultModule,
             getConfigurationModule(),
-            getGeneralModule(log),
+            getGeneralModule(log = log, developmentMode = developmentMode),
         )
     }
 }

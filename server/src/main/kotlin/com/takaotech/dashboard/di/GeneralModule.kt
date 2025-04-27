@@ -7,7 +7,6 @@ import io.ktor.client.*
 import io.ktor.client.engine.java.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.application.*
 import io.ktor.util.logging.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -17,7 +16,10 @@ import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-fun Application.getGeneralModule(log: Logger): Module =
+fun getGeneralModule(
+    log: Logger,
+    developmentMode: Boolean = false
+): Module =
     module {
         single<Logger> {
             log
