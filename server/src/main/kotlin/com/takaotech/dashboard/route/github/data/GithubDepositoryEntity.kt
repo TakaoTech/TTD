@@ -30,6 +30,8 @@ class GithubDepositoryEntity(
     var license by GithubDepositoryTable.license
     var licenseUrl by GithubDepositoryTable.licenseUrl
 
+    var readmeUrl by GithubDepositoryTable.readmeUrl
+
     var updatedAt by GithubDepositoryTable.updatedAt
     var refreshedAt by GithubDepositoryTable.refreshedAt
 }

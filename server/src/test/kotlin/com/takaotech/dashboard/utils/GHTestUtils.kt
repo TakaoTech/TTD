@@ -55,7 +55,8 @@ fun getGHRepositoryGenerator(
             languages = languages,
             updatedAt = updatedAt,
             tags = tags,
-            mainCategory = mainCategory
+            mainCategory = mainCategory,
+            readmeUrl = "https://${faker.internet.domain()}"
         )
     }
 }
@@ -128,6 +129,8 @@ fun getGHRepositoryExternalGenerator(
                     }
                 }
             }
+
+            every { it.readme.downloadUrl } returns "https://${faker.internet.domain()}"
         }
     }
 }

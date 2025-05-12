@@ -45,7 +45,7 @@ class GithubClientImpl(
                 Result.of<GHRepositoryDao, GHExternalConversionException> {
                     repository.convertToGHRepositoryWithDefaults()
                 }.onFailure {
-                    logger.error("Failed to convert repository {} {}:", repository.id.toString(), repository.name, it)
+                    logger.error("Failed to convert repository: ${repository.id} ${repository.name}", it)
                 }
             }.also { emit(it) }
         }

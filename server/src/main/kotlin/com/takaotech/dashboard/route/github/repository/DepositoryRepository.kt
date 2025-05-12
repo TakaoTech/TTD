@@ -7,7 +7,12 @@ import com.takaotech.dashboard.models.GHRepositoryDao
 import com.takaotech.dashboard.models.GHRepositoryMiniDao
 import com.takaotech.dashboard.models.GHUserDao
 import com.takaotech.dashboard.models.MainCategory
-import com.takaotech.dashboard.route.github.data.*
+import com.takaotech.dashboard.route.github.data.GithubDepositoryEntity
+import com.takaotech.dashboard.route.github.data.GithubDepositoryMiniEntity
+import com.takaotech.dashboard.route.github.data.GithubDepositoryTable
+import com.takaotech.dashboard.route.github.data.GithubUserEntity
+import com.takaotech.dashboard.route.github.data.TagsEntity
+import com.takaotech.dashboard.route.github.data.TagsEntityFollowRepo
 import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryMiniServerDao
 import com.takaotech.dashboard.route.github.repository.utils.convertToGHRepositoryServerDao
 import com.takaotech.dashboard.utils.HikariDatabase
@@ -111,6 +116,8 @@ class DepositoryRepository(
 
                 license = repository.license
                 licenseUrl = repository.licenseUrl
+
+                readmeUrl = repository.readmeUrl
 
                 updatedAt = repository.updatedAt
                 refreshedAt = refreshAt

@@ -54,6 +54,8 @@ object GithubDepositoryTable : IdTable<Long>() {
      */
     val licenseUrl = text("license_url").nullable()
 
+    val readmeUrl = text("readme_url").nullable()
+
     /**
      * Map of repository programming languages
      */

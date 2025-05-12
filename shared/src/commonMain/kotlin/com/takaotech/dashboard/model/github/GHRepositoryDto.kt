@@ -37,6 +37,8 @@ data class GHRepositoryDto(
     override val tags: List<TagDto>,
     @SerialName("mainCategory")
     val mainCategory: MainCategoryDto = MainCategoryDto.NONE,
+    @SerialName("readmeUrl")
+    val readmeUrl: String?,
 ) : GHRepositoryBaseDto()
 
 @Serializable

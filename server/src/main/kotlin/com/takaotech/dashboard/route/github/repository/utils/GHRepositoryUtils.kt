@@ -49,13 +49,14 @@ internal suspend fun GithubDepositoryEntity.convertToGHRepositoryServerDao(
                 colorCode = colorController.getColorLanguageByName(it.name)
             )
         },
+        updatedAt = updatedAt,
         tags = database.dbExec {
             tags.map { entity ->
                 entity.convertToTagServerDao()
             }
         },
         mainCategory = category,
-        updatedAt = updatedAt,
+        readmeUrl = readmeUrl,
     )
 
 internal suspend fun GithubDepositoryMiniEntity.convertToGHRepositoryMiniServerDao(
@@ -171,6 +172,7 @@ internal fun GHRepositoryExternal.convertToGHRepositoryWithDefaults(): GHReposit
         tags = listOf(),
         //TODO
         updatedAt = updatedAt.toInstant().toKotlinInstant(),
+        readmeUrl = readme?.downloadUrl
     )
 }
 
