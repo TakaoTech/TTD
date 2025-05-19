@@ -33,7 +33,6 @@ import com.takaotech.dashboard.ui.theme.AppTheme
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.serialization.Serializable
-import org.koin.compose.KoinContext
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -42,122 +41,107 @@ data object Home
 
 @Composable
 fun App() {
-    KoinContext {
-        AppTheme {
-            val navController = rememberNavController()
+    AppTheme {
+        val navController = rememberNavController()
 
-            val sessionExpiredFlow = koinInject<SessionManager>().sessionExpiredFlow
+        val sessionExpiredFlow = koinInject<SessionManager>().sessionExpiredFlow
 
-            val lifecycle = LocalLifecycleOwner.current
+        val lifecycle = LocalLifecycleOwner.current
 
-            LaunchedEffect(Unit) {
-                sessionExpiredFlow
-                    .onEach {
-                        navController.navigate(Home) {
-                            popUpTo<Home> {
-                                inclusive = true
-                            }
+        LaunchedEffect(Unit) {
+            sessionExpiredFlow
+                .onEach {
+                    navController.navigate(Home) {
+                        popUpTo<Home> {
+                            inclusive = true
                         }
                     }
-                    .flowWithLifecycle(lifecycle.lifecycle)
-                    .launchIn(this)
+                }
+                .flowWithLifecycle(lifecycle.lifecycle)
+                .launchIn(this)
+        }
+
+        NavHost(
+            navController = navController,
+            startDestination = Home
+        ) {
+            composable<Home> {
+                HomePage(
+                    onTagClicked = { tagId ->
+                        navController.navigate(GHListPage(tagId))
+                    },
+                    onMoreTagClicked = {
+                        navController.navigate(GHTagsList)
+                    },
+                    onRepositoryClicked = {
+                        navController.navigate(GHRepositoryDetail(it))
+                    },
+                    onMoreRepositoriesClicked = {
+                        navController.navigate(GHListDestination)
+                    },
+                    onCreditClicked = {
+                        navController.navigate("credits")
+                    },
+                    onAdminClick = {
+                        navController.navigate("admin")
+                    }
+                )
             }
 
-            NavHost(
-                navController = navController,
-                startDestination = Home
-            ) {
-                composable<Home> {
-                    HomePage(
-                        onTagClicked = { tagId ->
-                            navController.navigate(GHListPage(tagId))
-                        },
-                        onMoreTagClicked = {
-                            navController.navigate(GHTagsList)
-                        },
-                        onRepositoryClicked = {
-                            navController.navigate(GHRepositoryDetail(it))
-                        },
-                        onMoreRepositoriesClicked = {
-                            navController.navigate(GHListDestination)
-                        },
-                        onCreditClicked = {
-                            navController.navigate("credits")
-                        },
-                        onAdminClick = {
-                            navController.navigate("admin")
+            navigation<GHListDestination>(startDestination = GHListPage()) {
+                composable<GHListPage> {
+                    val backStackEntry =
+                        remember { navController.getBackStackEntry(GHListDestination) }
+                    val viewModel =
+                        koinViewModel<GHHomepageListPageViewModel>(viewModelStoreOwner = backStackEntry)
+                    Scaffold(
+                        topBar = {
+                            IconButton(
+                                onClick = {
+                                    navController.navigateUp()
+                                }
+                            ) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    ) {
+                        GHHomepageListPage(
+                            modifier = Modifier.fillMaxSize()
+                                .padding(it),
+                            viewModel = viewModel,
+                            onRepositoryClicked = {
+                                navController.navigate(GHRepositoryDetail(it))
+                            }
+                        )
+                    }
+                }
+
+                composable<GHRepositoryDetail> {
+                    val viewModel = koinViewModel<GHRepositoryDetailViewModel>()
+
+                    GHRepositoryDetailPage(
+                        modifier = Modifier.fillMaxSize(),
+                        viewModel = viewModel,
+                        onBackClicked = {
+                            navController.navigateUp()
                         }
                     )
                 }
 
-                navigation<GHListDestination>(startDestination = GHListPage()) {
-                    composable<GHListPage> {
-                        val backStackEntry =
-                            remember { navController.getBackStackEntry(GHListDestination) }
-                        val viewModel =
-                            koinViewModel<GHHomepageListPageViewModel>(viewModelStoreOwner = backStackEntry)
-                        Scaffold(
-                            topBar = {
-                                IconButton(
-                                    onClick = {
-                                        navController.navigateUp()
-                                    }
-                                ) {
-                                    Icon(
-                                        Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        ) {
-                            GHHomepageListPage(
-                                modifier = Modifier.fillMaxSize()
-                                    .padding(it),
-                                viewModel = viewModel,
-                                onRepositoryClicked = {
-                                    navController.navigate(GHRepositoryDetail(it))
-                                }
-                            )
-                        }
-                    }
-
-                    composable<GHRepositoryDetail> {
-                        val viewModel = koinViewModel<GHRepositoryDetailViewModel>()
-
-                        Scaffold(
-                            topBar = {
-                                IconButton(
-                                    onClick = {
-                                        navController.navigateUp()
-                                    }
-                                ) {
-                                    Icon(
-                                        Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        ) {
-                            GHRepositoryDetailPage(
-                                modifier = Modifier.fillMaxSize()
-                                    .padding(it),
-                                viewModel = viewModel
-                            )
-                        }
-                    }
-
-                    composable<GHTagsList> {
-                        GHTagsPage()
-                    }
+                composable<GHTagsList> {
+                    GHTagsPage()
                 }
+            }
 
-                composable("admin") {
-                    AdminSection()
-                }
+            composable("admin") {
+                AdminSection()
+            }
 
-                composable("credits") {
-                    CreditPage(modifier = Modifier.fillMaxSize())
-                }
+            composable("credits") {
+                CreditPage(modifier = Modifier.fillMaxSize())
             }
         }
     }

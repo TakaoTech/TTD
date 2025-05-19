@@ -88,9 +88,11 @@ monitoring. The application supports multiple platforms including iOS and web th
    ./gradlew build
 
    # Run server tests
+   # VERY IMPORTANT: don't use run_test command for running tests because the command does not support kotest.
    ./gradlew :server:test
 
    # Run shared module tests
+   # VERY IMPORTANT: don't use run_test command for running tests because the command does not support kotest.
    ./gradlew :shared:test
 
    # Run compose app

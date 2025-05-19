@@ -40,7 +40,8 @@ voyager = "1.1.0-beta03"
 
 depscredit = "11.6.3"
 haze = "1.1.1"
-coil = "3.0.0-alpha06"
+coil = "3.1.0"
+markdown = "0.34.0"
 
 [libraries]
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
@@ -171,10 +172,14 @@ depscredit-uim3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.r
 
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 
+markdown = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdown" }
+markdown-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdown" }
+markdown-coil = { module = "com.mikepenz:multiplatform-markdown-renderer-coil3", version.ref = "markdown" }
+markdown-code = { module = "com.mikepenz:multiplatform-markdown-renderer-code", version.ref = "markdown" }
 haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
 haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "haze" }
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
-coil-ktor = { module = "io.coil-kt.coil3:coil-network-ktor", version.ref = "coil" }
+coil-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 
 firebase-bom = { module = "com.google.firebase:firebase-bom", version = "33.1.1" }
@@ -223,4 +228,9 @@ exposed = [
     "exposed-datetime",
     "exposed-migration",
     "exposed-paging"
+]
+markdown = [
+    "markdown-m3",
+    "markdown-coil",
+    "markdown-code"
 ]
