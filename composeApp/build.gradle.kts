@@ -168,7 +168,7 @@ kotlin {
                 implementation(project.dependencies.platform(libs.koin.bom))
                 implementation(project.dependencies.platform(libs.koin.annotation.bom))
                 implementation(libs.koin.core)
-                implementation(libs.koin.annotation)
+                api(libs.koin.annotation)
                 implementation(libs.koin.compose)
                 implementation(libs.koin.compose.viewmodel)
                 implementation(libs.koin.compose.navigation)
